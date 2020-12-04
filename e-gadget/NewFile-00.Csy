@@ -1,0 +1,20 @@
+Title:Main - [ NewFile-00 ] DAISEN C-Style for e-Gadget CORE  [ Ver.20171102 ]
+CN01:Ball
+CN02:Line
+CN03:L-Touch
+CN04:R-Touch
+CN05:
+CN06:
+CN07:
+CN08:
+CN09:RED3
+CN10:RED2
+[0000]:sno:08,cno:07,val:111111-110000-000004,cmt:
+[0001]:sno:04,cno:01,val:000000-000000-000000,cmt:
+[0002]:sno:01,cno:14,val:000040-000001-000000,cmt:Ball
+[0003]:sno:21,cno:21,val:000050-000050-000000,cmt:
+[0004]:sno:03,cno:00,val:000000-000000-000000,cmt:
+[0005]:sno:23,cno:23,val:-00030-000030-000000,cmt:
+[0006]:sno:00,cno:02,val:000000-000000-000000,cmt:
+[0007]:sno:29,cno:29,val:000100-000000-000000,cmt:
+[0008]:sno:00,cno:03,val:000000-000000-000000,cmt:
