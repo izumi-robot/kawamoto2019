@@ -24,7 +24,7 @@ public:
     }
 
     XYPoint operator*()
-}
+};
 
 class Robot {
 
