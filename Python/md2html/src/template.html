@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+ <meta charset="utf-8">
+ <title>Title</title>
+ <style>
+  /* CSS */
+ </style>
+ <script type="text/javascript">
+   function funcColoring() {
+       let pElements = document.getElementsByClassName("p");
+       for(let element of pElements) {
+           if(element.textContent[0] != "(") { continue; }
+           let prev = element.previousSibling;
+           if(prev.className != 'n') { continue; }
+           prev.className = 'nf';
+       }
+   }
+ </script>
+</head>
+<body>
+ <div class="md-content">
+  {{CONTENT}}
+ </div>
+ <script type="text/javascript">
+   funcColoring();
+ </script>
+</body>
+</html>

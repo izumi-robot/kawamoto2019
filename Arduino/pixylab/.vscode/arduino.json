@@ -1,0 +1,5 @@
+{
+    "sketch": "pixylab.ino",
+    "board": "arduino:avr:uno",
+    "port": "COM7"
+}
