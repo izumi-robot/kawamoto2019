@@ -23,7 +23,7 @@ namespace motor_ctrl {
      */
     int powers[] = {0, 0, 0, 0};
 
-    // assert : m_id = 1,2,3,4
+    // assert : m_id = 1,2,3,4 && abs(power) <= 100
     void set(int m_id, int power) {
         /*
             Serial1.println(
@@ -35,10 +35,11 @@ namespace motor_ctrl {
             );
          */
         String d = power < 0 ? "R" : "F";
-        String p = String(min(abs(power), 100));
+        String p = String(abs(power)); // **TODO**: digit
         String dest = String(m_id) + d + p;
         Serial1.println(dest);
-        motors[m_id - 1] = power;
+        Serial.println(dest);
+        powers[m_id - 1] = power;
     }
 
     void stop() {
@@ -69,9 +70,9 @@ namespace motor_ctrl {
             return int((a + cos(d)) * b);
         };
         int r, l; // r : facing-right motor, l : facing-left motor
-        bool b = -PI/2 < rad && rad < PI/2;
-        r = b ? f(PI/4 + rad) : -f(PI*5/4 - rad);
-        l = f(b ? f(PI/4 - rad) : -f(rad - PI*3/4));
+        bool d = -PI/2 < rad && rad < PI/2;
+        r = d ? f(PI/4 + rad) : -f(PI*5/4 - rad);
+        l = d ? f(PI/4 - rad) : -f(rad - PI*3/4);
         set(1, r); set(2, l); set(3, l); set(4, r);
     }
 };
@@ -82,7 +83,8 @@ namespace motor_ctrl {
 int t = 0;
 
 void setup() {
-    Serial1.begin(9600);
+    Serial.begin(9600);
+    Serial1.begin(115200);
     // initialize motors
     motor_ctrl::setup();
 }
@@ -93,5 +95,6 @@ void loop() {
     if (PI < t) {
         t = -PI;
     }
-    motor_ctrl::set_powers(t);
+    motor_ctrl::set_powers(0);
+    delay(1000);
 }
