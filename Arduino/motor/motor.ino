@@ -1,3 +1,10 @@
+
+void str_rjust(String &s, int len, const String &pad) {
+    for (int i = s.length(); i < len; i++) {
+        s = pad + s;
+    }
+}
+
 namespace vel_util {
     double front_bound = PI/4, back_bound = PI/4;
     struct Velocity {
@@ -23,6 +30,13 @@ namespace motor_ctrl {
      */
     int powers[] = {0, 0, 0, 0};
 
+    String power_str(int m_id, int power) {
+        String d = power < 0 ? "R" : "F";
+        String p = String(abs(power)); // **TODO**: digit
+        str_rjust(p, 3, "0");
+        return String(m_id) + d + p;
+    }
+
     // assert : m_id = 1,2,3,4 && abs(power) <= 100
     void set(int m_id, int power) {
         /*
@@ -34,11 +48,9 @@ namespace motor_ctrl {
                 )
             );
          */
-        String d = power < 0 ? "R" : "F";
-        String p = String(abs(power)); // **TODO**: digit
-        String dest = String(m_id) + d + p;
+        String dest = power_str(m_id, power);
         Serial1.println(dest);
-        Serial.println(dest);
+        //Serial.println(dest);
         powers[m_id - 1] = power;
     }
 
@@ -70,10 +82,21 @@ namespace motor_ctrl {
             return int((a + cos(d)) * b);
         };
         int r, l; // r : facing-right motor, l : facing-left motor
-        bool d = -PI/2 < rad && rad < PI/2;
-        r = d ? f(PI/4 + rad) : -f(PI*5/4 - rad);
-        l = d ? f(PI/4 - rad) : -f(rad - PI*3/4);
+        bool forward = -PI/2 < rad && rad < PI/2;
+        r = forward ? f(PI/4 + rad) : -f(PI*5/4 - rad);
+        l = forward ? f(PI/4 - rad) : -f(rad - PI*3/4);
         set(1, r); set(2, l); set(3, l); set(4, r);
+    }
+
+    String power_info() {
+        String s = "[";
+        for (int i = 1; i <= 4; i++) {
+            s += String(i) + ": " + power_str(i, powers[i - 1]);
+            if (i != 4) {
+                s += ", ";
+            }
+        }
+        return s + "]";
     }
 };
 
@@ -87,6 +110,7 @@ void setup() {
     Serial1.begin(115200);
     // initialize motors
     motor_ctrl::setup();
+    Serial.println(motor_ctrl::power_info());
 }
 
 void loop() {
@@ -95,6 +119,8 @@ void loop() {
     if (PI < t) {
         t = -PI;
     }
-    motor_ctrl::set_powers(0);
+    //motor_ctrl::set_powers(t);
+    motor_ctrl::set(1, 50);
     delay(1000);
+    Serial.println(motor_ctrl::power_info());
 }
