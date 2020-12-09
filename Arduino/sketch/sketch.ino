@@ -1,26 +1,40 @@
-
-// https://musashinodenpa.com/arduinok/ref/index.php?f=0&pos=1462
-String motor_str(int m_num, int power) {
-    String d = power < 0 ? "R" : "F";
-    String p = String(abs(power));
-    String tmp = "000";
-    p = tmp.substring(0, 3 - p.length()) + p;
-    String ans = String(m_num) + d + p;
-    return ans;
-}
+const int LED_pin = 8;
+const int in_pin = 12;
 
 void setup() {
-    Serial.begin(9600);
+    pinMode(LED_pin, OUTPUT);
+    pinMode(in_pin, INPUT);
+    //Serial.begin(9600);
 }
-/*
-モーターの動かし方
-F -- 正転
-R -- 逆転
-複数動かす場合は:で繋げる
-*/
+
 void loop() {
-    Serial.println(motor_str(1, 100));
-    delay(500);
-    Serial.println(motor_str(1, -50));
-    delay(1000);
+    if (check()) {
+        digitalWrite(LED_pin, HIGH);
+        for (int i = 0; i < 20; i++) {
+            delay(100);
+            check();
+        }
+        digitalWrite(LED_pin, LOW);
+        for (int i = 0; i < 10; i++) {
+            delay(100);
+            check();
+        }
+    } else {
+        delay(10);
+        check();
+    }
+}
+
+bool check() {
+    static bool b = true;
+    static int value = LOW;
+
+    int v = digitalRead(in_pin);
+    if (v != value) {
+        value = v;
+        if (value == HIGH) {
+            b = !b;
+        }
+    }
+    return b;
 }
