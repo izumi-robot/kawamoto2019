@@ -1,5 +1,6 @@
 {
-    "sketch": "pixylab.ino",
-    "board": "arduino:avr:uno",
-    "port": "COM7"
+    "port": "COM6",
+    "board": "arduino:avr:mega",
+    "sketch": "motor.ino",
+    "configuration": "cpu=atmega2560"
 }
