@@ -1,4 +1,4 @@
 *.pdf
 **/*.pdf
-.vscode/**
-**/.vscode/**
+.vscode/**/*
+**/.vscode/**/*
