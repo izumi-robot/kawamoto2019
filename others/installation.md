@@ -57,6 +57,8 @@ https://www.microsoft.com/store/apps/9N9TNGVNDL3Q
 
 インストール後に起動するとコンソールウィンドウが開き、セットアップが自動で行われます。[新しいLinuxディストリビューションのユーザーアカウントとパスワードを作成する](https://docs.microsoft.com/ja-jp/windows/wsl/user-support)必要があります。Ubuntuの場合、ユーザーパスワードを打っても画面には表示されないので注意してください。
 
+SurfaceにもWSLが入っています。ユーザー名は`robo`、パスワードは`izumissh`です。
+
 これでWSL及びUbuntuのインストールは完了です。使い方は適当にググって下さい。
 
 ## Linux(Mac)
