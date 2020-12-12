@@ -3,6 +3,9 @@
 
 #include "util.h"
 
+
+namespace robo {
+
 namespace motor_ctrl {
     /*
         motors' positions:
@@ -84,5 +87,8 @@ namespace motor_ctrl {
         return s + "]";
     }
 };
+
+}
+
 
 #endif /* ROBO_MOTOR_H */
