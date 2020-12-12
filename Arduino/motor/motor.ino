@@ -100,27 +100,69 @@ namespace motor_ctrl {
     }
 };
 
+bool check() {
+    static bool b = true;
+    static int value = LOW;
+
+    int v = digitalRead(in_pin);
+    if (v != value) {
+        value = v;
+        if (value == HIGH) {
+            b = !b;
+        }
+    }
+    return b;
+}
+
 // example
 
 // frame counter
-int t = 0;
+double t = 0;
+
+const int in_pin = 22, out_pin = 24;
+bool s = false;
 
 void setup() {
     Serial.begin(9600);
-    Serial1.begin(115200);
+    Serial1.begin(19200);
     // initialize motors
     motor_ctrl::setup();
     Serial.println(motor_ctrl::power_info());
+    pinMode(in_pin, INPUT);
+    pinMode(out_pin, OUTPUT);
 }
 
 void loop() {
+    static bool s = false;
+    static int value = LOW;
+
+    int v = digitalRead(in_pin);
+    bool d = (v != value);
+    if (v == HIGH && d) {
+        s = !s;
+    }
+    value = v;
+    if (s) {
+        if (d) {
+            digitalWrite(out_pin, HIGH);
+            Serial.println("start");
+        }
+    } else {
+        if (d) {
+            digitalWrite(out_pin, LOW);
+            Serial.println("end");
+        }
+        delay(100);
+        return 0;
+    }
+
     // turn the direction of progress to a little right
     t += .01;
     if (PI < t) {
         t = -PI;
     }
-    //motor_ctrl::set_powers(t);
-    motor_ctrl::set(1, 50);
+    motor_ctrl::set_powers(t, 50, 40);
+    //motor_ctrl::set(1, 50);
     delay(1000);
     Serial.println(motor_ctrl::power_info());
 }
