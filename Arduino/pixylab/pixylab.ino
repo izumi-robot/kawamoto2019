@@ -1,50 +1,90 @@
 #include <ArxContainer.h>
 #include <Pixy2.h>
+#include <SPI.h>
+#include <MyTypes.h>
 
 Pixy2 pixy;
 
-class MyPixy {
-    private:
-    Pixy2 pixy;
-    int block_num;
+namespace robo {
 
-    public:
-    static struct Block {
-        private:
-        int _x, _y, _width, _height;
-        public:
+namespace pixy_util {
+    const int window_width = 320, window_height = 200;
 
-        Block(int x=0, int y=0, int width=0, int height=0)
-            :_X(x), _y(y), _width(width), _height(height) {}
+    double pos2angle(int m_x, int m_y) {
+        double x = m_x - window_width / 2;
+        double y = m_y - window_height / 2;
+        double ans = atan2(y, x);
 
-        double angle() {
-            
-        }
-    };
+    }
+}
 
-    MyPixy() {}
+namespace btn_onoff {
+    const int in_pin = 22, out_pin = 24;
+    bool state  = false;
+
+    void setup();
+    void callback();
+    bool changed();
+    bool check();
 
     void setup() {
-        pixy.init();
-        block_num = 0;
+        pinMode(out_pin, OUTPUT);
+
+        pinMode(in_pin, INPUT);
+        attachInterrupt(in_pin, callback, RISING);
     }
 
-    void update() {
-        block_num = pixy.ccc.getBlocks();
+    void callback() {
+        Serial.println("changed");
+        state = !state;
     }
 
-    int get_block_num() {
-        return block_num;
+    bool changed() {
+        static bool s = false;
+
+        bool ans = s != state;
+        s = state;
+        return ans;
     }
-};
+
+    bool check() {
+        static bool s = LOW;
+
+        bool n = digitalRead(in_pin) == HIGH;
+        bool changed = n != state;
+        state = n;
+        return changed;
+    }
+
+}
+
+}
+
 
 void setup() {
     Serial.begin(9600);
     pixy.init();
+    robo::btn_onoff::setup();
 }
 
+
 void loop() {
+    using namespace robo::btn_onoff;
+    if (check()) {
+        if (state) {
+            Serial.println("start");
+        } else {
+            Serial.println("end");
+        }
+    }
+    if (!state) {
+        return;
+    }
+    digitalWrite(out_pin, HIGH);
     getBalls();
+    delay(500);
+    digitalWrite(out_pin, LOW);
+    delay(500);
 }
 
 void print_ball_info(int x, int y) {
@@ -58,13 +98,11 @@ void getBalls() {
     int blocks = (int)pixy.ccc.getBlocks();
     if(blocks) {
         for(int i=0; i<blocks; i++) {
-            int x = (int)pixy.ccc.blocks[i].m_x;
-            int y = (int)pixy.ccc.blocks[i].m_y;
-            print_ball_info(x, y);
-            Serial.println("===============");
+            const auto &b = pixy.ccc.blocks[i];
+            b.print();
+            Serial.println(robo::pixy_util::pos2angle(b.m_x, b.m_y)/PI*180);
         }
     } else {
         Serial.println("no ball");
     }
-    delay(1000);
 }
