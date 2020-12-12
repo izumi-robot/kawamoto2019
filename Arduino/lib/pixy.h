@@ -4,7 +4,7 @@
 #include <ArxContainer.h>
 #include <Pixy2.h>
 #include <SPI.h>
-//#include <MyTypes.h>
+#include "mtp.h"
 
 namespace robo {
 
@@ -20,6 +20,16 @@ namespace pixy_util {
         double x = m_x - window_width / 2;
         double y = m_y - window_height / 2;
         double ans = atan2(y, x);
+        return ans;
+    }
+
+    double pos2angle(const robo::Vector2D<double> &pos) {
+        using dvec = robo::Vector2D<double>;
+        dvec np = pos - dvec(window_width / 2., window_height / 2.);
+        double ans = np.angle() + PI*3/4;
+        if (ans >= PI) {
+            ans -= PI;
+        }
         return ans;
     }
 
