@@ -4,7 +4,7 @@
 #include <ArxContainer.h>
 #include <Pixy2.h>
 #include <SPI.h>
-#include "mtp.h"
+#include "vec2d.h"
 
 namespace robo {
 
