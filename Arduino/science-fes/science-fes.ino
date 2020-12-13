@@ -1,13 +1,15 @@
-#include <robo.h>
+#include <robo2019.h>
 
 void setup() {
     Serial.begin(9600);
     robo::pixy_util::setup();
     robo::motor_ctrl::setup();
-    robo::interrupt::setup(3); // interrupt pin 3
+    // robo::interrupt::setup(3); // interrupt pin 3
 }
 
 void loop() {
+
+    goto END_INTERRUPT;
     INTERRUPT: { // label
         using namespace robo::interrupt;
         if (changed()) {
@@ -22,6 +24,8 @@ void loop() {
         }
     }
 
+    END_INTERRUPT:
+
     robo::Vector2D<double> ball_pos;
 
     PIXY: {
@@ -34,9 +38,12 @@ void loop() {
         ball_pos.y = double(pixy.ccc.blocks[0].m_y);
     }
 
+    Serial.println("ball_pos: " + ball_pos.to_string());
     double rad = robo::pixy_util::pos2angle(ball_pos);
 
     MOTOR: {
         robo::motor_ctrl::set_powers(rad, 40, 20);
     }
+
+    delay(100);
 }
