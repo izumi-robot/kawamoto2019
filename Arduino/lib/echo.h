@@ -1,6 +1,8 @@
 #ifndef ROBO_ECHO_H
 #define ROBO_ECHO_H
 
+#ifdef ARDUINO
+
 namespace robo {
 
 class Echo {
@@ -29,5 +31,11 @@ class Echo {
 };
 
 }
+
+#else /* ARDUINO */
+
+static_assert(0, "This liblary is for Arduino.");
+
+#endif /* ARDUINO */
 
 #endif /* ROBO_ECHO_H */

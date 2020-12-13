@@ -1,6 +1,8 @@
 #ifndef ROBO_UTIL_H
 #define ROBO_UTIL_H
 
+#ifdef ARDUINO
+
 namespace robo {
 
 void str_rjust(String &s, int len, const String &pad) {
@@ -10,5 +12,11 @@ void str_rjust(String &s, int len, const String &pad) {
 }
 
 }
+
+#else /* ARDUINO */
+
+static_assert(0, "This liblary is for Arduino.");
+
+#endif /* ARDUINO */
 
 #endif /* ROBO_UTIL_H */

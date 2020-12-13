@@ -1,6 +1,8 @@
 #ifndef ROBO_PIXY_H
 #define ROBO_PIXY_H
 
+#ifdef ARDUINO
+
 #include <ArxContainer.h>
 #include <Pixy2.h>
 #include <SPI.h>
@@ -45,5 +47,11 @@ namespace pixy_util {
 }
 
 }
+
+#else /* ARDUINO */
+
+static_assert(0, "This liblary is for Arduino.");
+
+#endif /* ARDUINO */
 
 #endif /* ROBO_PIXY_H */

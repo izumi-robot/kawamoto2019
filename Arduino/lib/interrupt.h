@@ -1,6 +1,8 @@
 #ifndef ROBO_INTERRUPT_H
 #define ROBO_INTERRUPT_H
 
+#ifdef ARDUINO
+
 // https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/
 
 namespace robo {
@@ -49,5 +51,11 @@ namespace interrupt {
 }
 
 }
+
+#else /* ARDUINO */
+
+static_assert(0, "This liblary is for Arduino.");
+
+#endif /* ARDUINO */
 
 #endif /* ROBO_INTERRUPT_H */

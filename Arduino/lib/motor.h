@@ -1,8 +1,9 @@
 #ifndef ROBO_MOTOR_H
 #define ROBO_MOTOR_H
 
-#include "util.h"
+#ifdef ARDUINO
 
+#include "util.h"
 
 namespace robo {
 
@@ -90,5 +91,10 @@ namespace motor_ctrl {
 
 }
 
+#else /* ARDUINO */
+
+static_assert(0, "This liblary is for Arduino.");
+
+#endif /* ARDUINO */
 
 #endif /* ROBO_MOTOR_H */
