@@ -10,7 +10,7 @@
 
 namespace robo {
 
-namespace pixy_util {
+namespace pixy {
     Pixy2 pixy;
     const int window_width = 320, window_height = 200;
 

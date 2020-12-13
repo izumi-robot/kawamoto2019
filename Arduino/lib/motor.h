@@ -7,7 +7,7 @@
 
 namespace robo {
 
-namespace motor_ctrl {
+namespace motor {
     /*
         motors' positions:
         { left-up, right-up, left-bottom, right-bottom }
