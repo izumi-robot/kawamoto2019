@@ -19,6 +19,17 @@ static_assert(0, "This liblary is for Arduino.");
 
 #define T_LIST T(&)[2]
 
+#define T_VEC2D robo::Vector2D<T>
+#define TMP template <class T>
+#define TEMPLATE(_type_) TMP _type_ T_VEC2D
+#define TEMPLATE_ TMP T_VEC2D
+
+// _tor_ : operator
+#define OP_VEC(_lh_, _rh_, _tor_) T_VEC2D(_lh_.x _tor_ _rh_.x, _lh_.y _tor_ _rh_.y)
+#define OP_LIST(_lh_, _ls_, _tor_) T_VEC2D(_lh_.x _tor_ _ls_[0], _lh_.y _tor_ _ls_[1])
+
+#define T_LIST_(_name_) T(&_name_)[2]
+
 namespace robo {
 
 template<class T>
@@ -49,12 +60,7 @@ public:
         this->y = *(beg + 1);
     }
 
-    Vector2D& operator=(const Vector2D&);
-    Vector2D& operator=(const T_LIST);
-
     /* define array subscription (a.k.a. []) */
-    const T& operator[](size_t) const;
-    T& operator[](size_t);
 
     Vector2D& operator=(const T_VEC2D& tmp) {
         this->x = tmp.x;
@@ -96,17 +102,6 @@ public:
 };
 
 }
-
-#define T_VEC2D robo::Vector2D<T>
-#define TMP template <class T>
-#define TEMPLATE(_type_) TMP _type_ T_VEC2D
-#define TEMPLATE_ TMP T_VEC2D
-
-// _tor_ : operator
-#define OP_VEC(_lh_, _rh_, _tor_) T_VEC2D(_lh_.x _tor_ _rh_.x, _lh_.y _tor_ _rh_.y)
-#define OP_LIST(_lh_, _ls_, _tor_) T_VEC2D(_lh_.x _tor_ _ls_[0], _lh_.y _tor_ _ls_[1])
-
-#define T_LIST_(_name_) T(&_name_)[2]
 
 TMP inline T_VEC2D operator+(const T_VEC2D &lh, const T_VEC2D &rh) {
     return OP_VEC(lh, rh, +);
