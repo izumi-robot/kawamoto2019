@@ -15,26 +15,17 @@ namespace motor {
     int powers[] = {0, 0, 0, 0};
 
     String power_str(int m_id, int power) {
-        String d = power < 0 ? "R" : "F";
-        String p = String(abs(power)); // **TODO**: digit
+        // R: front?
+        String d = power < 0 ? "F" : "R";
+        String p = String(abs(power));
         robo::str_rjust(p, 3, "0");
         return String(m_id) + d + p;
     }
 
     // assert : m_id = 1,2,3,4 && abs(power) <= 100
     void set(int m_id, int power) {
-        /*
-            Serial1.println(
-                String(m_id)
-                + (power < 0 ? "R" : "F")
-                + String(
-                    min(abs(power), 100)
-                )
-            );
-         */
         String dest = power_str(m_id, power);
         Serial1.println(dest);
-        //Serial.println(dest);
         powers[m_id - 1] = power;
     }
 
@@ -53,7 +44,21 @@ namespace motor {
 
     // set motors' powers from radian (direction)
     // assert : -PI <= rad && rad <= PI && max_power >= min_power >= 0
-    void set_powers(double rad, int max_power=90, int min_power=70) {
+
+    void set_direction(double rad, int ma_p=40) {
+        double l, r, c = cos(rad), s = sin(rad);
+        if (-PI/2 < rad && rad < PI/2) {
+            l = c + s;
+            r = c - s;
+        } else {
+            l = c - s;
+            r = c + s;
+        }
+        int il = int(ma_p * l), ir = int(ma_p * r);
+        set(1, ir); set(2, il); set(3, il); set(4, ir);
+    }
+
+    void _set_direction(double rad, int max_power=90, int min_power=70) {
         /*
             min_power <= (a + cos(t)) * b <= max_power
                 ** mi = min_power, ma = max_power **
@@ -71,9 +76,13 @@ namespace motor {
             return int((a + cos(d)) * b);
         };
         int r, l; // r : facing-right motor, l : facing-left motor
-        bool forward = -PI/2 < rad && rad < PI/2;
-        r = forward ? f(PI/4 + rad) : -f(PI*5/4 - rad);
-        l = forward ? f(PI/4 - rad) : -f(rad - PI*3/4);
+        if (-PI/2 <= rad && rad <= PI/2) {
+            r = f(PI/4 + rad);
+            l = f(PI/4 - rad);
+        } else {
+            r = -f(PI*5/4 - rad);
+            l = -f(rad - PI*3/4);
+        }
         set(1, r); set(2, l); set(3, l); set(4, r);
     }
 
