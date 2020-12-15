@@ -9,6 +9,7 @@
 #include "echo.h"
 #include "pixy.h"
 #include "motor.h"
+#include "bno055.h"
 
 #else /* ARDUINO */
 
