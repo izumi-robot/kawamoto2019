@@ -1,6 +1,8 @@
 #ifndef ROBO2019_BNO055_H
 #define ROBO2019_BNO055_H
 
+#ifdef ARDUINO
+
 #include <Wire.h>
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
@@ -34,12 +36,16 @@ namespace bno055 {
         d -= 180;
         // 度数法からラジアン
         d = d * PI / 180;
-        direction = d;
         return d;
     }
 }
 
 }
 
+#else /* ARDUINO */
+
+static_assert(0, "This liblary is for Arduino.");
+
+#endif /* ARDUINO */
 
 #endif /* ROBO2019_BNO055_H */
