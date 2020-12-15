@@ -45,45 +45,12 @@ namespace motor {
     // set motors' powers from radian (direction)
     // assert : -PI <= rad && rad <= PI && max_power >= min_power >= 0
 
-    void set_direction(double rad, int ma_p=40) {
-        double l, r, c = cos(rad), s = sin(rad);
-        if (-PI/2 < rad && rad < PI/2) {
-            l = c + s;
-            r = c - s;
-        } else {
-            l = c - s;
-            r = c + s;
-        }
-        int il = int(ma_p * l), ir = int(ma_p * r);
+    void set_direction(double rad, int v=40) {
+        double l, r, c = cos(rad), s = sin(rad), root2 = sqrt(2);
+        l = v * (c + s) / root2;
+        r = v * (c - s) / root2;
+        int il = int(l), ir = int(r);
         set(1, ir); set(2, il); set(3, il); set(4, ir);
-    }
-
-    void _set_direction(double rad, int max_power=90, int min_power=70) {
-        /*
-            min_power <= (a + cos(t)) * b <= max_power
-                ** mi = min_power, ma = max_power **
-            -> a = (ma + mi) / (ma - mi), b = (ma - mi) / 2
-         */
-        double a, b;
-        if (max_power == min_power) {
-            a = max_power;
-            b = 0;
-        } else {
-            a = (max_power + min_power) / (max_power - min_power);
-            b = (max_power - min_power) / 2;
-        }
-        auto f = [&](const double &d) -> int {
-            return int((a + cos(d)) * b);
-        };
-        int r, l; // r : facing-right motor, l : facing-left motor
-        if (-PI/2 <= rad && rad <= PI/2) {
-            r = f(PI/4 + rad);
-            l = f(PI/4 - rad);
-        } else {
-            r = -f(PI*5/4 - rad);
-            l = -f(rad - PI*3/4);
-        }
-        set(1, r); set(2, l); set(3, l); set(4, r);
     }
 
     String info() {
