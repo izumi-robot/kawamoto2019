@@ -46,7 +46,7 @@ namespace motor {
         void velocity(const double &vx, const double &vy) {
             double root2 = sqrt(2.);
             int fl = int((vy - vx) / root2), fr = int((vy + vx) / root2);
-            set(1, fr); set(2, fl); set(3, fl); set(4, fr);
+            one_motor(1, fr); one_motor(2, fl); one_motor(3, fl); one_motor(4, fr);
         }
 
         void velocity(const robo::V2_double &vel) {
@@ -54,7 +54,7 @@ namespace motor {
         }
 
         void left_right(const double &left, const double &right) {
-            set(1, left); set(2, right); set(3, left); set(4, right);
+            one_motor(1, left); one_motor(2, right); one_motor(3, left); one_motor(4, right);
         }
 
         void rotate(bool clockwise, int vel=100) {
