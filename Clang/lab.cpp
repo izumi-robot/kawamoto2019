@@ -1,8 +1,15 @@
-#include <type_traits>
+#include <iostream>
+#include <string>
 
-static_assert(std::is_arithmetic<int>::value, "value == true, int is arithmetic");
-
-template<class T>
-T
-
-int main() {}
+class A {
+    public:
+    int a;
+    private:
+    static class B {
+        public:
+        void seta(int _a) {
+            a = _a;
+        }
+    };
+    
+};
