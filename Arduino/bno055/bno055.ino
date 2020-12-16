@@ -7,6 +7,7 @@ void setup() {
 }
 
 void loop() {
-    Serial.println(robo::bno055::get_direction());
+    double d = robo::bno055::get_direction();
+    Serial.println(d);
     delay(1000);
 }

@@ -1,43 +1,40 @@
 #include <robo2019.h>
 #include <ArxContainer.h>
 
-using namespace robo;
-
-bool t = false;
-const int pin = 4;
-arx::vector<double> dirs{0, PI, }
+arx::vector<double> ds{0, PI, -PI / 2, PI / 2, -PI / 6, PI * 5 / 6};
+double t = 0;
 
 void setup() {
     Serial.begin(9600);
-    motor::setup();
+    robo::motor::setup();
+    robo::bno055::setup();
 }
 
 void loop() {
+    double dir;
 
-    motor::set_direction(0);
-    Serial.println(motor::info());
-    delay(1000);
+    BNO055: {
+        dir = robo::bno055::get_direction();
+    }
 
-    motor::set_direction(PI);
-    Serial.println(motor::info());
-    delay(1000);
+    ROTATE: {
+        if (abs(dir) <= PI / 18) {
+            //robo::motor::stop();
+            goto MOVE;
+        }
+        bool c = dir > 0;
+        robo::motor::set::rotate(c, int(abs(50 * dir / PI)) + 10);
+        goto END;
+    }
 
-    motor::set_direction(PI/2);
-    Serial.println(motor::info());
-    delay(1000);
+    MOVE: {
+        using robo::V2_double;
+        t += .1;
+        int i = int(t) % 6;
+        V2_double v = V2_double::from_polar_coord(ds[i], 50);
+        robo::motor::set::velocity(v);
+    }
 
-    motor::set_direction(-PI/2);
-    Serial.println(motor::info());
-    delay(1000);
-
-    motor::set_direction(PI/4);
-    Serial.println(motor::info());
-    delay(1000);
-
-    motor::set_direction(-PI*3/4);
-    Serial.println(motor::info());
-    delay(1000);
-
-    motor::stop();
-    delay(5000);
+    END:
+    delay(100);
 }
