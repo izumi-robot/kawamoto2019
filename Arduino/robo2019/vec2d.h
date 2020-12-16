@@ -37,6 +37,11 @@ class Vector2D {
 private:
     static_assert(std::is_arithmetic<T>::value, "must be a number type");
 public:
+    static Vector2D from_polar_coord(const double &rad, T length) {
+        T x = length * cos(rad), y = length * sin(rad);
+        return Vector2D<T>(x, y);
+    }
+
     T x, y;
 
     Vector2D() : x(0), y(0) {}
@@ -101,7 +106,9 @@ public:
     }
 };
 
-}
+using V2_double = Vector2D<double>;
+
+} // namespace robo
 
 TMP inline T_VEC2D operator+(const T_VEC2D &lh, const T_VEC2D &rh) {
     return OP_VEC(lh, rh, +);

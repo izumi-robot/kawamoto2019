@@ -4,6 +4,7 @@
 #ifdef ARDUINO
 
 #include "util.h"
+#include "vec2d.h"
 
 namespace robo {
 
@@ -22,37 +23,6 @@ namespace motor {
         return String(m_id) + d + p;
     }
 
-    // assert : m_id = 1,2,3,4 && abs(power) <= 100
-    void set(int m_id, int power) {
-        String dest = power_str(m_id, power);
-        Serial1.println(dest);
-        powers[m_id - 1] = power;
-    }
-
-    void stop() {
-        for (int i = 1; i <= 4; ++i) {
-            set(i, 0);
-        }
-    }
-
-    void setup(bool serial1_init=true) {
-        if (serial1_init) {
-            Serial1.begin(19200);
-        }
-        stop();
-    }
-
-    // set motors' powers from radian (direction)
-    // assert : -PI <= rad && rad <= PI && max_power >= min_power >= 0
-
-    void set_direction(double rad, int v=40) {
-        double l, r, c = cos(rad), s = sin(rad), root2 = sqrt(2);
-        l = v * (c + s) / root2;
-        r = v * (c - s) / root2;
-        int il = int(l), ir = int(r);
-        set(1, ir); set(2, il); set(3, il); set(4, ir);
-    }
-
     String info() {
         String s = "[";
         for (int i = 1; i <= 4; i++) {
@@ -63,9 +33,53 @@ namespace motor {
         }
         return s + "]";
     }
+
+    namespace set {
+
+        // assert : m_id = 1,2,3,4 && abs(power) <= 100
+        void one_motor(int m_id, int power) {
+            String dest = power_str(m_id, power);
+            Serial1.println(dest);
+            powers[m_id - 1] = power;
+        }
+
+        void velocity(const double &vx, const double &vy) {
+            double root2 = sqrt(2.);
+            int fl = int((vy - vx) / root2), fr = int((vy + vx) / root2);
+            set(1, fr); set(2, fl); set(3, fl); set(4, fr);
+        }
+
+        void velocity(const robo::V2_double &vel) {
+            velocity(vel.x, vel.y);
+        }
+
+        void left_right(const double &left, const double &right) {
+            set(1, left); set(2, right); set(3, left); set(4, right);
+        }
+
+        void rotate(bool clockwise, int vel=100) {
+            int d = clockwise ? 1 : -1;
+            left_right(vel * d, -vel * d);
+        }
+
+        void circular(const double &rotate_vel, const int &vel=100);
+    } // namespace set
+
+    void stop() {
+        for (int i = 1; i <= 4; ++i) {
+            set::one_motor(i, 0);
+        }
+    }
+
+    void setup(bool serial1_init=true) {
+        if (serial1_init) {
+            Serial1.begin(19200);
+        }
+        stop();
+    }
 };
 
-}
+} // namespace robo
 
 #else /* ARDUINO */
 
