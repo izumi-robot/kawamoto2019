@@ -8,7 +8,6 @@
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 
-
 namespace robo {
 
 namespace bno055 {
@@ -18,8 +17,7 @@ namespace bno055 {
     void setup()
     {
         started = bno.begin();
-        if (started)
-        {
+        if (!started) {
             Serial.println("could not connect");
         }
         bno.setExtCrystalUse(true);
@@ -30,17 +28,17 @@ namespace bno055 {
             return 0.;
         }
         double d = bno.getVector(Adafruit_BNO055::VECTOR_EULER).x();
-        // 反転
-        d = 360 - d;
         // -180 <= d <= 180
         d -= 180;
+        // 0->180, 180->0, -45->-135
+        d = d >= 0 ? 180 - d : -(180 + d);
         // 度数法からラジアン
         d = d * PI / 180;
         return d;
     }
-}
+} // namespace bno055
 
-}
+} // namespace robo
 
 #else /* ARDUINO */
 

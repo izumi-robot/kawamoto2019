@@ -31,26 +31,41 @@ namespace interrupt {
         attachInterrupt(digitalPinToInterrupt(in_pin), callback, RISING);
     }
 
+} // namespace interrupt
+
+template <int in_pin> class Interrupt {
+    private:
+    volatile bool _state = false;
+
+    Interrupt() {}
+    Interrupt(const Interrupt&) {}
+    ~Interrupt() {}
+    Interrupt& operator=(const Interrupt&) {}
+
+    void callback() { _state = !_state; }
+
+    public:
+    static Interrupt& instance() {
+        static Interrupt ins;
+        return ins;
+    }
+
+    void setup() {
+        pinMode(in_pin, INPUT);
+        attachInterrupt(digitalPinToInterrupt(in_pin), callback, RISING);
+    }
+
+    inline bool state() { return _state; }
+
     bool changed() {
         static bool s = false;
-
-        bool ans = s != state;
-        s = state;
+        bool ans = s != _state;
+        s = _state;
         return ans;
     }
+};
 
-    bool check() {
-        static bool s = LOW;
-
-        bool n = digitalRead(in_pin) == HIGH;
-        bool changed = n != state;
-        state = n;
-        return changed;
-    }
-
-}
-
-}
+} // namespace robo
 
 #else /* ARDUINO */
 

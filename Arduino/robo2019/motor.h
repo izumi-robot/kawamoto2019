@@ -38,9 +38,13 @@ namespace motor {
 
         // assert : m_id = 1,2,3,4 && abs(power) <= 100
         void one_motor(int m_id, int power) {
+            int i = m_id - 1;
+            if (powers[i] == power) {
+                return;
+            }
             String dest = power_str(m_id, power);
             Serial1.println(dest);
-            powers[m_id - 1] = power;
+            powers[i] = power;
         }
 
         void velocity(const double &vx, const double &vy) {
