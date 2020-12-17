@@ -1,6 +1,8 @@
 #include <robo2019.h>
 #include <ArxContainer.h>
 
+// robo::Echo e_left(), e_right();
+
 arx::vector<double> ds{0, PI, -PI / 2, PI / 2, -PI / 6, PI * 5 / 6};
 double t = 0;
 

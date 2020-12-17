@@ -1,29 +1,8 @@
-class Echo {
-    private:
-    int input_pin, order_pin, result;
+#include <robo2019.h>
 
-    public:
-    Echo(int i, int o) : input_pin(i), order_pin(o) {}
+using robo::Echo;
 
-    void setup() {
-        pinMode(input_pin, INPUT);
-        pinMode(order_pin, OUTPUT);
-    }
-
-    int read() {
-        digitalWrite(order_pin, LOW);
-        delayMicroseconds(10);
-        digitalWrite(order_pin, HIGH);
-        delayMicroseconds(10);
-        digitalWrite(order_pin, LOW);
-        result = pulseIn(input_pin, HIGH) / 60;
-        return result;
-    }
-
-    inline int getReault() { return result; }
-};
-
-Echo echo(4, 3);
+Echo echo(8, 4);
 
 void setup() {
     Serial.begin(9600);
