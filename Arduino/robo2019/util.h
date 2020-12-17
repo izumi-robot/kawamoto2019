@@ -11,7 +11,7 @@ void str_rjust(String &s, int len, const String &pad) {
     }
 }
 
-}
+} // namespace robo
 
 #else /* ARDUINO */
 

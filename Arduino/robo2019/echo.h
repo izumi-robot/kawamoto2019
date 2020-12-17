@@ -7,10 +7,11 @@ namespace robo {
 
 class Echo {
     private:
+    // Echo pin, Trig pin
     int input_pin, order_pin, result;
 
     public:
-    Echo(int i, int o) : input_pin(i), order_pin(o) {}
+    Echo(int i, int o) : input_pin(i), order_pin(o), result(0) {}
 
     void setup() {
         pinMode(input_pin, INPUT);
@@ -30,7 +31,7 @@ class Echo {
     inline int getReault() { return result; }
 };
 
-}
+} // namespace robo
 
 #else /* ARDUINO */
 
