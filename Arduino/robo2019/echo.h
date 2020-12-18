@@ -24,7 +24,7 @@ class Echo {
         digitalWrite(order_pin, HIGH);
         delayMicroseconds(10);
         digitalWrite(order_pin, LOW);
-        result = pulseIn(input_pin, HIGH) / 60;
+        result = pulseIn(input_pin, HIGH) / 59;
         return result;
     }
 

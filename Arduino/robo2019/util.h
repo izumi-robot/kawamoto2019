@@ -5,11 +5,15 @@
 
 namespace robo {
 
-void str_rjust(String &s, int len, const String &pad) {
-    for (int i = s.length(); i < len; i++) {
-        s = pad + s;
+namespace string {
+
+    void str_rjust(String &s, int len, const String &pad) {
+        for (int i = s.length(); i < len; i++) {
+            s = pad + s;
+        }
     }
-}
+
+} // namespace string
 
 } // namespace robo
 
