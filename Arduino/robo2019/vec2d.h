@@ -107,6 +107,7 @@ public:
 };
 
 using V2_double = Vector2D<double>;
+using V2_int = Vector2D<int>;
 
 } // namespace robo
 

@@ -18,6 +18,20 @@ namespace pixy {
         pixy.init();
     }
 
+    int update() {
+        return pixy.ccc.getBlocks();
+    }
+
+    V2_int get_pos(int i) {
+        int l = update();
+        if (l == 0) {
+            return V2_int(0, 0);
+        }
+        int x = pixy.ccc.blocks[i].m_x;
+        int y = pixy.ccc.blocks[i].m_y;
+        return V2_int{x - window_width / 2, y - window_height / 2};
+    }
+
     double pos2angle(int m_x, int m_y) {
         double x = m_x - window_width / 2;
         double y = m_y - window_height / 2;
