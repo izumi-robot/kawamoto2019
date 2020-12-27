@@ -17,10 +17,10 @@ namespace motor {
 
     String power_str(int m_id, int power) {
         // R: front?
-        String d = power < 0 ? "F" : "R";
-        String p = String(abs(power));
-        robo::str_rjust(p, 3, "0");
-        return String(m_id) + d + p;
+        String dir_s = power < 0 ? "F" : "R";
+        String power_s = String(abs(power));
+        power_s = robo::str_rjust(power_s, 3, "0");
+        return String(m_id) + dir_s + p;
     }
 
     String info() {

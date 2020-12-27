@@ -122,6 +122,10 @@ TMP inline T_VEC2D operator*(const T_VEC2D &lh, const T_VEC2D &rh) {
     return OP_VEC(lh, rh, *);
 }
 
+TMP inline T_VEC2D operator/(const T_VEC2D &lh, const T_VEC2D &rh) {
+    return OP_VEC(lh, rh, /);
+}
+
 TMP T_VEC2D& operator+=(T_VEC2D& lh, const T_VEC2D& rh) {
     lh.x += rh.x;
     lh.y += rh.y;
@@ -140,6 +144,12 @@ TMP T_VEC2D& operator*=(T_VEC2D& lh, const T_VEC2D& rh) {
     return lh;
 }
 
+TMP T_VEC2D& operator/=(T_VEC2D& lh, const T_VEC2D& rh) {
+    lh.x /= rh.x;
+    lh.y /= rh.y;
+    return lh;
+}
+
 TMP inline T_VEC2D operator+(const T_VEC2D &lh, const T_LIST_(rh)) {
     return OP_LIST(lh, rh, +);
 }
@@ -150,6 +160,10 @@ TMP inline T_VEC2D operator-(const T_VEC2D &lh, const T_LIST_(rh)) {
 
 TMP inline T_VEC2D operator*(const T_VEC2D &lh, const T_LIST_(rh)) {
     return OP_LIST(lh, rh, *);
+}
+
+TMP inline T_VEC2D operator/(const T_VEC2D &lh, const T_LIST_(rh)) {
+    return OP_LIST(lh, rh, /);
 }
 
 TMP T_VEC2D& operator+=(T_VEC2D &lh, const T_LIST_(rh)) {
@@ -170,13 +184,29 @@ TMP T_VEC2D& operator*=(T_VEC2D &lh, const T_LIST_(rh)) {
     return lh;
 }
 
+TMP T_VEC2D& operator/=(T_VEC2D &lh, const T_LIST_(rh)) {
+    lh.x /= rh[0];
+    lh.y /= rh[1];
+    return lh;
+}
+
 TMP inline T_VEC2D operator*(const T_VEC2D &lh, const T &rh) {
     return T_VEC2D(lh.x * rh, lh.y * rh);
+}
+
+TMP inline T_VEC2D operator/(const T_VEC2D &lh, const T &rh) {
+    return T_VEC2D(lh.x / rh, lh.y / rh);
 }
 
 TMP T_VEC2D& operator*=(T_VEC2D &lh, const T &rh) {
     lh.x *= rh;
     lh.y *= rh;
+    return lh;
+}
+
+TMP T_VEC2D& operator/=(T_VEC2D &lh, const T &rh) {
+    lh.x /= rh;
+    lh.y /= rh;
     return lh;
 }
 
