@@ -39,7 +39,7 @@ private:
 public:
     static Vector2D from_polar_coord(const double &rad, T length) {
         T x = length * cos(rad), y = length * sin(rad);
-        return Vector2D<T>(x, y);
+        return Vector2D<T>{x, y};
     }
 
     T x, y;
@@ -97,11 +97,11 @@ public:
         return "(" + TO_STR(this->x) + ", " + TO_STR(this->y) + ")";
     }
 
-    T angle() const {
-        return T(atan2(this->y, this->x));
+    double angle() const {
+        return atan2(this->y, this->x);
     }
 
-    T length() const {
+    T mag() const {
         return T(sqrt(pow(this->x, 2) + pow(this->y, 2)));
     }
 };

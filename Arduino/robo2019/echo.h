@@ -7,7 +7,7 @@ namespace robo {
 
 class Echo {
     private:
-    // Echo pin, Trig pin
+    // input: Echo pin, order: Trig pin
     int input_pin, order_pin, result;
 
     public:
@@ -24,8 +24,8 @@ class Echo {
         digitalWrite(order_pin, HIGH);
         delayMicroseconds(10);
         digitalWrite(order_pin, LOW);
-        result = pulseIn(input_pin, HIGH) / 59;
-        return result;
+        result = pulseIn(input_pin, HIGH, 1 << 32) / 59;
+        return result ? result : 1024;
     }
 
     inline int getReault() { return result; }

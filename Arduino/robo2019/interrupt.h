@@ -7,42 +7,17 @@
 
 namespace robo {
 
-namespace interrupt {
-    int in_pin;
-    volatile bool state = false;
-
-    void setup(int);
-    void callback();
-    bool changed();
-    bool check();
-
-    void callback() {
-        noInterrupts();
-        Serial.println("changed");
-        state = !state;
-        interrupts();
-    }
-
-    void setup(int i=12) {
-        Serial.println("robo::interrupt::setup");
-        in_pin = i;
-
-        pinMode(in_pin, INPUT);
-        attachInterrupt(digitalPinToInterrupt(in_pin), callback, RISING);
-    }
-
-} // namespace interrupt
-
-template <int in_pin> class Interrupt {
+template <int in_pin>
+class Interrupt {
     private:
-    volatile bool _state = false;
+    static volatile bool _state = false;
 
     Interrupt() {}
     Interrupt(const Interrupt&) {}
     ~Interrupt() {}
     Interrupt& operator=(const Interrupt&) {}
 
-    void callback() { _state = !_state; }
+    static void callback() { _state = !_state; }
 
     public:
     static Interrupt& instance() {
