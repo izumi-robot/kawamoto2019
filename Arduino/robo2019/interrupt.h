@@ -8,9 +8,10 @@
 namespace robo {
 
 template <int in_pin>
-class Interrupt {
-    private:
-    static volatile bool _state = false;
+class Interrupt
+{
+private:
+    static volatile bool _state;
 
     Interrupt() {}
     Interrupt(const Interrupt&) {}
@@ -19,26 +20,25 @@ class Interrupt {
 
     static void callback() { _state = !_state; }
 
-    public:
-    static Interrupt& instance() {
-        static Interrupt ins;
-        return ins;
-    }
-
-    void setup() {
+public:
+    static void setup()
+    {
         pinMode(in_pin, INPUT);
         attachInterrupt(digitalPinToInterrupt(in_pin), callback, RISING);
     }
 
-    inline bool state() { return _state; }
+    static inline bool state() { return _state; }
 
-    bool changed() {
-        static bool s = false;
-        bool ans = s != _state;
-        s = _state;
+    static bool changed()
+    {
+        static bool pre_state;
+        bool ans = pre_state != _state;
+        pre_state = _state;
         return ans;
     }
 };
+
+static volatile bool _state = false;
 
 } // namespace robo
 

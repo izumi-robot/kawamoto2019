@@ -5,12 +5,13 @@
 
 namespace robo {
 
-class Echo {
-    private:
+class Echo
+{
+private:
     // input: Echo pin, order: Trig pin
     int input_pin, order_pin, result;
 
-    public:
+public:
     Echo(int i, int o) : input_pin(i), order_pin(o), result(0) {}
 
     void setup() {
@@ -24,6 +25,7 @@ class Echo {
         digitalWrite(order_pin, HIGH);
         delayMicroseconds(10);
         digitalWrite(order_pin, LOW);
+        // pulseIn(pin, state, timeout)
         result = pulseIn(input_pin, HIGH, 1 << 32) / 59;
         return result ? result : 1024;
     }
