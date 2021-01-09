@@ -89,9 +89,9 @@ public:
             return powers[index];
         }
 
-        int8_t by_motor_id(int8_t id) const
+        int8_t one_motor(int8_t m_id) const
         {
-            return powers[id - 1];
+            return powers[m_id - 1];
         }
 
         String info() const
@@ -124,82 +124,6 @@ public:
 int8_t Motor::powers[] = { 0, 0, 0, 0 };
 
 Motor *motor = &Motor::instance();
-
-namespace _motor
-{
-    /*
-        motors' positions:
-        { left-up, right-up, left-bottom, right-bottom }
-     */
-    int powers[] = {0, 0, 0, 0};
-
-    String power_str(int m_id, int power) {
-        // R: front?
-        String dir_s = power < 0 ? "F" : "R";
-        String power_s = String(abs(power));
-        power_s = robo::string::rjust(power_s, 3, "0");
-        return String(m_id) + dir_s + power_s;
-    }
-
-    String info() {
-        String s = "[";
-        for (int i = 1; i <= 4; i++) {
-            s += String(i) + ": " + power_str(i, powers[i - 1]);
-            if (i != 4) {
-                s += ", ";
-            }
-        }
-        return s + "]";
-    }
-
-    namespace set {
-
-        // assert : m_id = 1,2,3,4 && abs(power) <= 100
-        void one_motor(int m_id, int power) {
-            int i = m_id - 1;
-            if (powers[i] == power) {
-                return;
-            }
-            String dest = power_str(m_id, power);
-            Serial1.println(dest);
-            powers[i] = power;
-        }
-
-        void velocity(const double &vx, const double &vy) {
-            double root2 = sqrt(2.);
-            int fl = int((vy - vx) / root2), fr = int((vy + vx) / root2);
-            one_motor(1, fr); one_motor(2, fl); one_motor(3, fl); one_motor(4, fr);
-        }
-
-        void velocity(const robo::V2_double &vel) {
-            velocity(vel.x, vel.y);
-        }
-
-        void left_right(const double &left, const double &right) {
-            one_motor(1, left); one_motor(2, right); one_motor(3, left); one_motor(4, right);
-        }
-
-        void rotate(bool clockwise, int vel=100) {
-            int d = clockwise ? 1 : -1;
-            left_right(vel * d, -vel * d);
-        }
-
-        void circular(const double &rotate_vel, const int &vel=100);
-    } // namespace set
-
-    void stop() {
-        for (int i = 1; i <= 4; ++i) {
-            set::one_motor(i, 0);
-        }
-    }
-
-    void setup(bool serial1_init=true) {
-        if (serial1_init) {
-            Serial1.begin(19200);
-        }
-        stop();
-    }
-} // namespace motor
 
 } // namespace robo
 

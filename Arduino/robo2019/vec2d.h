@@ -21,8 +21,6 @@ static_assert(0, "This liblary is for Arduino.");
 
 #define T_VEC2D robo::Vector2D<T>
 #define TMP template <class T>
-#define TEMPLATE(_type_) TMP _type_ T_VEC2D
-#define TEMPLATE_ TMP T_VEC2D
 
 // _tor_ : operator
 #define OP_VEC(_lh_, _rh_, _tor_) T_VEC2D(_lh_.x _tor_ _rh_.x, _lh_.y _tor_ _rh_.y)
@@ -33,11 +31,13 @@ static_assert(0, "This liblary is for Arduino.");
 namespace robo {
 
 template<class T>
-class Vector2D {
+class Vector2D
+{
 private:
     static_assert(std::is_arithmetic<T>::value, "must be a number type");
 public:
-    static Vector2D from_polar_coord(const double &rad, T length) {
+    static Vector2D from_polar_coord(const double &rad, T length)
+    {
         T x = length * cos(rad), y = length * sin(rad);
         return Vector2D<T>{x, y};
     }
@@ -49,17 +49,20 @@ public:
     Vector2D(const T &x, const T &y)
         : x(x), y(y) {}
 
-    Vector2D(const T_VEC2D& p) {
+    Vector2D(const T_VEC2D &p)
+    {
         this->x = p.x;
         this->y = p.y;
     }
 
-    Vector2D(const T_LIST_(p)) {
+    Vector2D(const T_LIST_(p))
+    {
         this->x = p[0];
         this->y = p[1];
     }
 
-    Vector2D(std::initializer_list<T> init) {
+    Vector2D(std::initializer_list<T> init)
+    {
         auto beg = init.begin();
         this->x = *beg;
         this->y = *(beg + 1);
@@ -67,42 +70,64 @@ public:
 
     /* define array subscription (a.k.a. []) */
 
-    Vector2D& operator=(const T_VEC2D& tmp) {
+    Vector2D& operator=(const T_VEC2D &tmp)
+    {
         this->x = tmp.x;
         this->y = tmp.y;
         return *this;
     }
 
-    Vector2D& operator=(const T_LIST_(data)) {
-        this->x = data[0];
-        this->y = data[1];
+    Vector2D& operator=(const T_LIST_(tmp))
+    {
+        this->x = tmp[0];
+        this->y = tmp[1];
         return *this;
     }
 
-    const T& operator[](size_t index) const {
+    const T& operator[](size_t index) const
+    {
         if (index == 1) {
             return this->y;
         }
         return this->x;
     }
 
-    T& operator[](size_t index) {
+    T& operator[](size_t index)
+    {
         if (index == 1) {
             return this->y;
         }
         return this->x;
     }
 
-    String to_string() const {
-        return "(" + TO_STR(this->x) + ", " + TO_STR(this->y) + ")";
+    String to_string() const
+    {
+        return "(" + String(this->x) + ", " + String(this->y) + ")";
     }
 
-    double angle() const {
+    inline T dot(const Vector2D &v) const
+    {
+        return this->x * v.x + this->y * v.y;
+    }
+
+    inline T dot(const T_LIST_(tmp)) const
+    {
+        return this->x * tmp[0] + this->y * tmp[1];
+    }
+
+    inline T dot(const T &x, const T &y) const
+    {
+        return this->x * x + this->y * y;
+    }
+
+    double angle() const
+    {
         return atan2(this->y, this->x);
     }
 
-    T mag() const {
-        return T(sqrt(pow(this->x, 2) + pow(this->y, 2)));
+    double mag() const
+    {
+        return sqrt(pow(this->x, 2) + pow(this->y, 2));
     }
 };
 
@@ -118,6 +143,7 @@ TMP inline T_VEC2D operator+(const T_VEC2D &lh, const T_VEC2D &rh) {
 TMP inline T_VEC2D operator-(const T_VEC2D &lh, const T_VEC2D &rh) {
     return OP_VEC(lh, rh, -);
 }
+
 TMP inline T_VEC2D operator*(const T_VEC2D &lh, const T_VEC2D &rh) {
     return OP_VEC(lh, rh, *);
 }
