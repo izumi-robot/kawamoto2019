@@ -36,9 +36,9 @@ class Vector2D
 private:
     static_assert(std::is_arithmetic<T>::value, "must be a number type");
 public:
-    static Vector2D from_polar_coord(const double &rad, T length)
+    static Vector2D from_polar_coord(const double &angle, const T &magnitude)
     {
-        T x = length * cos(rad), y = length * sin(rad);
+        T x = magnitude * cos(angle), y = magnitude * sin(angle);
         return Vector2D<T>{x, y};
     }
 

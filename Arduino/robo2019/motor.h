@@ -26,24 +26,24 @@ public:
         return ins;
     }
 
-    static String power_str(int m_id, int8_t power)
+    static String power_str(int pin, int8_t power)
     {
         // R: front?
         String dir_s = power < 0 ? "F" : "R";
         String power_s = String(abs(power));
         power_s = robo::string::rjust(power_s, 3, '0');
-        return String(m_id) + dir_s + power_s;
+        return String(pin) + dir_s + power_s;
     }
 
-    struct {
-        // assert : m_id = 1,2,3,4 && abs(power) <= 100
-        void one_motor(int m_id, int8_t power)
+    struct { // set
+        // assert : pin = 1,2,3,4 && abs(power) <= 100
+        void one_motor(uint8_t pin, int8_t power)
         {
-            int i = m_id - 1;
+            uint8_t i = pin - 1;
             if (powers[i] == power) {
                 return;
             }
-            String dest = power_str(m_id, power);
+            String dest = power_str(pin, power);
             Serial1.println(dest);
             powers[i] = power;
         }
@@ -73,14 +73,21 @@ public:
             all_motors(left, right, left, right);
         }
 
+        void direction_and_speed(const double &direction, int8_t speed)
+        {
+            double x = speed * sin(direction);
+            double y = speed * cos(direction);
+            velocity(x, y);
+        }
+
         void rotate(bool clockwise, int8_t vel=100)
         {
             int8_t d = clockwise ? 1 : -1;
             left_right(vel * d, -vel * d);
         }
 
-        // 旋回運動
-        void circular(const double &rotate_vel, const int &vel=100);
+        // TODO: 旋回運動
+        // void circular(const double &rotate_vel, const int &vel=100);
     } set;
 
     struct {
@@ -89,16 +96,21 @@ public:
             return powers[index];
         }
 
-        int8_t one_motor(int8_t m_id) const
+        int8_t one_motor(uint8_t pin) const
         {
-            return powers[m_id - 1];
+            return powers[pin - 1];
+        }
+
+        String power_str(uint8_t pin) const
+        {
+            return Motor::power_str(pin, powers[pin - 1]);
         }
 
         String info() const
         {
             String info_str = "[";
-            for (int i = 1; i <= 4; i++) {
-                info_str += String(i) + ": " + power_str(i, powers[i - 1]);
+            for (uint8_t i = 1; i <= 4; i++) {
+                info_str += String(i) + ": " + power_str(i);
                 if (i != 4) {
                     info_str += ", ";
                 }
@@ -109,9 +121,7 @@ public:
 
     void stop()
     {
-        for (int i = 1; i <= 4; ++i) {
-            set.one_motor(i, 0);
-        }
+        set.all_motors(0, 0, 0, 0);
     }
 
     void setup()
@@ -123,7 +133,7 @@ public:
 
 int8_t Motor::powers[] = { 0, 0, 0, 0 };
 
-Motor *motor = &Motor::instance();
+Motor &motor = Motor::instance();
 
 } // namespace robo
 

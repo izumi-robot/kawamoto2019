@@ -248,6 +248,88 @@ double mag = v.mag();
 // mag == sqrt(2)
 ```
 
+**静的関数**
+
+* `Vector2D<T> from_polar_coord(const double &angle, const T &magnitude)`
+
+極座標のパラメータからベクトルを作成します。第一引数に角度(ラジアン)、第二引数に大きさを渡して下さい。
+例:
+
+```C++
+robo::V2_double v = robo::V2_double::from_polar_coord(PI / 3, 10);
+// v.x == 5.0, v.y == 5.0 * sqrt(3.0)
+```
+
 ## motor
 
+モーター制御用の機能群です。モーターはダイセンのMCB対応です。Serial1を通して通信します。モーターのピン番号と位置は次の図のようになります。
 
+![motor-info.jpeg](./img/motor-info.jpeg) <!-- TODO -->
+
+`Motor`クラスはシングルトンとして提供しています。インスタンスは`robo::Motor::instance()`か`robo::motor`でアクセスして下さい。
+
+**関数群**
+
+* `void stop()`
+
+停止します。
+
+* `void setup()`
+
+モーターを初期化します。モーターを使用する場合はスケッチ本体の`setup()`関数内で必ず呼んで下さい。
+
+**`set`オブジェクト**
+
+モーターのパワー設定用の関数群です。
+
+* `void one_motor(uint8_t pin, int8_t power)`
+
+ピン番号`pin`のモーターのパワーを`power`に設定します。
+例:
+
+```C++
+robo::motor.set.one_motor(1, 50);
+// Serial1.println("1R050");
+```
+
+* `void all_motors(int8_t a, int8_t b, int8_t c, int8_t d)`
+
+モーター4つのパワーを設定します。
+例:
+
+```C++
+robo::motor.set.all_motors(25, -50, -10, 70);
+/*
+ Serial1.println("1R025");
+ Serial1.println("2F050");
+ Serial1.println("3F010");
+ Serial1.println("4R070");
+*/
+```
+
+* `void velocity(const double &vx, const double &vy)`
+
+機体が、与えられた速度ベクトル`(vx, vy)`で平行移動するようにモーターのパワーを設定します。
+
+* `void velocity(const robo::V2_double &vel)`
+
+`velocity(vel.x, vel.y)`のショートカットです。
+
+* `void left_right(int8_t left, int8_t right)`
+
+左側についている車輪、右側についている車輪でパワーを設定します。`all_motors(left, right, left, right)`のコードのショートカットです。
+
+* `void direction_and_speed(const double &direction, int8_t speed)`
+
+平行移動の方向と速さ
+
+* `void rotate(bool clockwise, int8_t vel=100)`
+
+<!--
+    TODO
+    bno055
+    dsrlcd
+    echo
+    interrupt
+    pixy
+-->
