@@ -82,7 +82,7 @@ void loop() {
 
     DEFAULT_DIR: {
         int i = millis() / 1000 % 6;
-        goto_dir = PI / 2;
+        goto_dir = -PI / 2;
     }
 
     MOVE: {
