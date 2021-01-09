@@ -80,10 +80,10 @@ public:
             velocity(x, y);
         }
 
-        void rotate(bool clockwise, int8_t vel=100)
+        void rotate(bool clockwise, int8_t speed=100)
         {
             int8_t d = clockwise ? 1 : -1;
-            left_right(vel * d, -vel * d);
+            left_right(speed * d, -speed * d);
         }
 
         // TODO: 旋回運動
@@ -91,12 +91,7 @@ public:
     } set;
 
     struct {
-        int8_t operator[](size_t index) const
-        {
-            return powers[index];
-        }
-
-        int8_t one_motor(uint8_t pin) const
+        inline int8_t one_motor(uint8_t pin) const
         {
             return powers[pin - 1];
         }

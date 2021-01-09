@@ -12,6 +12,7 @@ class Interrupt
 {
 private:
     static volatile bool _state;
+    static Interrupt _instance;
 
     Interrupt() {}
     Interrupt(const Interrupt&) {}
@@ -21,6 +22,11 @@ private:
     static void callback() { _state = !_state; }
 
 public:
+    static void instance()
+    {
+        return _instance;
+    }
+
     static void setup()
     {
         pinMode(in_pin, INPUT);
@@ -38,7 +44,8 @@ public:
     }
 };
 
-static volatile bool _state = false;
+template <int in_pin> volatile bool Interrupt<in_pin>::_state = false;
+template <int in_pin> Interrupt<in_pin> Interrupt<in_pin>::_instance;
 
 } // namespace robo
 

@@ -29,7 +29,7 @@ s = robo::string::rjust(s, 10, '+');
 
 ## vec2d.h
 
-`Vector2D<T>`
+* `Vector2D<T>`
 
 自作の2次元ベクトル型です。テンプレート引数の`T`は算術型(`int`, `double`など)である必要があります。モータ制御、pixyのボール情報などでこの型を使用しています。
 
@@ -48,11 +48,11 @@ s = robo::string::rjust(s, 10, '+');
 
 **コンストラクタ**
 
-* `Vector2D<T>()`
+* `Vector2D<T>::Vector2D()`
 
 プロパティの`x`と`y`を`0`で初期化します。
 
-* `Vector2D<T>(const T &x, const T &y)`
+* `Vector2D<T>::Vector2D(const T &x, const T &y)`
 
 プロパティの`x`と`y`を、引数の`x`と`y`でそれぞれ初期化します。
 例:
@@ -62,11 +62,11 @@ robo::V2_int v(2, 4);
 // v.x == 2, v.y == 4
 ```
 
-* `Vector2D<T>(const Vector2D<T> &p)`
+* `Vector2D<T>::Vector2D(const Vector2D<T> &p)`
 
 引数のベクトル`p`をコピーして初期化します。
 
-* `Vector2D<T>(const T (&p)[2])`
+* `Vector2D<T>::Vector2D(const T (&p)[2])`
 
 プロパティの`x`と`y`を、`p[0]`と`p[1]`でそれぞれ初期化します。
 例:
@@ -77,7 +77,7 @@ robo::V2_int v(ls);
 // v.x == 2, v.y == 4
 ```
 
-* `Vector2D<T>(std::initializer_list<T> init)`
+* `Vector2D<T>::Vector2D(std::initializer_list<T> init)`
 
 初期化子リストです。
 
@@ -90,7 +90,7 @@ robo::V2_int v{2, 4};
 
 `Vector2D`が実装している演算子を紹介します。
 
-* `Vector2D<t>& operator=(const Vector2D<T> &tmp)`
+* `Vector2D<T>& Vector2D<T>::operator=(const Vector2D<T> &tmp)`
 
 コピー代入です。
 例:
@@ -101,7 +101,7 @@ v1 = v2;
 // v1.x == 3, v1.y == 5
 ```
 
-* `Vector2D<T>& operator=(const T (&tmp)[2])`
+* `Vector2D<T>& Vector2D<T>::operator=(const T (&tmp)[2])`
 
 `x`に`tmp[0]`を、`y`に`tmp[1]`を代入します。
 例:
@@ -113,8 +113,8 @@ v = ls;
 // v.x = 2, v.y = 4
 ```
 
-* `const T& operator[](size_t index) const`
-* `T& operator[](size_t index)`
+* `const T& Vector2D<T>::operator[](size_t index) const`
+* `T& Vector2D<T>::operator[](size_t index)`
 
 添字の実装です。`0`であれば`x`、`1`であれば`y`の値を返します。
 例:
@@ -127,10 +127,10 @@ v[1] = 5;
 // v.x == 2, v.y == 4
 ```
 
-* `Vector2D<T> operator+(const Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T> operator+(const Vector2D<T> &lh, const T (&rh)[2])`
-* `Vector2D<T>& operator+=(Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T>& operator+=(Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T> Vector2D<T>::operator+(const Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T> Vector2D<T>::operator+(const Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T>& Vector2D<T>::operator+=(Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T>& Vector2D<T>::operator+=(Vector2D<T> &lh, const T (&rh)[2])`
 
 加算の実装です。
 例:
@@ -144,31 +144,21 @@ v2 += v1;
 // v2.x == 5, v2.y == 9
 ```
 
-* `Vector2D<T> operator-(const Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T> operator-(const Vector2D<T> &lh, const T (&rh)[2])`
-* `Vector2D<T>& operator-=(Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T>& operator-=(Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T> Vector2D<T>::operator-(const Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T> Vector2D<T>::operator-(const Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T>& Vector2D<T>::operator-=(Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T>& Vector2D<T>::operator-=(Vector2D<T> &lh, const T (&rh)[2])`
 
-減算の実装です。
-例:
+減算の実装です。使い方は加算と同じです。
 
-```C++
-robo::V2_int v1{2, 4}, v2{3, 5};
-int ls[] = {6, 1};
-robo::V2_int v3 = v1 - ls;
-// v3.x == -4, v3.y == 3
-v2 -= v1;
-// v2.x == 1, v2.y == 1
-```
+* `Vector2D<T> Vector2D<T>::operator*(const Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T> Vector2D<T>::operator*(const Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T> Vector2D<T>::operator*(const Vector2D<T> &lh, const T &rh)`
+* `Vector2D<T>& Vector2D<T>::operator*=(Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T>& Vector2D<T>::operator*=(Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T>& Vector2D<T>::operator*=(Vector2D<T> &lh, const T &rh)`
 
-* `Vector2D<T> operator*(const Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T> operator*(const Vector2D<T> &lh, const T (&rh)[2])`
-* `Vector2D<T> operator*(const Vector2D<T> &lh, const T &rh)`
-* `Vector2D<T>& operator*=(Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T>& operator*=(Vector2D<T> &lh, const T (&rh)[2])`
-* `Vector2D<T>& operator*=(Vector2D<T> &lh, const T &rh)`
-
-乗算の実装です。内積ではないので注意して下さい。
+乗算の実装です。内積ではないので注意して下さい。ベクトル`(a, b)`とベクトル`(x, y)`の乗算はベクトル`(a*x, b*y)`を返します。
 例:
 
 ```C++
@@ -180,14 +170,14 @@ v2 *= 5;
 // v2.x == 30, v2.y == 5
 ```
 
-* `Vector2D<T> operator/(const Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T> operator/(const Vector2D<T> &lh, const T (&rh)[2])`
-* `Vector2D<T> operator/(const Vector2D<T> &lh, const T &rh)`
-* `Vector2D<T>& operator/=(Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T>& operator/=(Vector2D<T> &lh, const T (&rh)[2])`
-* `Vector2D<T>& operator/=(Vector2D<T> &lh, const T &rh)`
+* `Vector2D<T> Vector2D<T>::operator/(const Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T> Vector2D<T>::operator/(const Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T> Vector2D<T>::operator/(const Vector2D<T> &lh, const T &rh)`
+* `Vector2D<T>& Vector2D<T>::operator/=(Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T>& Vector2D<T>::operator/=(Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T>& Vector2D<T>::operator/=(Vector2D<T> &lh, const T &rh)`
 
-除算の実装です。
+除算の実装です。ベクトル`(a, b)`とベクトル`(x, y)`の除算はベクトル`(a/x, b/y)`を返します。
 例: (小数の桁はテキトーです。)
 
 ```C++
@@ -250,7 +240,7 @@ double mag = v.mag();
 
 **静的関数**
 
-* `Vector2D<T> from_polar_coord(const double &angle, const T &magnitude)`
+* `static Vector2D<T> Vector2D<T>::from_polar_coord(const double &angle, const T &magnitude)`
 
 極座標のパラメータからベクトルを作成します。第一引数に角度(ラジアン)、第二引数に大きさを渡して下さい。
 例:
@@ -260,70 +250,82 @@ robo::V2_double v = robo::V2_double::from_polar_coord(PI / 3, 10);
 // v.x == 5.0, v.y == 5.0 * sqrt(3.0)
 ```
 
-## motor
+## motor.h
 
 モーター制御用の機能群です。モーターはダイセンのMCB対応です。Serial1を通して通信します。モーターのピン番号と位置は次の図のようになります。
 
 ![motor-info.jpeg](./img/motor-info.jpeg) <!-- TODO -->
 
-`Motor`クラスはシングルトンとして提供しています。インスタンスは`robo::Motor::instance()`か`robo::motor`でアクセスして下さい。
+このヘッダに含まれているのは`Motor`クラスとそのインスタンス`motor`だけです。`Motor`クラスはシングルトンとして提供しています。インスタンスは`robo::Motor::instance()`か`robo::motor`でアクセスして下さい。
 
 **関数群**
 
-* `void stop()`
+* `void Motor::stop()`
 
 停止します。
 
-* `void setup()`
+* `void Motor::setup()`
 
 モーターを初期化します。モーターを使用する場合はスケッチ本体の`setup()`関数内で必ず呼んで下さい。
 
 **`set`オブジェクト**
 
-モーターのパワー設定用の関数群です。
+モーターのパワー設定用の関数群です。呼び出す際には`robo::motor.set.one_motor(1, 100)`などと書く必要があります。
 
 * `void one_motor(uint8_t pin, int8_t power)`
 
 ピン番号`pin`のモーターのパワーを`power`に設定します。
-例:
 
-```C++
-robo::motor.set.one_motor(1, 50);
-// Serial1.println("1R050");
-```
-
-* `void all_motors(int8_t a, int8_t b, int8_t c, int8_t d)`
+* `void Motor::all_motors(int8_t a, int8_t b, int8_t c, int8_t d)`
 
 モーター4つのパワーを設定します。
-例:
-
-```C++
-robo::motor.set.all_motors(25, -50, -10, 70);
-/*
- Serial1.println("1R025");
- Serial1.println("2F050");
- Serial1.println("3F010");
- Serial1.println("4R070");
-*/
-```
 
 * `void velocity(const double &vx, const double &vy)`
-
-機体が、与えられた速度ベクトル`(vx, vy)`で平行移動するようにモーターのパワーを設定します。
-
 * `void velocity(const robo::V2_double &vel)`
 
-`velocity(vel.x, vel.y)`のショートカットです。
+機体が、与えられた速度ベクトルで平行移動するようにパワーを設定します。
 
 * `void left_right(int8_t left, int8_t right)`
 
-左側についている車輪、右側についている車輪でパワーを設定します。`all_motors(left, right, left, right)`のコードのショートカットです。
+左側についている車輪、右側についている車輪でパワーを設定します。`all_motors(left, right, left, right)`のショートカットです。
 
 * `void direction_and_speed(const double &direction, int8_t speed)`
 
-平行移動の方向と速さ
+与えられた方向`direction`と速さ`speed`で平行移動するようにパワーを設定します。
 
 * `void rotate(bool clockwise, int8_t vel=100)`
+
+`clockwise`が`true`であれば時計回りに、`false`であれば反時計回りに速さ`speed`で回転するようにパワーを設定します。
+
+**`get`オブジェクト**
+
+パワー情報を取得するための関数群です。呼び出す際には`robo::motor.get.one_motor(1, 100)`などと書く必要があります。
+
+* `int8_t one_motor(uint8_t pin) const`
+
+ピン番号`pin`のモーターのパワーを取得します。
+
+* `String power_str(uint8_t pin) const`
+
+ピン番号`pin`のモーターのパワーを取得し、シリアル通信でMCBに渡す文字列を返します。
+
+* `String info() const`
+
+モーターのパワー情報をまとめて文字列で返します。デバッグ用です。
+
+**静的関数**
+
+* `static Motor& Motor::instance()`
+
+シングルトンのインスタンスを返します。
+
+* `static String Motor::power_str(int pin, int8_t power)`
+
+ピン番号`pin`のモーターのパワーを`power`に設定する際の文字列を返します。例: `robo::Motor::power_str(1, 50)`は`"1R050"`を返します。
+
+## interrupt.h
+
+割り込み用のユーティリティです。こちらもシングルトンですが、テンプレートパラメータとして割り込み監視用の
 
 <!--
     TODO
