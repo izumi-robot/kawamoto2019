@@ -32,7 +32,7 @@ public:
 int A::i = 0;
 
 int main() {
-    A *a = &A::instance();
+    A &a = A::instance();
     std::cout
-        << a->b.geti() << "\n";
+        << a.b.geti() << "\n";
 }
