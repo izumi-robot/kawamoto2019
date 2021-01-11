@@ -44,9 +44,6 @@ private: // internal-types
         // void circular(const double &rotate_vel, const int &vel=100);
     };
 
-public:
-    enum Pin { pin1; pin2}
-
 private: // variables
     static Motor _singleton;
     static int8_t powers[];
