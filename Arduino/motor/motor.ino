@@ -38,9 +38,6 @@ bool iswhite(int v)
 void setup() {
     Serial.begin(9600);
     robo::motor.setup();
-    robo::motor.set.direction_and_speed(- PI / 2, 70);
-    Serial.println(robo::motor.get.info());
-    return;
     robo::bno055::setup();
     for (LineSensor sensor : line_sensors) {
         sensor.setup();
@@ -50,7 +47,6 @@ void setup() {
 }
 
 void loop() {
-    return;
     double facing_dir, mov_dir;
     int line_value;
 
@@ -59,14 +55,12 @@ void loop() {
     }
 
     ROTATE: {
-        if (abs(facing_dir) <= PI / 18) {
-            goto ROTATE_END;
+        if (abs(facing_dir) > PI / 6) {
+            bool cond = facing_dir > 0;
+            robo::motor.set.rotate(cond, (int8_t)(abs(50 * facing_dir / PI)) + 10);
         }
-        bool cond = facing_dir > 0;
-        robo::motor.set.rotate(cond, int(abs(50 * facing_dir / PI)) + 10);
         goto END;
     }
-    ROTATE_END:
 
     LINE: {
         int left  = line_sensors[0].read(),
@@ -85,16 +79,15 @@ void loop() {
     }
 
     DEFAULT_DIR: {
-        int i = millis() / 1000 % 6;
+        //int i = millis() / 1000 % 6;
         mov_dir = -PI / 2;
     }
 
     MOVE: {
-        using robo::V2_double;
         robo::motor.set.direction_and_speed(mov_dir, 70);
     }
 
     END:
-    Serial.println(robo::motor.get.info());
-    delay(100);
+    //Serial.println(robo::motor.get.info());
+    delay(10);
 }

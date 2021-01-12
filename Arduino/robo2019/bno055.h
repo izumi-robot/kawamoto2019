@@ -4,7 +4,9 @@
 #ifdef ARDUINO
 
 #include <Wire.h>
+#include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
+#include <utility/imumaths.h>
 
 
 namespace robo {
@@ -27,14 +29,18 @@ namespace bno055 {
         if (!started) {
             return 0.;
         }
-        double dir_x = bno.getVector(Adafruit_BNO055::VECTOR_EULER).x();
-        // -180 <= d <= 180
-        dir_x -= 180;
-        // 0 -> 180, 180 -> 0, -45 -> -135
-        dir_x = dir_x >= 0 ? 180 - dir_x : -(180 + dir_x);
-        // 度数法からラジアン
-        dir_x = dir_x * PI / 180;
-        return dir_x;
+        double dir_degree = bno.getVector(Adafruit_BNO055::VECTOR_EULER).x();
+        double dir_radian = (
+            (0 <= dir_degree && dir_degree <= 180) ? dir_degree : dir_degree - 360
+        ) * PI / 180;
+        return dir_radian;
+        // // -180 <= d <= 180
+        // dir_x -= 180;
+        // // 0 -> 180, 180 -> 0, -45 -> -135
+        // dir_x = dir_x >= 0 ? 180 - dir_x : -(180 + dir_x);
+        // // 度数法からラジアン
+        // dir_x = dir_x * PI / 180;
+        // return dir_x;
     }
 } // namespace bno055
 

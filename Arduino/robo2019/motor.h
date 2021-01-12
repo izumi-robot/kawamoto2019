@@ -145,7 +145,7 @@ Motor& Motor::instance()
 String Motor::power_str(int pin, int8_t power)
 {
     // R: front?
-    String dir_s = power < 0 ? "F" : "R";
+    String dir_s = power > 0 ? "F" : "R";
     String power_s = String(abs(power));
     power_s = robo::string::rjust(power_s, 3, '0');
     return String(pin) + dir_s + power_s;
