@@ -11,38 +11,32 @@
 
 namespace robo {
 
-namespace bno055 {
-    Adafruit_BNO055 bno = Adafruit_BNO055(55);
-    bool started = false;
+class BNO_wrapper
+{
+private:
+    static BNO_wrapper _singleton;
+    bool _started;
+    Adafruit_BNO055 _bno;
 
-    void setup()
-    {
-        started = bno.begin();
-        if (!started) {
-            Serial.println("could not connect");
-        }
-        bno.setExtCrystalUse(true);
-    }
+private:
+    BNO_wrapper() {}
+    BNO_wrapper(const BNO_wrapper &) {}
+    ~BNO_wrapper() {}
+    BNO_wrapper& operator=(const BNO_wrapper &) {}
 
-    double get_direction()
-    {
-        if (!started) {
-            return 0.;
-        }
-        double dir_degree = bno.getVector(Adafruit_BNO055::VECTOR_EULER).x();
-        double dir_radian = (
-            (0 <= dir_degree && dir_degree <= 180) ? dir_degree : dir_degree - 360
-        ) * PI / 180;
-        return dir_radian;
-        // // -180 <= d <= 180
-        // dir_x -= 180;
-        // // 0 -> 180, 180 -> 0, -45 -> -135
-        // dir_x = dir_x >= 0 ? 180 - dir_x : -(180 + dir_x);
-        // // 度数法からラジアン
-        // dir_x = dir_x * PI / 180;
-        // return dir_x;
-    }
-} // namespace bno055
+public:
+    static BNO_wrapper& instance();
+    void setup();
+    double get_direction();
+    const Adafruit_BNO055& bno();
+};
+
+BNO_wrapper BNO_wrapper::_singleton;
+
+BNO_wrapper& BNO_wrapper::instance()
+{
+    return BNO_wrapper::_singleton;
+}
 
 } // namespace robo
 

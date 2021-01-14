@@ -7,45 +7,56 @@
 
 namespace robo {
 
-template <int in_pin>
-class Interrupt
-{
+#define TMP template<int in_pin>
+#define INTERRUPT Interrupt<in_pin>
+
+TMP class Interrupt {
 private:
     static volatile bool _state;
-    static Interrupt _instance;
+    static Interrupt _singleton;
 
     Interrupt() {}
-    Interrupt(const Interrupt&) {}
+    Interrupt(const Interrupt &) {}
     ~Interrupt() {}
-    Interrupt& operator=(const Interrupt&) {}
+    Interrupt& operator=(const Interrupt &) {}
 
-    static void callback() { _state = !_state; }
+    static void callback();
 
 public:
-    static void instance()
-    {
-        return _instance;
-    }
-
-    static void setup()
-    {
-        pinMode(in_pin, INPUT);
-        attachInterrupt(digitalPinToInterrupt(in_pin), callback, RISING);
-    }
-
-    static inline bool state() { return _state; }
-
-    static bool changed()
-    {
-        static bool pre_state;
-        bool ans = pre_state != _state;
-        pre_state = _state;
-        return ans;
-    }
+    static Interrupt& instance();
+    void setup();
+    inline bool state();
+    bool changed();
 };
 
-template <int in_pin> volatile bool Interrupt<in_pin>::_state = false;
-template <int in_pin> Interrupt<in_pin> Interrupt<in_pin>::_instance;
+TMP void INTERRUPT::callback()
+{
+    INTERRUPT::_state = !INTERRUPT::_state;
+}
+
+TMP INTERRUPT& INTERRUPT::instance()
+{
+    return INTERRUPT::_singleton;
+}
+
+TMP void INTERRUPT::setup()
+{
+    pinMode(in_pin, INPUT);
+    attachInterrupt(digitalPinToInterrupt(in_pin), callback, RISING);
+}
+
+TMP bool INTERRUPT::state()
+{
+    return _state;
+}
+
+TMP bool INTERRUPT::changed()
+{
+    static bool pre_state;
+    bool ans = pre_state != _state;
+    pre_state = _state;
+    return ans;
+}
 
 } // namespace robo
 

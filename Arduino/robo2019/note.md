@@ -82,3 +82,84 @@ struct { // get
     }
 } get;
 ```
+
+# Interrupt
+
+```C++
+template <int in_pin>
+class Interrupt
+{
+private:
+    static volatile bool _state;
+    static Interrupt _instance;
+
+    Interrupt() {}
+    Interrupt(const Interrupt&) {}
+    ~Interrupt() {}
+    Interrupt& operator=(const Interrupt&) {}
+
+    static void callback() { _state = !_state; }
+
+public:
+    static Interrupt& instance()
+    {
+        return _instance;
+    }
+
+    static void setup()
+    {
+        pinMode(in_pin, INPUT);
+        attachInterrupt(digitalPinToInterrupt(in_pin), callback, RISING);
+    }
+
+    static inline bool state() { return _state; }
+
+    static bool changed()
+    {
+        static bool pre_state;
+        bool ans = pre_state != _state;
+        pre_state = _state;
+        return ans;
+    }
+};
+
+template <int in_pin> volatile bool Interrupt<in_pin>::_state = false;
+template <int in_pin> Interrupt<in_pin> Interrupt<in_pin>::_instance;
+```
+
+# bno055
+
+```C++
+namespace bno055 {
+    Adafruit_BNO055 bno = Adafruit_BNO055(55);
+    bool started = false;
+
+    void setup()
+    {
+        started = bno.begin();
+        if (!started) {
+            Serial.println("could not connect");
+        }
+        bno.setExtCrystalUse(true);
+    }
+
+    double get_direction()
+    {
+        if (!started) {
+            return 0.;
+        }
+        double dir_degree = bno.getVector(Adafruit_BNO055::VECTOR_EULER).x();
+        double dir_radian = (
+            (0 <= dir_degree && dir_degree <= 180) ? dir_degree : dir_degree - 360
+        ) * PI / 180;
+        return dir_radian;
+        // // -180 <= d <= 180
+        // dir_x -= 180;
+        // // 0 -> 180, 180 -> 0, -45 -> -135
+        // dir_x = dir_x >= 0 ? 180 - dir_x : -(180 + dir_x);
+        // // 度数法からラジアン
+        // dir_x = dir_x * PI / 180;
+        // return dir_x;
+    }
+} // namespace bno055
+```

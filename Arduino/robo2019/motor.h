@@ -1,3 +1,9 @@
+/**
+ * @file motor.h
+ * @brief Daisen MCB 操作用のクラス
+ */
+
+
 #ifndef ROBO_MOTOR_H
 #define ROBO_MOTOR_H
 
@@ -9,22 +15,59 @@
 namespace robo
 {
 
+/**
+ * @brief モーター操作用のシングルトンクラス
+ * @details　ダイセンのMCBを操作するためのシングルトンクラス。モーターの配置についてはREADMEを参照。
+ */
 class Motor
 {
-private: // internal-types
+private: // 内部型
+
+    /**
+     * @brief モーターの情報を取得する関数群
+     */
     class Get
     {
     private:
+        //! 情報取得元のインスタンス
         Motor *_motor;
     public:
-        Get(): _motor(NULL) {}
-        Get(Motor *motor): _motor(motor) {}
 
+        /**
+         * @brief デフォルトのコンストラクタ
+         */
+        Get()
+            : _motor(NULL) {}
+
+        /**
+         * @brief 引数のポインタで初期化
+         */
+        Get(Motor *motor)
+            : _motor(motor) {}
+
+        /**
+         * @fn int8_t one_motor(uint8_t pin) const
+         * @brief pinのモーターのパワーを取得する
+         * @param[in] pin モーターのピン番号
+         * @param[out] int8_t モーターのパワー
+         */
         inline int8_t one_motor(uint8_t) const;
-        String power_str(uint8_t pin) const;
+        
+        /**
+         * @fn String power_str(uint8_t pin) const
+         * @brief mcbに流す用の文字列を取得する
+         * @param[in] pin モーターのピン番号
+         * @param[out] String mcbに流す用の文字列
+         * @example power_str(1)
+         */
+        String power_str(uint8_t) const;
+        // 
         String info() const;
     };
 
+    /**
+     * @brief モーターのパワーを設定するための関数群
+     */
     class Set
     {
     private:
@@ -46,29 +89,39 @@ private: // internal-types
 
 private: // variables
     static Motor _singleton;
-    static int8_t powers[];
     int8_t _powers[4];
 public:
     Get get;
     Set set;
 
 private: // functions
+    /**
+     * @brief プライベートコンストラクタ
+     */
     Motor()
         : _powers{ 0, 0, 0, 0 }, get(this), set(this) {}
-    Motor(const Motor&)
+    /**
+     * @brief プライベートのコピーコンストラクタ
+     */
+    Motor(const Motor &)
         : _powers{ 0, 0, 0, 0 }, get(this), set(this) {}
+    /**
+     * @brief プライベートデストラクタ
+     */
     ~Motor() {}
-    Motor& operator=(const Motor&) { return *this; }
+    /**
+     * @brief コピー代入
+     */
+    Motor& operator=(const Motor &) { return *this; }
 
 public:
     static Motor& instance();
-    static String power_str(int pin, int8_t power);
+    static String power_str(int, int8_t);
 
     void stop();
     void setup();
 }; // class Motor
 
-int8_t Motor::powers[] = { 0, 0, 0, 0 };
 Motor Motor::_singleton;
 
 inline int8_t Motor::Get::one_motor(uint8_t pin) const

@@ -12,7 +12,8 @@ private:
     int input_pin, order_pin, result;
 
 public:
-    Echo(int i, int o) : input_pin(i), order_pin(o), result(0) {}
+    Echo(int i, int o)
+        : input_pin(i), order_pin(o), result(0) {}
 
     void setup() {
         pinMode(input_pin, INPUT);

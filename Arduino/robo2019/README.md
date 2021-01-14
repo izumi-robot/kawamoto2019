@@ -127,10 +127,10 @@ v[1] = 5;
 // v.x == 2, v.y == 4
 ```
 
-* `Vector2D<T> Vector2D<T>::operator+(const Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T> Vector2D<T>::operator+(const Vector2D<T> &lh, const T (&rh)[2])`
-* `Vector2D<T>& Vector2D<T>::operator+=(Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T>& Vector2D<T>::operator+=(Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T> operator+(const Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T> operator+(const Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T>& operator+=(Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T>& operator+=(Vector2D<T> &lh, const T (&rh)[2])`
 
 加算の実装です。
 例:
@@ -144,19 +144,19 @@ v2 += v1;
 // v2.x == 5, v2.y == 9
 ```
 
-* `Vector2D<T> Vector2D<T>::operator-(const Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T> Vector2D<T>::operator-(const Vector2D<T> &lh, const T (&rh)[2])`
-* `Vector2D<T>& Vector2D<T>::operator-=(Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T>& Vector2D<T>::operator-=(Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T> operator-(const Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T> operator-(const Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T>& operator-=(Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T>& operator-=(Vector2D<T> &lh, const T (&rh)[2])`
 
 減算の実装です。使い方は加算と同じです。
 
-* `Vector2D<T> Vector2D<T>::operator*(const Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T> Vector2D<T>::operator*(const Vector2D<T> &lh, const T (&rh)[2])`
-* `Vector2D<T> Vector2D<T>::operator*(const Vector2D<T> &lh, const T &rh)`
-* `Vector2D<T>& Vector2D<T>::operator*=(Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T>& Vector2D<T>::operator*=(Vector2D<T> &lh, const T (&rh)[2])`
-* `Vector2D<T>& Vector2D<T>::operator*=(Vector2D<T> &lh, const T &rh)`
+* `Vector2D<T> operator*(const Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T> operator*(const Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T> operator*(const Vector2D<T> &lh, const T &rh)`
+* `Vector2D<T>& operator*=(Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T>& operator*=(Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T>& operator*=(Vector2D<T> &lh, const T &rh)`
 
 乗算の実装です。内積ではないので注意して下さい。ベクトル`(a, b)`とベクトル`(x, y)`の乗算はベクトル`(a*x, b*y)`を返します。
 例:
@@ -170,12 +170,12 @@ v2 *= 5;
 // v2.x == 30, v2.y == 5
 ```
 
-* `Vector2D<T> Vector2D<T>::operator/(const Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T> Vector2D<T>::operator/(const Vector2D<T> &lh, const T (&rh)[2])`
-* `Vector2D<T> Vector2D<T>::operator/(const Vector2D<T> &lh, const T &rh)`
-* `Vector2D<T>& Vector2D<T>::operator/=(Vector2D<T> &lh, const Vector2D<T> &rh)`
-* `Vector2D<T>& Vector2D<T>::operator/=(Vector2D<T> &lh, const T (&rh)[2])`
-* `Vector2D<T>& Vector2D<T>::operator/=(Vector2D<T> &lh, const T &rh)`
+* `Vector2D<T> operator/(const Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T> operator/(const Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T> operator/(const Vector2D<T> &lh, const T &rh)`
+* `Vector2D<T>& operator/=(Vector2D<T> &lh, const Vector2D<T> &rh)`
+* `Vector2D<T>& operator/=(Vector2D<T> &lh, const T (&rh)[2])`
+* `Vector2D<T>& operator/=(Vector2D<T> &lh, const T &rh)`
 
 除算の実装です。ベクトル`(a, b)`とベクトル`(x, y)`の除算はベクトル`(a/x, b/y)`を返します。
 例: (小数の桁はテキトーです。)
