@@ -27,8 +27,8 @@ public:
         delayMicroseconds(10);
         digitalWrite(order_pin, LOW);
         // pulseIn(pin, state, timeout)
-        result = pulseIn(input_pin, HIGH, 1 << 32) / 59;
-        return result ? result : 1024;
+        result = pulseIn(input_pin, HIGH) / 59;
+        return result;
     }
 
     inline int getReault() { return result; }

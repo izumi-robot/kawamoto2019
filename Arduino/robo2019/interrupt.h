@@ -7,10 +7,10 @@
 
 namespace robo {
 
-#define TMP template<int in_pin>
+#define I_TMP template<int in_pin>
 #define INTERRUPT Interrupt<in_pin>
 
-TMP class Interrupt {
+I_TMP class Interrupt {
 private:
     static volatile bool _state;
     static Interrupt _singleton;
@@ -29,28 +29,28 @@ public:
     bool changed();
 };
 
-TMP void INTERRUPT::callback()
+I_TMP void INTERRUPT::callback()
 {
     INTERRUPT::_state = !INTERRUPT::_state;
 }
 
-TMP INTERRUPT& INTERRUPT::instance()
+I_TMP INTERRUPT& INTERRUPT::instance()
 {
     return INTERRUPT::_singleton;
 }
 
-TMP void INTERRUPT::setup()
+I_TMP void INTERRUPT::setup()
 {
     pinMode(in_pin, INPUT);
     attachInterrupt(digitalPinToInterrupt(in_pin), callback, RISING);
 }
 
-TMP bool INTERRUPT::state()
+I_TMP bool INTERRUPT::state()
 {
     return _state;
 }
 
-TMP bool INTERRUPT::changed()
+I_TMP bool INTERRUPT::changed()
 {
     static bool pre_state;
     bool ans = pre_state != _state;
