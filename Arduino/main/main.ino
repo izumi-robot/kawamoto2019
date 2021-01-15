@@ -1,21 +1,9 @@
-#define PIXY_I2C
-
-#include <LiquidCrystal_I2C.h>
 #include <robo2019.h>
-
-using robo::Echo;
-
-LiquidCrystal_I2C lcd(0x27, 16, 2);
-Echo echo(0, 1);
 
 void setup()
 {
     Serial.begin(9600);
-    echo.setup();
-    return;
     robo::bno_wrapper.setup();
-    lcd.init();
-    lcd.backlight();
     robo::pixy::setup();
 }
 
