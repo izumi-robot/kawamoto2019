@@ -38,6 +38,8 @@
 
 namespace robo {
 
+using robo::V2_int;
+
 namespace pixy {
     PIXY pixy;
     const int window_width = 320, window_height = 200;
@@ -52,7 +54,7 @@ namespace pixy {
         return pixy.ccc.getBlocks();
     }
 
-    robo::V2_int get_pos(int i)
+    V2_int get_pos(int i)
     {
         int l = update();
         if (l == 0) {
@@ -60,10 +62,10 @@ namespace pixy {
         }
         int x = pixy.ccc.blocks[i].m_x;
         int y = pixy.ccc.blocks[i].m_y;
-        return robo::V2_int{x, y};
+        return V2_int{x, y};
     }
 
-    robo::V2_int get_pos()
+    V2_int get_pos()
     {
         return get_pos(0);
     }
@@ -76,9 +78,9 @@ namespace pixy {
         return ans;
     }
 
-    double pos2angle(const robo::V2_int &pos)
+    double pos2angle(const V2_int &pos)
     {
-        robo::V2_int np = pos - robo::V2_int{window_width / 2, window_height / 2};
+        V2_int np = pos - V2_int{window_width / 2, window_height / 2};
         double ans = np.angle() + PI * 3 / 4;
         if (ans >= PI) {
             ans -= PI;

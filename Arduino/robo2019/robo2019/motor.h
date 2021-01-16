@@ -17,7 +17,7 @@ namespace robo
 
 /**
  * @brief モーター操作用のシングルトンクラス
- * @details　ダイセンのMCBを操作するためのシングルトンクラス。モーターの配置についてはREADMEを参照。
+ * @details ダイセンのMCBを操作するためのシングルトンクラス。モーターの配置についてはREADMEを参照。
  */
 class Motor
 {
@@ -36,20 +36,18 @@ private: // 内部型
         /**
          * @brief デフォルトのコンストラクタ
          */
-        Get()
-            : _motor(NULL) {}
+        Get() : _motor(NULL) {}
 
         /**
          * @brief 引数のポインタで初期化
          */
-        Get(Motor *motor)
-            : _motor(motor) {}
+        Get(Motor *motor) : _motor(motor) {}
 
         /**
          * @fn int8_t one_motor(uint8_t pin) const
          * @brief pinのモーターのパワーを取得する
          * @param[in] pin モーターのピン番号
-         * @param[out] int8_t モーターのパワー
+         * @return int8_t モーターのパワー
          */
         inline int8_t one_motor(uint8_t) const;
         
@@ -57,7 +55,7 @@ private: // 内部型
          * @fn String power_str(uint8_t pin) const
          * @brief mcbに流す用の文字列を取得する
          * @param[in] pin モーターのピン番号
-         * @param[out] String mcbに流す用の文字列
+         * @return String mcbに流す用の文字列
          * @example power_str(1)
          */
         String power_str(uint8_t) const;
@@ -73,8 +71,8 @@ private: // 内部型
     private:
         Motor *_motor;
     public:
-        Set(): _motor(NULL) {}
-        Set(Motor *motor): _motor(motor) {}
+        Set() : _motor(NULL) {}
+        Set(Motor *motor) : _motor(motor) {}
 
         bool one_motor(uint8_t, int8_t);
         bool all_motors(int8_t, int8_t, int8_t, int8_t);
@@ -98,13 +96,11 @@ private: // functions
     /**
      * @brief プライベートコンストラクタ
      */
-    Motor()
-        : _powers{ 0, 0, 0, 0 }, get(this), set(this) {}
+    Motor() : _powers{ 0, 0, 0, 0 }, get(this), set(this) {}
     /**
      * @brief プライベートのコピーコンストラクタ
      */
-    Motor(const Motor &)
-        : _powers{ 0, 0, 0, 0 }, get(this), set(this) {}
+    Motor(const Motor &) : _powers{ 0, 0, 0, 0 }, get(this), set(this) {}
     /**
      * @brief プライベートデストラクタ
      */
@@ -157,7 +153,7 @@ bool Motor::Set::one_motor(uint8_t pin, int8_t power)
 
 bool Motor::Set::all_motors(int8_t a, int8_t b, int8_t c, int8_t d)
 {
-    return one_motor(1, a) && one_motor(2, b) && one_motor(3, c) && one_motor(4, d);
+    return one_motor(1, a) & one_motor(2, b) & one_motor(3, c) & one_motor(4, d);
 }
 
 bool Motor::Set::velocity(const double &vx, const double &vy)
@@ -179,9 +175,9 @@ bool Motor::Set::left_right(int8_t left, int8_t right)
 
 bool Motor::Set::direction_and_speed(const double &direction, int8_t speed)
 {
-    double x = speed * sin(direction);
-    double y = speed * cos(direction);
-    return velocity(x, y);
+    double vx = speed * sin(direction);
+    double vy = speed * cos(direction);
+    return velocity(vx, vy);
 }
 
 bool Motor::Set::rotate(bool clockwise, int8_t speed)

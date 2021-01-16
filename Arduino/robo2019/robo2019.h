@@ -7,6 +7,7 @@
 #include "robo2019/vec2d.h"
 #include "robo2019/interrupt.h"
 #include "robo2019/echo.h"
+#include "robo2019/line_sensor.h"
 #include "robo2019/pixy.h"
 #include "robo2019/motor.h"
 #include "robo2019/bno055.h"

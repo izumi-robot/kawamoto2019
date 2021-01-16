@@ -21,19 +21,19 @@ public:
     int in_pin();
 };
 
-static int LineSensor::_white_border = 650;
+int LineSensor::_white_border = 650;
 
-static int LineSensor::white_border()
+int LineSensor::white_border()
 {
     return _white_border;
 }
 
-static void LineSensor::white_border(int new_border)
+void LineSensor::white_border(int new_border)
 {
     _white_border = new_border > 0 ? _white_border : new_border;
 }
 
-static bool LineSensor::iswhite(int c)
+bool LineSensor::iswhite(int c)
 {
     return c >= _white_border;
 }
