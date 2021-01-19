@@ -236,4 +236,14 @@ TMP T_VEC2D& operator/=(T_VEC2D &lh, const T &rh) {
     return lh;
 }
 
+TMP bool operator==(const T_VEC2D &lh, const T_VEC2D &rh)
+{
+    return lh.x == rh.x && lh.y == rh.y;
+}
+
+TMP bool operator!=(const T_VEC2D &lh, const T_VEC2D &rh)
+{
+    return lh.x != rh.x || lh.y != rh.y;
+}
+
 #endif /* MYTYPES_H */

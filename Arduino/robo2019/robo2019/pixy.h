@@ -38,11 +38,12 @@
 
 namespace robo {
 
-using robo::V2_int;
-
 namespace pixy {
+    using Camera_pos = robo::V2_int;
+
     PIXY pixy;
     const int window_width = 320, window_height = 200;
+    int center_w = 160, center_h = 125;
 
     void setup()
     {
@@ -54,46 +55,37 @@ namespace pixy {
         return pixy.ccc.getBlocks();
     }
 
-    V2_int get_pos(int i)
+    Camera_pos get_pos(int i, const Camera_pos &default_value)
     {
         int l = update();
         if (l == 0) {
-            return V2_int(0, 0);
+            return default_value;
         }
-        int x = pixy.ccc.blocks[i].m_x;
-        int y = pixy.ccc.blocks[i].m_y;
-        return V2_int{x, y};
+        int x = pixy.ccc.blocks[i].m_x - center_w;
+        int y = pixy.ccc.blocks[i].m_y - center_h;
+        return Camera_pos{x, y};
     }
 
-    V2_int get_pos()
+    Camera_pos get_pos(int i)
+    {
+        return get_pos(i, Camera_pos{0, 0});
+    }
+
+    Camera_pos get_pos()
     {
         return get_pos(0);
     }
 
-    double pos2angle(int m_x, int m_y)
+    Camera_pos get_pos(const Camera_pos &default_value)
     {
-        double x = m_x - window_width / 2;
-        double y = m_y - window_height / 2;
-        double ans = atan2(y, x);
-        return ans;
+        return get_pos(0, default_value);
     }
 
-    double pos2angle(const V2_int &pos)
+    double pos2angle(const Camera_pos &pos)
     {
-        V2_int np = pos - V2_int{window_width / 2, window_height / 2};
-        double ans = np.angle() + PI * 3 / 4;
+        double ans = pos.angle() + PI * 3 / 4;
         if (ans >= PI) {
-            ans -= PI;
-        }
-        return ans;
-    }
-
-    double pos2angle(const robo::V2_double &pos)
-    {
-        robo::V2_double np = pos - robo::V2_double{window_width / 2., window_height / 2.};
-        double ans = np.angle() + PI * 3 / 4;
-        if (ans >= PI) {
-            ans -= PI;
+            ans -= 2 * PI;
         }
         return ans;
     }
@@ -108,6 +100,12 @@ namespace pixy {
         }
 
         Serial.println("end   robo::pixy::log_blocks");
+    }
+
+    robo::V2_double cam_pos2real_pos(const Camera_pos &pos)
+    {
+        double x = -pos.x, y = pos.y;
+        return robo::V2_double{x * x, y * y};
     }
 }
 

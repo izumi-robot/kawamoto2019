@@ -81,6 +81,7 @@ private: // 内部型
         bool left_right(int8_t, int8_t);
         bool direction_and_speed(const double &, int8_t);
         bool rotate(bool, int8_t);
+        bool stop();
         // TODO: 旋回運動
         // void circular(const double &rotate_vel, const int &vel=100);
     };
@@ -93,16 +94,17 @@ public:
     Set set;
 
 private: // functions
+    // シングルトンにする上で欠かせない部分
     /**
-     * @brief プライベートコンストラクタ
+     * @brief コンストラクタ
      */
     Motor() : _powers{ 0, 0, 0, 0 }, get(this), set(this) {}
     /**
-     * @brief プライベートのコピーコンストラクタ
+     * @brief コピーコンストラクタ
      */
     Motor(const Motor &) : _powers{ 0, 0, 0, 0 }, get(this), set(this) {}
     /**
-     * @brief プライベートデストラクタ
+     * @brief デストラクタ
      */
     ~Motor() {}
     /**
@@ -146,7 +148,7 @@ bool Motor::Set::one_motor(uint8_t pin, int8_t power)
     int8_t &p = _motor->_powers[pin-1];
     if (power < -100 || p == power || 100 < power) { return false; }
     String dest = Motor::power_str(pin, power);
-    Serial1.println(dest);
+    Serial2.println(dest);
     p = power;
     return true;
 }
@@ -159,8 +161,8 @@ bool Motor::Set::all_motors(int8_t a, int8_t b, int8_t c, int8_t d)
 bool Motor::Set::velocity(const double &vx, const double &vy)
 {
     double root2 = sqrt(2.);
-    int8_t fl = (int8_t)((vy - vx) / root2), fr = (int8_t)((vy + vx) / root2);
-    return all_motors(fr, fl, fl, fr);
+    int8_t left = (int8_t)((vx + vy) / root2), right = (int8_t)((vx - vy) / root2);
+    return all_motors(right, left, left, right);
 }
 
 bool Motor::Set::velocity(const robo::V2_double &vel)
@@ -175,15 +177,18 @@ bool Motor::Set::left_right(int8_t left, int8_t right)
 
 bool Motor::Set::direction_and_speed(const double &direction, int8_t speed)
 {
-    double vx = speed * sin(direction);
-    double vy = speed * cos(direction);
-    return velocity(vx, vy);
+    return velocity(speed * cos(direction), speed * sin(direction));
 }
 
 bool Motor::Set::rotate(bool clockwise, int8_t speed)
 {
     int8_t d = clockwise ? 1 : -1;
     return left_right(speed * d, -speed * d);
+}
+
+bool Motor::Set::stop()
+{
+    return all_motors(0, 0, 0, 0);
 }
 
 Motor& Motor::instance()
@@ -194,21 +199,21 @@ Motor& Motor::instance()
 String Motor::power_str(int pin, int8_t power)
 {
     // R: front?
-    String dir_s = power > 0 ? "F" : "R";
+    String dir_s = power < 0 ? "F" : "R";
     String power_s = String(abs(power));
     power_s = robo::string::rjust(power_s, 3, '0');
     return String(pin) + dir_s + power_s;
 }
 
-void Motor::stop()
-{
-    this->set.all_motors(0, 0, 0, 0);
-}
+// void Motor::stop()
+// {
+//     this->set.all_motors(0, 0, 0, 0);
+// }
 
 void Motor::setup()
 {
-    Serial1.begin(19200);
-    this->stop();
+    Serial2.begin(19200);
+    this->set.stop();
 }
 
 Motor &motor = Motor::instance();
