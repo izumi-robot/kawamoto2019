@@ -1,6 +1,7 @@
 #ifndef LINE_SENSOR_H
-
 #define LINE_SENSOR_H
+
+#ifdef ARDUINO
 
 namespace robo {
 
@@ -12,9 +13,10 @@ private:
 private:
     LineSensor() {}
 public:
-    static int white_border();
+    static int  white_border();
     static void white_border(int);
     static bool iswhite(int);
+
     LineSensor(int i) : _in_pin(i) {}
     void setup();
     int read();
@@ -54,5 +56,11 @@ int LineSensor::in_pin()
 }
 
 } // namespace robo
+
+#else /* ARDUINO */
+
+static_assert(0, "This liblary is for Arduino.");
+
+#endif /* ARDUINO */
 
 #endif /* LINE_SENSOR_H */

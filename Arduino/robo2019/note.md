@@ -163,3 +163,116 @@ namespace bno055 {
     }
 } // namespace bno055
 ```
+
+# Vector2D
+
+```C++
+template<class T>
+class Vector2D
+{
+private: // static part
+    static_assert(std::is_arithmetic<T>::value, "must be a number type");
+public:
+    static Vector2D from_polar_coord(const double &, const T &);
+
+public: // nonstatic part
+    T x, y;
+
+    Vector2D() : x(0), y(0) {}
+    Vector2D(const T &x, const T &y)
+        : x(x), y(y) {}
+    Vector2D(const T_VEC2D &p)
+        : x(p.x), y(p.y) {}
+    Vector2D(const T_LIST_(p))
+        : x(p[0]), y(p[1]) {}
+    Vector2D(const std::initializer_list<T> &init)
+    {
+        auto beg = init.begin();
+        this->x = *beg;
+        this->y = *(beg + 1);
+    }
+
+    Vector2D& operator=(const T_VEC2D &);
+    Vector2D& operator=(const T_LIST);
+
+    const T& operator[](size_t) const;
+    T& operator[](size_t);
+
+    String to_string() const;
+
+    inline T dot(const Vector2D &) const;
+    inline T dot(const T_LIST) const;
+    inline T dot(const T &, const T &) const;
+
+    double angle() const;
+    double mag() const;
+};
+
+TMP T_VEC2D T_VEC2D::from_polar_coord(const double &angle, const T &magnitude)
+{
+    return T_VEC2D{
+        magnitude * cos(angle),
+        magnitude * sin(angle)
+    };
+}
+
+TMP T_VEC2D& T_VEC2D::operator=(const T_VEC2D &tmp)
+{
+    this->x = tmp.x;
+    this->y = tmp.y;
+    return *this;
+}
+
+TMP T_VEC2D& T_VEC2D::operator=(const T_LIST_(tmp))
+{
+    this->x = tmp[0];
+    this->y = tmp[1];
+    return *this;
+}
+
+TMP const T& T_VEC2D::operator[](size_t index) const
+{
+    if (index == 1) { return this->y; }
+    return this->x;
+}
+
+TMP T& T_VEC2D::operator[](size_t index)
+{
+    if (index == 1) { return this->y; }
+    // else
+    return this->x;
+}
+
+TMP String T_VEC2D::to_string() const
+{
+    return (
+        "(" + String(this->x) + ", "
+        + String(this->y) + ")"
+    );
+}
+
+TMP inline T T_VEC2D::dot(const T_VEC2D &v) const
+{
+    return this->x * v.x + this->y * v.y;
+}
+
+TMP inline T T_VEC2D::dot(const T_LIST_(tmp)) const
+{
+    return this->x * tmp[0] + this->y * tmp[1];
+}
+
+TMP inline T T_VEC2D::dot(const T &x, const T &y) const
+{
+    return this->x * x + this->y * y;
+}
+
+TMP double T_VEC2D::angle() const
+{
+    return atan2(this->y, this->x);
+}
+
+TMP double T_VEC2D::mag() const
+{
+    return sqrt(pow(this->x, 2) + pow(this->y, 2));
+}
+```
