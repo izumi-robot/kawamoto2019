@@ -7,111 +7,119 @@
 namespace use_flag
 {
     constexpr bool
-        line  = true,
-        echo  = true,
-        pixy  = false,
+        line  = false,
+        echo  = false,
+        pixy  = true,
         bno   = true,
         motor = true,
-        lcd   = true;
+        lcd   = false;
 }
 
 
-namespace echo
+template <class T>
+class Sensor
 {
-    using robo::Echo;
-    Echo sensors[] = {
-        Echo(2, 3), Echo(4, 5), Echo(6, 7)
-    };
-
-    Echo &left = sensors[0], &right = sensors[1], &back = sensors[2];
-
-    namespace values
+private:
+    class Values
     {
-        int list[] = {0, 0, 0};
-        int &left = list[0], &right = list[1], &back = list[2];
+    private:
+        Sensor *ptr;
+        int _list[3];
+        int &_left, &_right, &_back;
+    public:
+        Values()
+            : ptr(NULL), _list{0, 0, 0}, _left(_list[0]), _right(_list[1]), _back(_list[2]) {}
+        Values(Sensor *p)
+            : ptr(p), _list{0, 0, 0}, _left(_list[0]), _right(_list[1]), _back(_list[2]) {}
         void update()
         {
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 3; ++i)
             {
-                list[i] = sensors[i].read();
+                _list[i] = (*ptr)[i].read();
             }
         }
-    }
+
+        inline const int &left()  const { return _left;  }
+        inline const int &right() const { return _right; }
+        inline const int &back()  const { return _back;  }
+        inline const int &operator[](size_t i) const { return _list[i % 3]; }
+
+        inline int &left()  { return _left;  }
+        inline int &right() { return _right; }
+        inline int &back()  { return _back;  }
+        inline int &operator[](size_t i) { return _list[i]; }
+    };
+
+private:
+    T _list[3];
+    T &_left, &_right, &_back;
+    Values _values;
+
+public:
+    Sensor(const T &left, const T &right, const T &back)
+        : _list{ left, right, back },
+        _left(_list[0]), _right(_list[1]), _back(_list[2]),
+        _values(this) {}
+
+    inline const T &left()  const { return _left;  }
+    inline const T &right() const { return _right; }
+    inline const T &back()  const { return _back;  }
+
+    inline T &left()  { return _left;  }
+    inline T &right() { return _right; }
+    inline T &back()  { return _back;  }
+
+    Values &values() { return _values; }
 
     void setup()
     {
-        for (Echo e : sensors)
+        for (int i = 0; i < 3; ++i)
         {
-            e.setup();
+            _list[i].setup();
         }
-    }
-}
-
-
-namespace line
-{
-    using robo::LineSensor;
-    LineSensor sensors[] = {
-        LineSensor(0), LineSensor(1), LineSensor(2)
-    };
-
-    LineSensor &left = sensors[0], &right = sensors[1], &back = sensors[2];
-
-    namespace values
-    {
-        int list[] = {0, 0, 0};
-        int &left = list[0], &right = list[1], &back = list[2];
-        void update()
-        {
-            for (int i = 0; i < 3; i++)
-            {
-                list[i] = sensors[i].read();
-            }
-        }
+        _values.update();
     }
 
-    void setup()
-    {
-        for (LineSensor l : sensors)
-        {
-            l.setup();
-        }
-        values::update();
-    }
-}
-
-
-enum class MotorFlag : int {
-    stop, move, rotate
+    inline const T &operator[](size_t i) const { return _list[i % 3]; }
+    inline T &operator[](size_t i) { return _list[i]; }
 };
+
+namespace sensors{
+    using robo::LineSensor;
+    using robo::Echo;
+
+    Sensor<Echo> echo(Echo(2, 3), Echo(4, 5), Echo(6, 7));
+    Sensor<LineSensor> line(LineSensor(0), LineSensor(1), LineSensor(2));
+}
+
+
+enum class MotorFlag : int { stop, move, rotate };
 
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
-robo::V2_double ball_pos{0, 0};
-int untrack_frame = 0;
 
 
 void setup()
 {
     Serial.begin(9600);
-    robo::LineSensor::white_border(300);
 
     if (use_flag::line) {
-        line::setup();
+        robo::LineSensor::white_border(300);
+        sensors::line.setup();
     }
-    if (use_flag::echo)  {
-        echo::setup();
+    if (use_flag::echo) {
+        sensors::echo.setup();
     }
     if (use_flag::bno) {
         robo::bno_wrapper.setup();
     }
-    if (use_flag::pixy)  {
+    if (use_flag::pixy) {
         robo::pixy::setup();
     }
     if (use_flag::motor) {
         robo::motor.setup();
     }
-    if (use_flag::lcd)   {
+    if (use_flag::lcd) {
         lcd.init();
         lcd.backlight();
     }
@@ -120,89 +128,48 @@ void setup()
 
 void loop()
 {
-    union {
-        double direction;
-        double rotate_angle;
-    } info;
-    info.direction = -PI / 2;
-    MotorFlag m_flag = MotorFlag::move;
+    static robo::pixy::Camera_pos cam_pos;
+    static int untrack_frame = 100;
+    static double dir;
 
-    LINE_ECHO: {
-        LINE:  if (use_flag::line)  {
-            using robo::LineSensor;
-            line::values::update();
-            const bool
-                l_wh = LineSensor::iswhite(line::values::left),
-                r_wh = LineSensor::iswhite(line::values::right),
-                b_wh = LineSensor::iswhite(line::values::back);
-            if (l_wh && r_wh) {
-                info.direction = 0;
-            } else if (l_wh) {
-                info.direction = b_wh ? PI / 4 : PI / 2;
-            } else if (r_wh) {
-                info.direction = b_wh ? -PI / 4 : -PI / 2;
-            } else if (b_wh) {
-                info.direction = 0;
-            }
-            m_flag = l_wh || r_wh || b_wh ? MotorFlag::move : m_flag;
-        }
+    MotorFlag m_flag = MotorFlag::stop;
 
-        ECHO:  if (use_flag::echo)  {}
+    double f_dir = robo::bno_wrapper.get_direction();
+    double abs_fd = abs(f_dir);
+    if (abs_fd > PI / 6) {
+        m_flag = MotorFlag::rotate;
     }
 
-    BNO: if (use_flag::bno) {
-        double dir = robo::bno_wrapper.get_direction();
-        if (abs(dir) > PI / 4) {
-            info.rotate_angle = dir * 80 / PI;
-            m_flag = MotorFlag::rotate;
-        }
-        if (use_flag::lcd) {
-            lcd.setCursor(0, 1);
-            lcd.print(dir);
-        }
-        //Serial.println("bno: " + String(dir));
+    int block_len = robo::pixy::update();
+    if (block_len > 0) {
+        m_flag = MotorFlag::move;
+        untrack_frame = 0;
+        cam_pos = robo::pixy::get_pos(0, cam_pos);
+        String pos_str = cam_pos.to_string();
+        lcd.clear();
+        lcd.setCursor(0, 0);
+        lcd.print(pos_str);
+        Serial.println(pos_str);
+        dir = robo::pixy::pos2angle(cam_pos);
+    } else {
+        untrack_frame++;
     }
 
-    PIXY: if (use_flag::pixy)  {
-        int num = robo::pixy::update();
-        if (num > 0) {
-            untrack_frame = 0;
-            robo::pixy::Camera_pos c_pos = robo::pixy::get_pos(0);
-            ball_pos = robo::pixy::cam_pos2real_pos(c_pos);
-            Serial.println(c_pos.to_string());
-        } else {
-            untrack_frame++;
-            if (untrack_frame > 3) {
-                m_flag = MotorFlag::stop;
-            }
-        }
-        info.direction = atan2(ball_pos.x, ball_pos.y);
-    }
-
-    MOTOR: if (use_flag::motor) {
+    if (use_flag::motor) {
         using robo::motor;
         switch (m_flag)
         {
         case MotorFlag::move:
-            motor.set.direction_and_speed(info.direction, 80);
+            motor.set.direction_and_speed(dir, 80);
             break;
         case MotorFlag::rotate:
-            motor.set.rotate(
-                info.rotate_angle > 0,
-                int8_t(abs(info.rotate_angle))
-            );
-            break;
-        default: // MotorFlag::stop
+            motor.set.rotate(f_dir > 0, abs_fd * 50 / PI + 10);
+        case MotorFlag::stop:
+        default:
             motor.set.stop();
             break;
         }
     }
 
-    LCD: if (use_flag::lcd) {
-        lcd.setCursor(0, 0);
-        lcd.print(info.direction * 180 / PI);
-    }
-
-    END:
-    delay(50);
+    delay(10);
 }
