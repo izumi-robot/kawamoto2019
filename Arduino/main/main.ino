@@ -9,17 +9,16 @@ namespace use_flag
     constexpr bool
         line  = false,
         echo  = false,
-        pixy  = true,
+        pixy  = false,
         bno   = true,
         motor = true,
-        lcd   = false;
+        lcd   = true;
 }
 
 
-template <class T>
-class Sensor
+template <class T> class Sensor
 {
-private:
+public:
     class Values
     {
     private:
@@ -80,7 +79,7 @@ public:
         _values.update();
     }
 
-    inline const T &operator[](size_t i) const { return _list[i % 3]; }
+    inline const T &operator[](size_t i) const { return _list[i]; }
     inline T &operator[](size_t i) { return _list[i]; }
 };
 
@@ -89,14 +88,21 @@ namespace sensors{
     using robo::Echo;
 
     Sensor<Echo> echo(Echo(2, 3), Echo(4, 5), Echo(6, 7));
-    Sensor<LineSensor> line(LineSensor(0), LineSensor(1), LineSensor(2));
+    Sensor<LineSensor> line(LineSensor(1), LineSensor(3), LineSensor(5));
 }
 
 
 enum class MotorFlag : int { stop, move, rotate };
 
-
 LiquidCrystal_I2C lcd(0x27, 16, 2);
+
+double spin_enter_dir(const double &ball_dir)
+{
+    double sp_en_dir = ball_dir * 5 / 4;
+    if (sp_en_dir < -PI) { sp_en_dir += 2 * PI; }
+    if (sp_en_dir >  PI) { sp_en_dir -= 2 * PI; }
+    return sp_en_dir;
+}
 
 
 void setup()
@@ -104,7 +110,7 @@ void setup()
     Serial.begin(9600);
 
     if (use_flag::line) {
-        robo::LineSensor::white_border(300);
+        robo::LineSensor::white_border(400);
         sensors::line.setup();
     }
     if (use_flag::echo) {
@@ -123,36 +129,68 @@ void setup()
         lcd.init();
         lcd.backlight();
     }
-    delay(5000);
 }
 
 void loop()
 {
     static robo::pixy::Camera_pos cam_pos;
     static int untrack_frame = 100;
-    static double dir;
+    static union { double dir; double power; } m_info;
 
     MotorFlag m_flag = MotorFlag::stop;
 
-    double f_dir = robo::bno_wrapper.get_direction();
-    double abs_fd = abs(f_dir);
-    if (abs_fd > PI / 6) {
-        m_flag = MotorFlag::rotate;
+    if (use_flag::line) {
+        using robo::LineSensor;
+        Sensor<LineSensor>::Values &values = sensors::line.values();
+        values.update();
+        const bool
+            lw = LineSensor::iswhite(values.left()),
+            rw = LineSensor::iswhite(values.right()),
+            bw = LineSensor::iswhite(values.back());
+        if (lw || rw || bw) {
+            m_flag = MotorFlag::move;
+            if (lw) { m_info.dir =  PI / 2 + (bw ? PI / 4 : 0); }
+            if (rw) { m_info.dir = -PI / 2 - (bw ? PI / 4 : 0); }
+            if (bw) { m_info.dir =  0; }
+        }
     }
 
-    int block_len = robo::pixy::update();
-    if (block_len > 0) {
-        m_flag = MotorFlag::move;
-        untrack_frame = 0;
-        cam_pos = robo::pixy::get_pos(0, cam_pos);
-        String pos_str = cam_pos.to_string();
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print(pos_str);
-        Serial.println(pos_str);
-        dir = robo::pixy::pos2angle(cam_pos);
-    } else {
-        untrack_frame++;
+    if (use_flag::bno && m_flag == MotorFlag::stop) {
+        using robo::bno_wrapper;
+        double fdir = bno_wrapper.get_direction();
+        if (abs(fdir) > PI / 6) {
+            m_flag = MotorFlag::rotate;
+            m_info.power = fdir * 70 / PI + 30;
+        }
+        if (use_flag::lcd) {
+            lcd.clear();
+            lcd.setCursor(0, 0);
+            lcd.print(fdir * 180 / PI);
+        }
+    }
+
+    if (use_flag::pixy && m_flag == MotorFlag::stop) {
+        if (robo::pixy::update() > 0) {
+            double ball_dir;
+            m_flag = MotorFlag::move;
+            untrack_frame = 0;
+            cam_pos = robo::pixy::get_pos(cam_pos);
+            if (use_flag::lcd) {
+                String pos_str = cam_pos.to_string();
+                lcd.clear();
+                lcd.setCursor(0, 0);
+                lcd.print(pos_str);
+            }
+            ball_dir = robo::pixy::pos2angle(cam_pos);
+            //m_info.dir = ball_dir;
+            m_info.dir = spin_enter_dir(ball_dir);
+        } else {
+            untrack_frame++;
+            m_flag = MotorFlag::move;
+            if (untrack_frame >= 10) {
+                m_flag = MotorFlag::stop;
+            }
+        }
     }
 
     if (use_flag::motor) {
@@ -160,10 +198,13 @@ void loop()
         switch (m_flag)
         {
         case MotorFlag::move:
-            motor.set.direction_and_speed(dir, 80);
+            motor.set.direction_and_speed(m_info.dir, 90);
             break;
+
         case MotorFlag::rotate:
-            motor.set.rotate(f_dir > 0, abs_fd * 50 / PI + 10);
+            motor.set.rotate(m_info.power > 0, 50);
+            break;
+
         case MotorFlag::stop:
         default:
             motor.set.stop();
@@ -171,5 +212,5 @@ void loop()
         }
     }
 
-    delay(10);
+    delay(100);
 }

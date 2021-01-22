@@ -50,7 +50,8 @@ double BNO_wrapper::get_direction()
     double dir_degree = this->_bno.getVector(Adafruit_BNO055::VECTOR_EULER).x();
     double dir_radian = (
         (0 <= dir_degree && dir_degree <= 180)
-        ? dir_degree : dir_degree - 360
+        ? dir_degree
+        : dir_degree - 360
     ) * -PI / 180;
     return dir_radian;
 }

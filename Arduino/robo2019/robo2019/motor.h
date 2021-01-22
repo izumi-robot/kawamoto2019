@@ -146,7 +146,7 @@ String Motor::Get::info() const
 bool Motor::Set::one_motor(uint8_t pin, int8_t power)
 {
     int8_t &p = _motor->_powers[pin-1];
-    if (power < -100 || p == power || 100 < power) { return false; }
+    if (power < -100 || abs(p - power) < 10 || 100 < power) { return false; }
     String dest = Motor::power_str(pin, power);
     Serial2.println(dest);
     p = power;

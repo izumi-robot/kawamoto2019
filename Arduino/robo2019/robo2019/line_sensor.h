@@ -23,7 +23,7 @@ public:
     int in_pin();
 };
 
-int LineSensor::_white_border = 650;
+int LineSensor::_white_border = 300;
 
 int LineSensor::white_border()
 {
