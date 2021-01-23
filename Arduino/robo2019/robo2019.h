@@ -3,14 +3,14 @@
 
 #ifdef ARDUINO
 
-#include "robo2019/util.h"
-#include "robo2019/vec2d.h"
-#include "robo2019/interrupt.h"
-#include "robo2019/echo.h"
-#include "robo2019/line_sensor.h"
-#include "robo2019/pixy.h"
-#include "robo2019/motor.h"
-#include "robo2019/bno055.h"
+#include "robo2019_src/util.h"
+#include "robo2019_src/vec2d.h"
+#include "robo2019_src/interrupt.h"
+#include "robo2019_src/echo.h"
+#include "robo2019_src/line_sensor.h"
+#include "robo2019_src/pixy.h"
+#include "robo2019_src/motor.h"
+#include "robo2019_src/bno055.h"
 
 #else /* ARDUINO */
 
