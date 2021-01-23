@@ -1,15 +1,22 @@
 #include <robo2019.h>
 
 // LineSensor(analog-in pin)
-robo::LineSensor line_sensor(3);
+robo::LineSensor left(1), right(3), back(5);
 
 void setup()
 {
-    line_sensor.setup();
+    Serial.begin(9600);
+    left.setup();
+    right.setup();
+    back.setup();
 }
 
 void loop()
 {
-    Serial.println(line_sensor.read());
+    Serial.println(
+        String(left.read()) + ", "
+        + String(right.read()) + ", "
+        + String(back.read())
+    );
     delay(1000);
 }
