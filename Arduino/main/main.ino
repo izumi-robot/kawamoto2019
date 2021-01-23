@@ -30,6 +30,7 @@ public:
             : ptr(NULL), _list{0, 0, 0}, _left(_list[0]), _right(_list[1]), _back(_list[2]) {}
         Values(Sensor *p)
             : ptr(p), _list{0, 0, 0}, _left(_list[0]), _right(_list[1]), _back(_list[2]) {}
+
         void update()
         {
             for (int i = 0; i < 3; ++i)
@@ -41,7 +42,7 @@ public:
         inline const int &left()  const { return _left;  }
         inline const int &right() const { return _right; }
         inline const int &back()  const { return _back;  }
-        inline const int &operator[](size_t i) const { return _list[i % 3]; }
+        inline const int &operator[](size_t i) const { return _list[i]; }
 
         inline int &left()  { return _left;  }
         inline int &right() { return _right; }
@@ -76,7 +77,15 @@ public:
         {
             _list[i].setup();
         }
-        _values.update();
+        update();
+    }
+
+    void update()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            _values[i] = _list[i].read();
+        }
     }
 
     inline const T &operator[](size_t i) const { return _list[i]; }
@@ -87,8 +96,11 @@ namespace sensors{
     using robo::LineSensor;
     using robo::Echo;
 
-    Sensor<Echo> echo(Echo(2, 3), Echo(4, 5), Echo(6, 7));
-    Sensor<LineSensor> line(LineSensor(1), LineSensor(3), LineSensor(5));
+    using Echo_t = Sensor<Echo>;
+    using Line_t = Sensor<LineSensor>;
+
+    Echo_t echo(Echo(2, 3), Echo(4, 5), Echo(6, 7));
+    Line_t line(LineSensor(1), LineSensor(3), LineSensor(5));
 }
 
 
@@ -140,7 +152,7 @@ void loop()
 
     if (use_flag::line) {
         using robo::LineSensor;
-        Sensor<LineSensor>::Values &values = sensors::line.values();
+        sensors::Line_t::Values &values = sensors::line.values();
         values.update();
         const bool
             lw = LineSensor::iswhite(values.left()),
@@ -173,12 +185,6 @@ void loop()
             m_flag = MotorFlag::move;
             untrack_frame = 0;
             cam_pos = robo::pixy::get_pos(cam_pos);
-            if (use_flag::lcd) {
-                String pos_str = cam_pos.to_string();
-                lcd.clear();
-                lcd.setCursor(0, 0);
-                lcd.print(pos_str);
-            }
             ball_dir = robo::pixy::pos2angle(cam_pos);
             //m_info.dir = ball_dir;
             m_info.dir = spin_enter_dir(ball_dir);
