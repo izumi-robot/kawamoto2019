@@ -7,9 +7,9 @@
 namespace use_flag
 {
     constexpr bool
-        line  = false,
+        line  = true,
         echo  = false,
-        pixy  = false,
+        pixy  = true,
         bno   = true,
         motor = true,
         lcd   = true;
@@ -110,7 +110,6 @@ void setup()
     Serial.begin(9600);
 
     if (use_flag::line) {
-        robo::LineSensor::white_border(400);
         sensors::line.setup();
     }
     if (use_flag::echo) {
@@ -156,11 +155,10 @@ void loop()
     }
 
     if (use_flag::bno && m_flag == MotorFlag::stop) {
-        using robo::bno_wrapper;
-        double fdir = bno_wrapper.get_direction();
-        if (abs(fdir) > PI / 6) {
+        double fdir = robo::bno_wrapper.get_direction();
+        if (abs(fdir) > PI / 12) {
             m_flag = MotorFlag::rotate;
-            m_info.power = fdir * 70 / PI + 30;
+            m_info.power = fdir * 70 / PI;
         }
         if (use_flag::lcd) {
             lcd.clear();
@@ -186,9 +184,8 @@ void loop()
             m_info.dir = spin_enter_dir(ball_dir);
         } else {
             untrack_frame++;
-            m_flag = MotorFlag::move;
-            if (untrack_frame >= 10) {
-                m_flag = MotorFlag::stop;
+            if (untrack_frame < 10) {
+                m_flag = MotorFlag::move;
             }
         }
     }
@@ -202,7 +199,7 @@ void loop()
             break;
 
         case MotorFlag::rotate:
-            motor.set.rotate(m_info.power > 0, 50);
+            motor.set.rotate(m_info.power > 0, abs(m_info.power));
             break;
 
         case MotorFlag::stop:
@@ -212,5 +209,5 @@ void loop()
         }
     }
 
-    delay(100);
+    delay(10);
 }
