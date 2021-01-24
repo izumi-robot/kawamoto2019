@@ -50,6 +50,12 @@ private: // 内部型
          * @return int8_t モーターのパワー
          */
         inline int8_t one_motor(uint8_t) const;
+        /**
+         * @fn void one_motor(int8_t *dst, uint8_t pin)
+         * @param[in] pin ピン番号
+         * @param[out] dst 結果
+         */
+        inline void one_potor(int8_t *, uint8_t);
         
         /**
          * @fn String power_str(uint8_t pin) const
@@ -59,8 +65,23 @@ private: // 内部型
          * @example power_str(1)
          */
         String power_str(uint8_t) const;
-        // 
+        /**
+         * @fn void power_str(String *, uint8_t pin)
+         * @param[in] pin ピン番号
+         * @param[out] dst mcbに流す用の文字列
+         */
+        void power_str(String *, uint8_t);
+        /** 
+         * @fn String info() const
+         * @brief mcbに流す用の文字列のセットを取得
+         * @return "[power_str(1), power_str(2), power_str(3)]"
+         */
         String info() const;
+        /**
+         * fn void info(String *dst)
+         * param[out] 結果
+         */
+        void info(String *);
     };
 
     /**
@@ -74,7 +95,14 @@ private: // 内部型
         Set() : _motor(NULL) {}
         Set(Motor *motor) : _motor(motor) {}
 
+        /**
+         * @fn bool one_motor(uint8_t pin, int8_t power)
+         * @brief ピン番号pinのモーターのパワーをpowerに設定
+         * @param[in] pin ピン番号
+         * @param[in] power パワー
+         */
         bool one_motor(uint8_t, int8_t);
+
         bool all_motors(int8_t, int8_t, int8_t, int8_t);
         bool velocity(const double &, const double &);
         bool velocity(const robo::V2_double &);

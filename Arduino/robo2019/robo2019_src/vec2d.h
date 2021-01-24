@@ -3,9 +3,7 @@
 
 #ifdef ARDUINO
 
-#include <ArxContainer.h>
 #include <ArxTypeTraits.h>
-#include <ArxStringUtils.h>
 
 #define T_LIST T(&)[2]
 
@@ -27,6 +25,7 @@ private: // static part
     static_assert(std::is_arithmetic<T>::value, "must be a number type");
 public:
     static Vector2D from_polar_coord(const double &, const T &);
+    static void from_polar_coord(Vector2D *, const double &, const T &);
 
 public: // nonstatic part
     T x, y;
@@ -41,24 +40,30 @@ public: // nonstatic part
     Vector2D(const std::initializer_list<T> &init)
     {
         auto beg = init.begin();
-        this->x = *beg;
-        this->y = *(beg + 1);
+        x = *beg;
+        y = *(beg + 1);
     }
 
     Vector2D& operator=(const T_VEC2D &);
     Vector2D& operator=(const T_LIST);
 
-    const T& operator[](size_t) const;
-    T& operator[](size_t);
+    inline const T& operator[](size_t) const;
+    inline T& operator[](size_t);
 
     String to_string() const;
+    void to_string(String *);
 
     inline T dot(const Vector2D &) const;
     inline T dot(const T_LIST) const;
     inline T dot(const T &, const T &) const;
+    inline void dot(T *, const Vector2D &);
+    inline void dot(T *, const T_LIST);
+    inline void dot(T *, const T &, const T &);
 
-    double angle() const;
-    double mag() const;
+    inline double angle() const;
+    inline void angle(double *);
+    inline double mag() const;
+    inline void mag(double *);
 };
 
 using V2_double = Vector2D<double>;
@@ -73,66 +78,80 @@ TMP T_VEC2D T_VEC2D::from_polar_coord(const double &angle, const T &magnitude)
         magnitude * sin(angle)
     };
 }
+TMP void T_VEC2D::from_polar_coord(T_VEC2D *dst, const double &angle, const T &magnitude)
+{
+    dst->x = magnitude * cos(angle);
+    dst->y = magnitude * sin(angle);
+}
 
 TMP T_VEC2D& T_VEC2D::operator=(const T_VEC2D &tmp)
 {
-    this->x = tmp.x;
-    this->y = tmp.y;
+    x = tmp.x;
+    y = tmp.y;
     return *this;
 }
 
 TMP T_VEC2D& T_VEC2D::operator=(const T_LIST_(tmp))
 {
-    this->x = tmp[0];
-    this->y = tmp[1];
+    x = tmp[0];
+    y = tmp[1];
     return *this;
 }
 
 TMP const T& T_VEC2D::operator[](size_t index) const
 {
-    if (index == 1) { return this->y; }
-    return this->x;
+    return index == 1 ? y : x;
 }
 
 TMP T& T_VEC2D::operator[](size_t index)
 {
-    if (index == 1) { return this->y; }
-    // else
-    return this->x;
+    return index == 1 ? y : x;
 }
 
 TMP String T_VEC2D::to_string() const
 {
     return (
-        "(" + String(this->x) + ", "
-        + String(this->y) + ")"
+        "(" + String(x) + ", " + String(y) + ")"
     );
 }
-
-TMP inline T T_VEC2D::dot(const T_VEC2D &v) const
+TMP void T_VEC2D::to_string(String *dst)
 {
-    return this->x * v.x + this->y * v.y;
+    *dst = "(" + String(x) + ", " + String(y) + ")";
 }
 
-TMP inline T T_VEC2D::dot(const T_LIST_(tmp)) const
+TMP T T_VEC2D::dot(const T_VEC2D &v) const
 {
-    return this->x * tmp[0] + this->y * tmp[1];
+    return x * v.x + y * v.y;
 }
 
-TMP inline T T_VEC2D::dot(const T &x, const T &y) const
+TMP T T_VEC2D::dot(const T_LIST_(tmp)) const
+{
+    return x * tmp[0] + y * tmp[1];
+}
+
+TMP T T_VEC2D::dot(const T &x, const T &y) const
 {
     return this->x * x + this->y * y;
 }
 
 TMP double T_VEC2D::angle() const
 {
-    return atan2(this->y, this->x);
+    return atan2(y, x);
+}
+TMP void T_VEC2D::angle(double *dst)
+{
+    *dst = atan2(y, x);
 }
 
 TMP double T_VEC2D::mag() const
 {
-    return sqrt(pow(this->x, 2) + pow(this->y, 2));
+    return sqrt(x * x + y * y);
 }
+TMP void T_VEC2D::mag(double *dst) const
+{
+    *dst = sqrt(x * x + y * y);
+}
+
 
 TMP inline T_VEC2D operator+(const T_VEC2D &lh, const T_VEC2D &rh) {
     return OP_VEC(lh, rh, +);
