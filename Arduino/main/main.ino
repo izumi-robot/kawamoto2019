@@ -110,7 +110,7 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 double spin_enter_dir(const double &ball_dir)
 {
-    double sp_en_dir = ball_dir * 5 / 4;
+    double sp_en_dir = ball_dir * 3 / 2;
     if (sp_en_dir < -PI) { sp_en_dir += 2 * PI; }
     if (sp_en_dir >  PI) { sp_en_dir -= 2 * PI; }
     return sp_en_dir;
@@ -170,7 +170,7 @@ void loop()
         double fdir = robo::bno_wrapper.get_direction();
         if (abs(fdir) > PI / 12) {
             m_flag = MotorFlag::rotate;
-            m_info.power = fdir * 70 / PI;
+            m_info.power = fdir * 80 / PI;
         }
         if (use_flag::lcd) {
             lcd.clear();
@@ -205,7 +205,10 @@ void loop()
             break;
 
         case MotorFlag::rotate:
-            motor.set.rotate(m_info.power > 0, abs(m_info.power));
+            motor.set.rotate(
+                m_info.power > 0,
+                min(abs(m_info.power), 35)
+            );
             break;
 
         case MotorFlag::stop:
@@ -215,5 +218,6 @@ void loop()
         }
     }
 
-    delay(10);
+    int ms = millis();
+    Serial.println(ms);
 }
