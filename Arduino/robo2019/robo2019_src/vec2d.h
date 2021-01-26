@@ -152,7 +152,7 @@ TMP double T_VEC2D::mag() const
 {
     return sqrt(x * x + y * y);
 }
-TMP void T_VEC2D::mag(double *dst) const
+TMP void T_VEC2D::mag(double *dst)
 {
     *dst = sqrt(x * x + y * y);
 }

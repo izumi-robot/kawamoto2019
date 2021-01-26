@@ -65,14 +65,7 @@ namespace string {
      * @param[in] width 右寄せした後の長さ
      * @param[in] padding 左に埋める文字
      */
-    void rjust(String *target, uint8_t width, const char &padding)
-    {
-        for (uint8_t i = target->length(); i < width; ++i)
-        {
-            *target = padding + (*target);
-        }
-    }
-
+    void rjust(String *target, uint8_t, const char &);
 } // namespace string
 
 String string::rjust(const String &target, uint8_t width, char padding)

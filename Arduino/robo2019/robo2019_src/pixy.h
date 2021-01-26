@@ -81,7 +81,7 @@ namespace pixy {
         dst->y = double(-cam_pos.x + center.x);
     }
 
-    inline double pos2angle(const Camera_pos &pos)
+    inline double pos2angle(const Camera_pos &cam_pos)
     {
         return atan2(
             double(-cam_pos.x + center.x),

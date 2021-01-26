@@ -1,5 +1,10 @@
-#ifndef ROBO_DSRLCD_H
-#define ROBO_DSRLCD_H
+/**
+ * @file dsrlcd.h
+ * @brief ダイセンのLCD操作用の関数群
+ */
+
+#ifndef ROBO2019_DSRLCD_H
+#define ROBO2019_DSRLCD_H
 
 #ifdef ARDUINO
 
@@ -49,4 +54,4 @@ static_assert(0, "This liblary is for Arduino.");
 
 #endif /* ARDUINO */
 
-#endif /* ROBO_DSRLCD_H */
+#endif /* ROBO2019_DSRLCD_H */

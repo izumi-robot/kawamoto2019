@@ -92,8 +92,8 @@ BNO_wrapper& BNO_wrapper::instance()
 
 void BNO_wrapper::setup()
 {
-    this->_started = this->_bno.begin();
-    this->_bno.setExtCrystalUse(true);
+    _detected = _bno.begin();
+    _bno.setExtCrystalUse(true);
 }
 
 double BNO_wrapper::get_direction()
@@ -109,6 +109,7 @@ double BNO_wrapper::get_direction()
 }
 void BNO_wrapper::get_direction(double *dst)
 {
+    if (dst == NULL) return;
     double &res = *dst;
     if (!_detected) { res = 0.; }
     double dir_degree = _bno.getVector(Adafruit_BNO055::VECTOR_EULER).x();
@@ -209,6 +210,7 @@ double _BNO055::get_direction()
 }
 void _BNO055::get_direction(double *dst)
 {
+    if (dst == NULL) return;
     double &res = *dst;
     if (!_detected) { res = 0.; }
     double dir_degree = Adafruit_BNO055::getVector(Adafruit_BNO055::VECTOR_EULER).x();

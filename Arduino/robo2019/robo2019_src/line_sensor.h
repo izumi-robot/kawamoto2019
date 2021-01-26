@@ -39,13 +39,13 @@ public:
      */
     LineSensor(uint8_t i) : in_pin(i) {}
 
-    inline void setup();
-    inline int read();
+    inline void setup() override;
+    inline int read() override;
 };
 
-unsigned int LineSensor::white_border = 600;
+int LineSensor::white_border = 600;
 
-bool LineSensor::iswhite(unsigned int c)
+bool LineSensor::iswhite(int c)
 {
     return c >= white_border;
 }

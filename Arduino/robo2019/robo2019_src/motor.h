@@ -77,28 +77,28 @@ private: // 内部型
          * @brief パワー設定用の文字列を取得する
          * @param[in] pin モーターのピン番号
          * @param[out] dst mcbに流す用の文字列
-         *  @note dstには少なくとも6文字を格納する容量が必要。容量チェックは行っていないため、注意すること。
+         * @note dstには少なくとも6文字を格納する容量が必要。容量チェックは行っていないため、注意すること。
          */
         void power_str(char *, uint8_t);
 
         /** 
          * @fn String info() const
          * @brief パワー設定用の文字列のセットを取得
-         * @return "[power_str(1), power_str(2), power_str(3)]"
+         * @return "[power_str(1), power_str(2), power_str(3), power_str(4)]"
          * @note デバッグ用
          */
         String info() const;
         /**
          * @fn void info(String *dst)
          * @brief パワー設定用の文字列のセットを取得
-         * @param[out] dst "[power_str(1), power_str(2), power_str(3)]"
+         * @param[out] dst "[power_str(1), power_str(2), power_str(3), power_str(4)]"
          * @note デバッグ用
          */
         void info(String *);
         /**
          * @fn void info(char *dst)
          * @brief パワー設定用の文字列のセットを取得
-         * @param[out] dst "[power_str(1), power_str(2), power_str(3)]"
+         * @param[out] dst "[power_str(1), power_str(2), power_str(3), power_str(4)]"
          * @note デバッグ用。dstは少なくとも29文字の容量が必要となる。容量チェックは行っていないため、注意すること。
          */
         void info(char *);
@@ -144,18 +144,18 @@ private: // 内部型
          * @brief ベクトル(vx, vy)が機体の速度ベクトルになるようにモーターのパワーを設定する
          * @param[in] vx ベクトルのx成分
          * @param[in] vy ベクトルのy成分
-         * @detail x成分は機体の正面方向が正方向、y成分は機体の左方向が正方向。いつもの座標系を反時計回りに90度回転させた感じ。こうすることで機体の正面が0度になり、方向の管理が楽になる。
+         * @details x成分は機体の正面方向が正方向、y成分は機体の左方向が正方向。いつもの座標系を反時計回りに90度回転させた感じ。こうすることで機体の正面が0度になり、方向の管理が楽になる。
          */
-        bool velocity(const double &, const double &);
+        void velocity(const double &, const double &);
 
         /**
          * @fn bool velocity(const robo::V2_double &v)
          * @brief velocity(v.x, v.y)のショートカット
          * @param[in] v 設定する速度ベクトル
          * @sa bool velocity(const double vx, const double vy)
-         * @detail V2_doubleについてはvec2d.hを参照。
+         * @details V2_doubleについてはvec2d.hを参照。
          */
-        inline bool velocity(const robo::V2_double &);
+        inline void velocity(const robo::V2_double &);
 
         /**
          * @fn bool left_right(int8_t left, int8_t right)
@@ -163,16 +163,16 @@ private: // 内部型
          * @param[in] left  左輪のパワー
          * @param[in] right 右輪のパワー
          */
-        inline bool left_right(int8_t, int8_t);
+        inline void left_right(int8_t, int8_t);
 
         /**
          * @fn bool direction_and_speed(const double &direction, int8_t speed)
          * @brief 与えられた方向と速さに機体の速度を設定する
          * @param[in] direction 方向(ラジアン)
          * @param[in] speed 速さ
-         * @detail 方向は機体の正面を0とし、反時計回りが正回転。PIまたは-PIで真後ろを指す。
+         * @details 方向は機体の正面を0とし、反時計回りが正回転。PIまたは-PIで真後ろを指す。
          */
-        bool direction_and_speed(const double &, int8_t);
+        void direction_and_speed(const double &, int8_t);
 
         /**
          * @fn bool rotate(bool clockwise, int8_t speed)
@@ -180,13 +180,13 @@ private: // 内部型
          * @param[in] clockwise 時計回りに回転するかどうか
          * @param[in] speed 回転の速さ
          */
-        bool rotate(bool, int8_t);
+        void rotate(bool, int8_t);
 
         /**
          * @fn bool stop()
          * @brief 停止させる
          */
-        bool stop();
+        void stop();
         // TODO: 旋回運動
         // void circular(const double &rotate_vel, const int &vel=100);
     };
@@ -236,7 +236,7 @@ public:
      * @param[in] pin モーターのピン番号
      * @param[in] power モーターのパワー
      * @return パワー設定用の文字列
-     * @detail 例えば、`power_str(1, -10)`は"1R010"を返す。実際のパワーは変更されない点に注意。
+     * @details 例えば、`power_str(1, -10)`は"1R010"を返す。実際のパワーは変更されない点に注意。
      */
     static String power_str(uint8_t, int8_t);
     /**
@@ -288,7 +288,7 @@ void Motor::Get::power_str(String *dst, uint8_t pin)
     int8_t power = one_motor(pin);
     Motor::power_str(dst, pin, power);
 }
-void Motor::Get::power_str(String *dst, uint8_t pin)
+void Motor::Get::power_str(char *dst, uint8_t pin)
 {
     if (dst == NULL) return;
     int8_t power = one_motor(pin);
@@ -330,7 +330,7 @@ void Motor::Get::info(char *dst)
             ptr += 2;
         }
     }
-    sprintf(ptr + ']');
+    ptr[0] = ']';
 }
 
 void Motor::Set::one_motor(uint8_t pin, int8_t power)
@@ -343,7 +343,7 @@ void Motor::Set::one_motor(uint8_t pin, int8_t power)
     p = power;
 }
 
-bool Motor::Set::all_motors(int8_t a, int8_t b, int8_t c, int8_t d)
+void Motor::Set::all_motors(int8_t a, int8_t b, int8_t c, int8_t d)
 {
     int8_t ps[] = {a, b, c, d};
     char dst[32];
@@ -353,22 +353,27 @@ bool Motor::Set::all_motors(int8_t a, int8_t b, int8_t c, int8_t d)
         int8_t &power = _motor->_powers[i];
         const int8_t &p = ps[i];
         if (power == p) continue;
-    }
-    String powers_str;
-    for (int i = 0; i < 4; ++i)
-    {
-        int8_t &power = _motor->_powers[i];
-        const int8_t &p = ps[i];
-        if (power == p) continue;
         power = p;
-        String p_str = "aaaaaa";
-        Motor::power_str(&p_str, i + 1, p);
-        char *ptr = powers_str.c_str() + i * 6
-        sprintf(powers_str.c_str(), "%s\n", p_str.c_str());
-        powers_str.concat(p_str);
-        powers_str.concat('\n');
+        Motor::power_str(ptr, i + 1, power);
+        ptr += 5;
+        ptr[0] = '\n';
     }
-    Serial2.print(powers_str);
+    ptr[1] = '\0';
+    // String powers_str;
+    // for (int i = 0; i < 4; ++i)
+    // {
+    //     int8_t &power = _motor->_powers[i];
+    //     const int8_t &p = ps[i];
+    //     if (power == p) continue;
+    //     power = p;
+    //     String p_str = "aaaaaa";
+    //     Motor::power_str(&p_str, i + 1, p);
+    //     char *ptr = powers_str.c_str() + i * 6
+    //     sprintf(powers_str.c_str(), "%s\n", p_str.c_str());
+    //     powers_str.concat(p_str);
+    //     powers_str.concat('\n');
+    // }
+    Serial2.print(dst);
 }
 
 void Motor::Set::velocity(const double &vx, const double &vy)
@@ -412,19 +417,19 @@ Motor& Motor::instance()
 
 String Motor::power_str(uint8_t pin, int8_t power)
 {
-    char buff[8] = "";
-    char dir_c = power < 0 ? 'F' : 'R';
-    sprintf(buff, "%01d%c%03d", pin, dir_c, abs(power));
     // R: 正転?
+    char buffer[8] = "";
+    Motor::power_str(buffer, pin, power);
     // String dir_s = power < 0 ? "F" : "R";
     // String power_s = String(abs(power));
     // power_s = robo::string::rjust(power_s, 3, '0');
-    return String(buff);
+    return String(buffer);
 }
 void Motor::power_str(String *dst, uint8_t pin, int8_t power)
 {
-    char dir_c = power < 0 ? 'F' : 'R';
-    sprintf(dst->c_str(), "%01d%c%03d", pin, dir_c, abs(power));
+    char buffer[8] = "";
+    Motor::power_str(buffer, pin, power);
+    *dst = String(buffer);
 }
 void Motor::power_str(char *dst, uint8_t pin, int8_t power)
 {
