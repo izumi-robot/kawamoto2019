@@ -1,37 +1,56 @@
-#include <robo2019.h>
-#include <LiquidCrystal_I2C.h>
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <utility/imumaths.h>
 
-using robo::motor;
-using robo::bno_wrapper;
+Adafruit_BNO055 _bno055(55);
 
-LiquidCrystal_I2C lcd(0x27, 16, 2);
-
-void setup() {
-    Serial.begin(9600);
-    motor.setup();
-    bno_wrapper.setup();
-    lcd.init();
-    lcd.backlight();
-}
-
-double abs_d(double d)
+void setup()
 {
-    return d > 0 ? d : -d;
+    Serial.begin(9600);
+    if (_bno055.begin()) {
+        Serial.println("detected");
+        _bno055.setExtCrystalUse(true);
+    }
 }
 
-void loop() {
-    double d = bno_wrapper.get_direction();
-    double abd = abs_d(d);
-    if (d < -PI / 6 || PI / 6 < d)
-    {
-        motor.set.rotate(d > 0, abd * 50 / PI + 10);
-    } else {
-        motor.set.stop();
-    }
-    if (millis() % 100 == 0) {
-        lcd.clear();
-        lcd.setCursor(0, 0);
-        lcd.print(d * 180 / PI);
-    }
-    delay(10);
+#include <robo2019.h>
+
+//using robo::_bno055;
+using imu_v3 = imu::Vector<3>;
+
+void printVector(const imu_v3 &vec)
+{
+    char buffer[64];
+    sprintf(buffer, "(%+3.2f, %+3.2f, %3.2f)\n", vec.x(), vec.y(), vec.z());
+    Serial.print(buffer);
+}
+
+void printQuat(const imu::Quaternion &quat)
+{
+    char buffer[64];
+    sprintf(buffer, "(%+3.2f, %+3.2f, %+3.2f, %+3.2f)\n", quat.x(), quat.y(), quat.x(), quat.w());
+    Serial.println(buffer);
+}
+
+// void setup()
+// {
+//     Serial.begin(9600);
+//     _bno055.setup();
+// }
+
+void loop()
+{
+    Serial.println("================");
+
+    Serial.print("Euler: ");
+    printVector(_bno055.getVector(Adafruit_BNO055::VECTOR_EULER));
+
+    Serial.print("Gyroscope: ");
+    printVector(_bno055.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE));
+
+    Serial.print("Quaternion: ");
+    printQuat(_bno055.getQuat());
+
+    delay(1000);
 }
