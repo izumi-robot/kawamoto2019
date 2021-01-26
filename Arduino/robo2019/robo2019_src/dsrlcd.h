@@ -11,6 +11,10 @@
 #include <Wire.h>
 #include "util.h"
 
+/**
+ * @namespace robo
+ * @brief 自作ライブラリの機能をまとめたもの
+ */
 namespace robo {
 
 namespace dsr_lcd {

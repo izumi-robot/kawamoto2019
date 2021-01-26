@@ -13,9 +13,17 @@
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 
-
+/**
+ * @namespace robo
+ * @brief 自作ライブラリの機能をまとめたもの
+ */
 namespace robo {
 
+/**
+ * @class BNO_wrapper
+ * @brief BNO055操作用のクラス
+ * @note シングルトン
+ */
 class BNO_wrapper
 {
 private:
@@ -125,8 +133,14 @@ Adafruit_BNO055& BNO_wrapper::bno()
     return this->_bno;
 }
 
+//! シングルトンオブジェクトへの参照
 BNO_wrapper &bno_wrapper = BNO_wrapper::instance();
 
+/**
+ * @class _BNO055
+ * @brief Adafruit_BNO055の子クラス
+ * @note シングルトン
+ */
 class _BNO055 : public Adafruit_BNO055
 {
 private:
@@ -221,6 +235,7 @@ void _BNO055::get_direction(double *dst)
     ) * -PI / 180;
 }
 
+//! シングルトンオブジェクトへの参照
 _BNO055 &_bno055 = _BNO055::instance();
 
 } // namespace robo

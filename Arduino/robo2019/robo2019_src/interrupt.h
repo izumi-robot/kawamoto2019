@@ -10,6 +10,10 @@
 
 // https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/
 
+/**
+ * @namespace robo
+ * @brief 自作ライブラリの機能をまとめたもの
+ */
 namespace robo {
 
 #define I_TMP template<int in_pin, int mode=RISING>

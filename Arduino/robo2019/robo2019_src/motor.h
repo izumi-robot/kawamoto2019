@@ -12,6 +12,10 @@
 #include "util.h"
 #include "vec2d.h"
 
+/**
+ * @namespace robo
+ * @brief 自作ライブラリの機能をまとめたもの
+ */
 namespace robo
 {
 
@@ -298,7 +302,8 @@ void Motor::Get::power_str(char *dst, uint8_t pin)
 String Motor::Get::info() const
 {
     String info_str = "[";
-    for (uint8_t i = 1; i <= 4; i++) {
+    for (uint8_t i = 1; i <= 4; i++)
+    {
         info_str += this->power_str(i);
         if (i != 4) { info_str += ", "; }
     }
@@ -309,7 +314,8 @@ void Motor::Get::info(String *dst)
     if (dst == NULL) return;
     String info_str = *dst;
     info_str = "[";
-    for (uint8_t i = 1; i <= 4; i++) {
+    for (uint8_t i = 1; i <= 4; i++)
+    {
         info_str += this->power_str(i);
         if (i != 4) { info_str += ", "; }
     }
@@ -325,12 +331,15 @@ void Motor::Get::info(char *dst)
     {
         power_str(ptr, i);
         ptr += 5;
-        if (i < 4) {
-            sprintf(ptr, ", ");
+        if (i < 4)
+        {
+            ptr[0] = ',';
+            ptr[1] = ' ';
             ptr += 2;
         }
     }
     ptr[0] = ']';
+    ptr[1] = '\0';
 }
 
 void Motor::Set::one_motor(uint8_t pin, int8_t power)
@@ -443,6 +452,7 @@ void Motor::setup()
     set.stop();
 }
 
+//! Motorのシングルトンオブジェクトへの参照
 Motor &motor = Motor::instance();
 
 } // namespace robo

@@ -10,10 +10,16 @@
 
 #include "util.h"
 
+/**
+ * @namespace robo
+ * @brief 自作ライブラリの機能をまとめたもの
+ */
 namespace robo {
 
 /**
+ * @class LineSensor
  * @brief ラインセンサー操作用のクラス
+ * @note robo::Sensorはutil.h内
  */
 class LineSensor : public robo::Sensor
 {

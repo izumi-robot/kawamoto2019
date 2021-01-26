@@ -1,5 +1,10 @@
-#ifndef ROBO_PIXY_H
-#define ROBO_PIXY_H
+/**
+ * @file pixy.h
+ * @brief Pixy2操作用の関数群
+ */
+
+#ifndef ROBO2019_PIXY_H
+#define ROBO2019_PIXY_H
 
 #ifdef ARDUINO
 
@@ -35,6 +40,10 @@ using PIXY = Pixy2;
 
 #include "vec2d.h"
 
+/**
+ * @namespace robo
+ * @brief 自作ライブラリの機能をまとめたもの
+ */
 namespace robo {
 
 namespace pixy {
@@ -126,4 +135,4 @@ static_assert(0, "This liblary is for Arduino.");
 
 #endif /* ARDUINO */
 
-#endif /* ROBO_PIXY_H */
+#endif /* ROBO2019_PIXY_H */

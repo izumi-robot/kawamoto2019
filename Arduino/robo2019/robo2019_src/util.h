@@ -8,6 +8,10 @@
 
 #ifdef ARDUINO
 
+/**
+ * @namespace robo
+ * @brief 自作ライブラリの機能をまとめたもの
+ */
 namespace robo
 {
 
