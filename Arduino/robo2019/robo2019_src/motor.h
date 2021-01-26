@@ -4,8 +4,8 @@
  */
 
 
-#ifndef ROBO_MOTOR_H
-#define ROBO_MOTOR_H
+#ifndef ROBO2019_MOTOR_H
+#define ROBO2019_MOTOR_H
 
 #ifdef ARDUINO
 
@@ -66,12 +66,21 @@ private: // 内部型
          */
         String power_str(uint8_t) const;
         /**
-         * @fn void power_str(String *, uint8_t pin)
+         * @fn void power_str(String *dst, uint8_t pin)
          * @brief パワー設定用の文字列を取得する
          * @param[in] pin モーターのピン番号
          * @param[out] dst mcbに流す用の文字列
          */
         void power_str(String *, uint8_t);
+        /**
+         * @fn void power_str(char *dst, uint8_t pin)
+         * @brief パワー設定用の文字列を取得する
+         * @param[in] pin モーターのピン番号
+         * @param[out] dst mcbに流す用の文字列
+         *  @note dstには少なくとも6文字を格納する容量が必要。容量チェックは行っていないため、注意すること。
+         */
+        void power_str(char *, uint8_t);
+
         /** 
          * @fn String info() const
          * @brief パワー設定用の文字列のセットを取得
@@ -83,8 +92,16 @@ private: // 内部型
          * @fn void info(String *dst)
          * @brief パワー設定用の文字列のセットを取得
          * @param[out] dst "[power_str(1), power_str(2), power_str(3)]"
+         * @note デバッグ用
          */
         void info(String *);
+        /**
+         * @fn void info(char *dst)
+         * @brief パワー設定用の文字列のセットを取得
+         * @param[out] dst "[power_str(1), power_str(2), power_str(3)]"
+         * @note デバッグ用。dstは少なくとも29文字の容量が必要となる。容量チェックは行っていないため、注意すること。
+         */
+        void info(char *);
     };
 
     /**
@@ -230,6 +247,15 @@ public:
      * @param[out] dst パワー設定用の文字列
      */
     static void power_str(String *, uint8_t, int8_t);
+    /**
+     * @fn void power_str(char *dst, uint8_t pin, int8_t power)
+     * @brief パワー設定用の文字列を取得する
+     * @param[in] pin モーターのピン番号
+     * @param[in] power モーターのパワー
+     * @param[out] dst パワー設定用の文字列
+     * @note dstには少なくとも6文字を格納する容量が必要。容量チェックは行っていないため、注意すること。
+     */
+    static void power_str(char *, uint8_t, int8_t);
 
     /**
      * @fn void setup();
@@ -247,7 +273,8 @@ int8_t Motor::Get::one_motor(uint8_t pin) const
 }
 void Motor::Get::one_motor(int8_t *dst, uint8_t pin)
 {
-    if (dst != NULL) *dst = _motor->_powers[(pin - 1)];
+    if (dst == NULL) return;
+    *dst = _motor->_powers[(pin - 1)];
 }
 
 String Motor::Get::power_str(uint8_t pin) const
@@ -261,12 +288,18 @@ void Motor::Get::power_str(String *dst, uint8_t pin)
     int8_t power = one_motor(pin);
     Motor::power_str(dst, pin, power);
 }
+void Motor::Get::power_str(String *dst, uint8_t pin)
+{
+    if (dst == NULL) return;
+    int8_t power = one_motor(pin);
+    Motor::power_str(dst, pin, power);
+}
 
 String Motor::Get::info() const
 {
     String info_str = "[";
     for (uint8_t i = 1; i <= 4; i++) {
-        info_str += String(i) + ": " + this->power_str(i);
+        info_str += this->power_str(i);
         if (i != 4) { info_str += ", "; }
     }
     return info_str + "]";
@@ -277,10 +310,27 @@ void Motor::Get::info(String *dst)
     String info_str = *dst;
     info_str = "[";
     for (uint8_t i = 1; i <= 4; i++) {
-        info_str += String(i) + ": " + this->power_str(i);
+        info_str += this->power_str(i);
         if (i != 4) { info_str += ", "; }
     }
     info_str += "]";
+}
+void Motor::Get::info(char *dst)
+{
+    if (dst == NULL) return;
+    char *ptr = dst;
+    ptr[0] = '[';
+    ptr += 1;
+    for (int8_t i = 1; i <= 4; i++)
+    {
+        power_str(ptr, i);
+        ptr += 5;
+        if (i < 4) {
+            sprintf(ptr, ", ");
+            ptr += 2;
+        }
+    }
+    sprintf(ptr + ']');
 }
 
 void Motor::Set::one_motor(uint8_t pin, int8_t power)
@@ -295,16 +345,26 @@ void Motor::Set::one_motor(uint8_t pin, int8_t power)
 
 bool Motor::Set::all_motors(int8_t a, int8_t b, int8_t c, int8_t d)
 {
-    String powers_str;
     int8_t ps[] = {a, b, c, d};
+    char dst[32];
+    char *ptr = dst;
+    for (uint8_t i = 0; i < 4; ++i)
+    {
+        int8_t &power = _motor->_powers[i];
+        const int8_t &p = ps[i];
+        if (power == p) continue;
+    }
+    String powers_str;
     for (int i = 0; i < 4; ++i)
     {
         int8_t &power = _motor->_powers[i];
         const int8_t &p = ps[i];
         if (power == p) continue;
         power = p;
-        String p_str;
+        String p_str = "aaaaaa";
         Motor::power_str(&p_str, i + 1, p);
+        char *ptr = powers_str.c_str() + i * 6
+        sprintf(powers_str.c_str(), "%s\n", p_str.c_str());
         powers_str.concat(p_str);
         powers_str.concat('\n');
     }
@@ -366,6 +426,11 @@ void Motor::power_str(String *dst, uint8_t pin, int8_t power)
     char dir_c = power < 0 ? 'F' : 'R';
     sprintf(dst->c_str(), "%01d%c%03d", pin, dir_c, abs(power));
 }
+void Motor::power_str(char *dst, uint8_t pin, int8_t power)
+{
+    if (dst == NULL) return;
+    sprintf(dst, "%1d%c%03d", pin, power < 0 ? 'F' : 'R', abs(power));
+}
 
 void Motor::setup()
 {
@@ -383,4 +448,4 @@ static_assert(0, "This liblary is for Arduino.");
 
 #endif /* ARDUINO */
 
-#endif /* ROBO_MOTOR_H */
+#endif /* ROBO2019_MOTOR_H */

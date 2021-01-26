@@ -1,3 +1,8 @@
+/**
+ * @file bno055.h
+ * @brief BNO055センサー操作用のクラス定義
+ */
+
 #ifndef ROBO2019_BNO055_H
 #define ROBO2019_BNO055_H
 
@@ -178,6 +183,8 @@ public:
     void get_direction(double *);
 };
 
+_BNO055 _BNO055::_singleton;
+
 _BNO055& _BNO055::instance()
 {
     return _singleton;
@@ -211,6 +218,8 @@ void _BNO055::get_direction(double *dst)
         : dir_degree - 360
     ) * -PI / 180;
 }
+
+_BNO055 &_bno055 = _BNO055::instance();
 
 } // namespace robo
 

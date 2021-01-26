@@ -1,5 +1,10 @@
-#ifndef VEC2D_H
-#define VEC2D_H
+/**
+ * @file vec2d.h
+ * @brief 自作のベクトル型
+ */
+
+#ifndef ROBO2019_VEC2D_H
+#define ROBO2019_VEC2D_H
 
 #ifdef ARDUINO
 
@@ -269,4 +274,4 @@ static_assert(0, "This liblary is for Arduino.");
 
 #endif /* ARDUINO */
 
-#endif /* VEC2D_H */
+#endif /* ROBO2019_VEC2D_H */

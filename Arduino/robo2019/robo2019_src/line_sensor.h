@@ -1,58 +1,63 @@
-#ifndef LINE_SENSOR_H
-#define LINE_SENSOR_H
+/**
+ * @file line_sensor.h
+ * @brief ラインセンサー操作用のクラス定義
+ */
+
+#ifndef ROBO2019_LINE_SENSOR_H
+#define ROBO2019_LINE_SENSOR_H
 
 #ifdef ARDUINO
 
+#include "util.h"
+
 namespace robo {
 
-class LineSensor
+/**
+ * @brief ラインセンサー操作用のクラス
+ */
+class LineSensor : public robo::Sensor
 {
-private:
-    static int _white_border;
-    int _in_pin;
-private:
-    LineSensor() {}
 public:
-    static int  white_border();
-    static void white_border(int);
+    //! センサーの値がこれ以上であれば白
+    static int white_border;
+
+    //! センサーのピン
+    const uint8_t in_pin;
+
+    /**
+     * @fb bool iswhite(int c)
+     * @brief 値が白色か判別する
+     * @param[in] c 検査する値
+     * @return 白色かどうか
+     */
     static bool iswhite(int);
 
-    LineSensor(int i) : _in_pin(i) {}
-    void setup();
-    int read();
-    int in_pin();
+    LineSensor() = delete;
+    /**
+     * @brief コンストラクタ
+     * @param[in] i ラインセンサーのピン番号
+     */
+    LineSensor(uint8_t i) : in_pin(i) {}
+
+    inline void setup();
+    inline int read();
 };
 
-int LineSensor::_white_border = 600;
+unsigned int LineSensor::white_border = 600;
 
-int LineSensor::white_border()
+bool LineSensor::iswhite(unsigned int c)
 {
-    return _white_border;
-}
-
-void LineSensor::white_border(int new_border)
-{
-    _white_border = new_border > 0 ? _white_border : new_border;
-}
-
-bool LineSensor::iswhite(int c)
-{
-    return c >= _white_border;
+    return c >= white_border;
 }
 
 void LineSensor::setup()
 {
-    pinMode(_in_pin, INPUT);
+    pinMode(in_pin, INPUT);
 }
 
 int LineSensor::read()
 {
-    return analogRead(_in_pin);
-}
-
-int LineSensor::in_pin()
-{
-    return _in_pin;
+    return analogRead(in_pin);
 }
 
 } // namespace robo
@@ -63,4 +68,4 @@ static_assert(0, "This liblary is for Arduino.");
 
 #endif /* ARDUINO */
 
-#endif /* LINE_SENSOR_H */
+#endif /* ROBO2019_LINE_SENSOR_H */
