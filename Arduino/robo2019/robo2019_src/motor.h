@@ -3,7 +3,6 @@
  * @brief Daisen MCB 操作用のクラス定義
  */
 
-
 #ifndef ROBO2019_MOTOR_H
 #define ROBO2019_MOTOR_H
 
