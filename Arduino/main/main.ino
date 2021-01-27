@@ -94,12 +94,12 @@ public:
 
 namespace sensors{
     using robo::LineSensor;
-    using robo::Echo;
+    using robo::EchoSensor;
 
-    using Echo_t = Sensor<Echo>;
+    using Echo_t = Sensor<EchoSensor>;
     using Line_t = Sensor<LineSensor>;
 
-    Echo_t echo(Echo(2, 3), Echo(4, 5), Echo(6, 7));
+    Echo_t echo(EchoSensor(2, 3), EchoSensor(4, 5), EchoSensor(6, 7));
     Line_t line(LineSensor(1), LineSensor(3), LineSensor(5));
 }
 
@@ -119,7 +119,7 @@ double spin_enter_dir(const double &ball_dir)
 
 void setup()
 {
-    Serial.begin(9600);
+    Serial.begin(19200);
 
     if (use_flag::line) {
         sensors::line.setup();
@@ -147,6 +147,7 @@ void loop()
     static robo::pixy::Camera_pos cam_pos;
     static int untrack_frame = 100;
     static union { double dir; double power; } m_info;
+    static long time;
 
     MotorFlag m_flag = MotorFlag::stop;
 
@@ -188,10 +189,18 @@ void loop()
             ball_dir = robo::pixy::pos2angle(cam_pos);
             //m_info.dir = ball_dir;
             m_info.dir = spin_enter_dir(ball_dir);
+            if (use_flag::lcd) {
+                lcd.setCursor(0, 1);
+                lcd.print("detect");
+            }
         } else {
             untrack_frame++;
             if (untrack_frame < 10) {
                 m_flag = MotorFlag::move;
+            }
+            if (use_flag::lcd) {
+                lcd.setCursor(0, 1);
+                lcd.print("noball");
             }
         }
     }
@@ -207,7 +216,7 @@ void loop()
         case MotorFlag::rotate:
             motor.set.rotate(
                 m_info.power > 0,
-                min(abs(m_info.power), 35)
+                min(abs(m_info.power), 40)
             );
             break;
 
@@ -217,7 +226,4 @@ void loop()
             break;
         }
     }
-
-    int ms = millis();
-    Serial.println(ms);
 }

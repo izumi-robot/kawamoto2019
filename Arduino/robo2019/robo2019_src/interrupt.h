@@ -8,6 +8,10 @@
 
 #ifdef ARDUINO
 
+#define I_TMP template<int in_pin, int mode=RISING>
+#define I_TMP_ template<int in_pin, int mode>
+#define INTERRUPT Interrupt<in_pin, mode>
+
 // https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/
 
 /**
@@ -15,10 +19,6 @@
  * @brief 自作ライブラリの機能をまとめたもの
  */
 namespace robo {
-
-#define I_TMP template<int in_pin, int mode=RISING>
-#define INTERRUPT Interrupt<in_pin, mode>
-
 
 /**
  * @brief 割り込み用のテンプレートクラス
@@ -87,28 +87,28 @@ public:
     bool changed();
 };
 
-I_TMP void INTERRUPT::callback()
+I_TMP_ void INTERRUPT::callback()
 {
     INTERRUPT::_state = !INTERRUPT::_state;
 }
 
-I_TMP INTERRUPT& INTERRUPT::instance()
+I_TMP_ INTERRUPT& INTERRUPT::instance()
 {
     return INTERRUPT::_singleton;
 }
 
-I_TMP void INTERRUPT::setup()
+I_TMP_ void INTERRUPT::setup()
 {
     pinMode(in_pin, INPUT);
     attachInterrupt(digitalPinToInterrupt(in_pin), callback, mode);
 }
 
-I_TMP bool INTERRUPT::state()
+I_TMP_ bool INTERRUPT::state()
 {
     return _state;
 }
 
-I_TMP bool INTERRUPT::changed()
+I_TMP_ bool INTERRUPT::changed()
 {
     static bool pre_state;
     bool ans = pre_state != _state;
@@ -117,6 +117,10 @@ I_TMP bool INTERRUPT::changed()
 }
 
 } // namespace robo
+
+#undef I_TMP
+#undef I_TMP_
+#undef INTERRUPT
 
 #else /* ARDUINO */
 
