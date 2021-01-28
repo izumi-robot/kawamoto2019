@@ -120,14 +120,14 @@ I_TMP_ bool INTERRUPT::changed()
 
 #undef INTERRUPT
 
-#define _INTERRUPT Interrupt<in_pin, mode>
+#define _INTERRUPT _Interrupt<in_pin, mode>
 
 /**
  * @brief 割り込み用のテンプレートクラス
  * @tparam in_pin 割り込みで監視するピン番号
  */
 template<int in_pin, int mode=RISING>
-class _Interrupt : public robo::SingletonBase<_Interrupt>
+class _Interrupt : public robo::SingletonBase<_INTERRUPT>
 {
 private:
     /**
@@ -165,9 +165,11 @@ public:
     bool changed();
 };
 
-_I_TMP_ void _INTERRUPT::callback()
+I_TMP_ volatile bool _INTERRUPT::_state;
+
+I_TMP_ void _INTERRUPT::callback()
 {
-    _INTERRUPT::_state = !INTERRUPT::_state;
+    _INTERRUPT::_state = !_INTERRUPT::_state;
 }
 
 I_TMP_ void _INTERRUPT::setup()

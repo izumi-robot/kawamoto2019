@@ -62,12 +62,11 @@ public:
     static Derived& instance();
 };
 
-template<class Derived> Derived& SingletonBase::instance()
+template<class Derived> Derived& SingletonBase<Derived>::instance()
 {
     static Derived ins;
     return ins;
 }
-
 
 /**
  * @namespace string
