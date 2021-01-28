@@ -8,9 +8,7 @@
 
 #ifdef ARDUINO
 
-#define I_TMP template<int in_pin, int mode=RISING>
-#define I_TMP_ template<int in_pin, int mode>
-#define INTERRUPT Interrupt<in_pin, mode>
+#include "util.h"
 
 // https://www.arduino.cc/reference/en/language/functions/external-interrupts/attachinterrupt/
 
@@ -19,6 +17,10 @@
  * @brief 自作ライブラリの機能をまとめたもの
  */
 namespace robo {
+
+#define I_TMP template<int in_pin, int mode=RISING>
+#define I_TMP_ template<int in_pin, int mode>
+#define INTERRUPT Interrupt<in_pin, mode>
 
 /**
  * @brief 割り込み用のテンプレートクラス
@@ -116,11 +118,83 @@ I_TMP_ bool INTERRUPT::changed()
     return ans;
 }
 
-} // namespace robo
+#undef INTERRUPT
+
+#define _INTERRUPT Interrupt<in_pin, mode>
+
+/**
+ * @brief 割り込み用のテンプレートクラス
+ * @tparam in_pin 割り込みで監視するピン番号
+ */
+template<int in_pin, int mode=RISING>
+class _Interrupt : public robo::SingletonBase<_Interrupt>
+{
+private:
+    /**
+     * @brief 状態記憶用の変数
+     * @details 割り込みが発生するごとにtrue/falseが切り替わる
+     */
+    static volatile bool _state;
+
+    /**
+     * @fn void callback()
+     * @brief 割り込み発生時に呼び出される
+     * @details _stateを切り替える
+     */
+    static void callback();
+
+public:
+    /**
+     * @fn void setup();
+     * @brief 割り込みのセットアップを行う
+     * @note 全体のsetup内で呼ばないと他の機能が使えない
+     */
+    void setup();
+
+    /**
+     * @fn bool state()
+     * @brief 現在保存されている状態を返す
+     * @return _stateの値
+     */
+    inline bool state();
+    /**
+     * @fn bool changed()
+     * @brief 最後の呼び出しから_stateが変化したかどうか
+     * @return 変化していたらtrue
+     */
+    bool changed();
+};
+
+_I_TMP_ void _INTERRUPT::callback()
+{
+    _INTERRUPT::_state = !INTERRUPT::_state;
+}
+
+I_TMP_ void _INTERRUPT::setup()
+{
+    pinMode(in_pin, INPUT);
+    attachInterrupt(digitalPinToInterrupt(in_pin), callback, mode);
+}
+
+I_TMP_ bool _INTERRUPT::state()
+{
+    return _state;
+}
+
+I_TMP_ bool _INTERRUPT::changed()
+{
+    static bool pre_state;
+    bool ans = pre_state != _state;
+    pre_state = _state;
+    return ans;
+}
+
+#undef _INTERRUPT
 
 #undef I_TMP
 #undef I_TMP_
-#undef INTERRUPT
+
+} // namespace robo
 
 #else /* ARDUINO */
 

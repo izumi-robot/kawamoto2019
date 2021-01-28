@@ -108,12 +108,19 @@ private: // 内部型
     };
 
     /**
+     * @class Set
      * @brief モーターのパワーを設定するための関数群
      */
     class Set
     {
     private:
+        //! 情報取得元のインスタンス
         Motor *_motor;
+
+        /**
+         * @
+         */
+        bool _update(uint8_t, int8_t);
     public:
         /**
          * @brief デフォルトのコンストラクタ
@@ -140,7 +147,7 @@ private: // 内部型
          * @param[in] c 番号3のパワー
          * @param[in] d 4番のパワー
          */
-        inline void all_motors(int8_t, int8_t, int8_t, int8_t);
+        void all_motors(int8_t, int8_t, int8_t, int8_t);
 
         /**
          * @fn bool velocity(const double &vx, const double &vy)
@@ -175,7 +182,7 @@ private: // 内部型
          * @param[in] speed 速さ
          * @details 方向は機体の正面を0とし、反時計回りが正回転。PIまたは-PIで真後ろを指す。
          */
-        void direction_and_speed(const double &, int8_t);
+        inline void direction_and_speed(const double &, int8_t);
 
         /**
          * @fn bool rotate(bool clockwise, int8_t speed)
@@ -189,7 +196,7 @@ private: // 内部型
          * @fn bool stop()
          * @brief 停止させる
          */
-        void stop();
+        inline void stop();
         // TODO: 旋回運動
         // void circular(const double &rotate_vel, const int &vel=100);
     };
@@ -328,12 +335,11 @@ void Motor::Get::info(char *dst)
     ptr += 1;
     for (int8_t i = 1; i <= 4; i++)
     {
-        power_str(ptr, i);
+        this->power_str(ptr, i);
         ptr += 5;
         if (i < 4)
         {
-            ptr[0] = ',';
-            ptr[1] = ' ';
+            strcpy(ptr, ", ");
             ptr += 2;
         }
     }
@@ -344,7 +350,7 @@ void Motor::Get::info(char *dst)
 void Motor::Set::one_motor(uint8_t pin, int8_t power)
 {
     int8_t &p = _motor->_powers[pin - 1];
-    if (p == power) return;
+    if (abs(p - power) < 2) return;
     String p_str;
     Motor::power_str(&p_str, pin, power);
     Serial2.println(p_str);
@@ -353,13 +359,18 @@ void Motor::Set::one_motor(uint8_t pin, int8_t power)
 
 void Motor::Set::all_motors(int8_t a, int8_t b, int8_t c, int8_t d)
 {
+    one_motor(1, a);
+    one_motor(2, b);
+    one_motor(3, c);
+    one_motor(4, d);
+    return;
     int8_t ps[] = {a, b, c, d};
-    char dst[32];
+    char dst[64] = "";
     char *ptr = dst;
     for (uint8_t i = 0; i < 4; ++i)
     {
         int8_t &power = _motor->_powers[i];
-        const int8_t &p = ps[i];
+        const int8_t p = ps[i];
         if (power == p) continue;
         power = p;
         Motor::power_str(ptr, i + 1, power);
@@ -367,20 +378,6 @@ void Motor::Set::all_motors(int8_t a, int8_t b, int8_t c, int8_t d)
         ptr[0] = '\n';
     }
     ptr[1] = '\0';
-    // String powers_str;
-    // for (int i = 0; i < 4; ++i)
-    // {
-    //     int8_t &power = _motor->_powers[i];
-    //     const int8_t &p = ps[i];
-    //     if (power == p) continue;
-    //     power = p;
-    //     String p_str = "aaaaaa";
-    //     Motor::power_str(&p_str, i + 1, p);
-    //     char *ptr = powers_str.c_str() + i * 6
-    //     sprintf(powers_str.c_str(), "%s\n", p_str.c_str());
-    //     powers_str.concat(p_str);
-    //     powers_str.concat('\n');
-    // }
     Serial2.print(dst);
 }
 

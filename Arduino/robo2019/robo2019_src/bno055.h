@@ -226,7 +226,10 @@ void _BNO055::get_direction(double *dst)
 {
     if (dst == NULL) return;
     double &res = *dst;
-    if (!_detected) { res = 0.; }
+    if (!_detected) {
+        res = 0.;
+        return;
+    }
     double dir_degree = Adafruit_BNO055::getVector(Adafruit_BNO055::VECTOR_EULER).x();
     res = (
         (0 <= dir_degree && dir_degree <= 180)

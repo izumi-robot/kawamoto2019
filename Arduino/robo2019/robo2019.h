@@ -1,3 +1,8 @@
+/**
+ * @file robo2019.h
+ * @brief 自作ライブラリのエントリーポイント
+ */
+
 #ifndef ROBO2019_H
 #define ROBO2019_H
 
