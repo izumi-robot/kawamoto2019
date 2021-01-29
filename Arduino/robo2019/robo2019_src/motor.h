@@ -25,7 +25,6 @@ namespace robo
 class Motor
 {
 private: // 内部型
-
     /**
      * @brief モーターの情報を取得する関数群
      */
@@ -279,12 +278,12 @@ Motor Motor::_singleton;
 
 int8_t Motor::Get::one_motor(uint8_t pin) const
 {
-    return _motor->_powers[(pin - 1)];
+    return _motor->_powers[pin - 1];
 }
 void Motor::Get::one_motor(int8_t *dst, uint8_t pin)
 {
     if (dst == NULL) return;
-    *dst = _motor->_powers[(pin - 1)];
+    *dst = _motor->_powers[pin - 1];
 }
 
 String Motor::Get::power_str(uint8_t pin) const
@@ -364,16 +363,16 @@ void Motor::Set::all_motors(int8_t a, int8_t b, int8_t c, int8_t d)
     one_motor(3, c);
     one_motor(4, d);
     return;
-    int8_t ps[] = {a, b, c, d};
+    int8_t new_powers[] = {a, b, c, d};
     char dst[64] = "";
     char *ptr = dst;
     for (uint8_t i = 0; i < 4; ++i)
     {
-        int8_t &power = _motor->_powers[i];
-        const int8_t p = ps[i];
-        if (power == p) continue;
-        power = p;
-        Motor::power_str(ptr, i + 1, power);
+        int8_t &c_power = _motor->_powers[i]; // current
+        const int8_t n_power = new_powers[i]; // new
+        if (c_power == n_power) continue;
+        c_power = n_power;
+        Motor::power_str(ptr, i + 1, c_power);
         ptr += 5;
         ptr[0] = '\n';
     }
@@ -439,7 +438,10 @@ void Motor::power_str(String *dst, uint8_t pin, int8_t power)
 void Motor::power_str(char *dst, uint8_t pin, int8_t power)
 {
     if (dst == NULL) return;
-    sprintf(dst, "%1d%c%03d", pin, power < 0 ? 'F' : 'R', abs(power));
+    sprintf(
+        dst, "%1d%c%03d",
+        pin, power < 0 ? 'F' : 'R', abs(power)
+    );
 }
 
 void Motor::setup()

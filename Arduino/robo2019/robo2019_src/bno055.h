@@ -145,18 +145,26 @@ BNO_wrapper &bno_wrapper = BNO_wrapper::instance();
  */
 class _BNO055 : public virtual Adafruit_BNO055, public virtual robo::SingletonBase<_BNO055>
 {
-    friend robo::SingletonBase<_BNO055>;
+    using Base = robo::SingletonBase<_BNO055>;
+    friend class Base;
 private:
     //! bnoを検知したかどうか
     bool _detected;
-    //! 最新の方向
-    double _last_dir;
+    //! 最新の、ジャイロセンサーで算出した方向
+    double _last_gyro_dir;
+    /**
+     * @brief 地磁気のズレ
+     * @details `0`が指す向きの、最初の向きとのズレ
+     */
+    double _geomag_diff;
 
 protected:
     /**
      * @brief コンストラクタ
      */
-    _BNO055() : Adafruit_BNO055(55) {}
+    _BNO055()
+        : Adafruit_BNO055(55), Base(),
+        _detected(false), _last_dir(0), _geomag_diff(0) {}
 
 public:
     /**
@@ -166,18 +174,31 @@ public:
      */
     void setup();
     /**
-     * @fn double get_direction()
+     * @fn double get_geomag_direction()
      * @brief 現在向いている方向をラジアンで取得
      * @return dst 現在向いている方向
+     * @note ラジアンの値は、0を最初の向きとして、そこから正回転が反時計回り
      */
     double get_geomag_direction();
     /**
-     * @fn void get_direction(double *dst)
+     * @fn void get_geomag_direction(double *dst)
      * @brief 現在向いている方向をラジアンで取得
      * @param[out] dst 現在向いている方向
-     * @note ラジアンの値は、0を最初の向きとして、そこから正回転が反時計回りとなっている
+     * @note ラジアンの値は、0を最初の向きとして、そこから正回転が反時計回り
      */
     void get_geomag_direction(double *);
+
+    /**
+     * @fn bool detected()
+     * @brief bnoが検知されたかどうか
+     * @return 検知されたらtrue
+     */
+    inline bool detected();
+
+    /**
+     * @fn double update_gyro_dir();
+     */
+    double update_gyro_dir();
 };
 
 void _BNO055::setup()
@@ -211,6 +232,29 @@ void _BNO055::get_geomag_direction(double *dst)
         ? dir_degree
         : dir_degree - 360
     ) * -PI / 180;
+}
+
+bool _BNO055::detected()
+{
+    return _detected;
+}
+
+double _BNO055::update_gyro_dir()
+{
+    static bool initialized = false;
+    static uint64_t last_ms;
+
+    uint64_t now_ms = millis();
+    if (!initialized) {
+        last_ms = now_ms;
+        _last_gyro_dir = 0.0
+        return _last_gyro_dir;
+    }
+    uint64_t diff_ms = now_ms - last_ms;
+    last_ms = now_ms;
+    double gyro = Adafruit_BNO055::getVector(Adafruit_BNO055::VECTOR_GYROSCOPE).x();
+    _last_gyro_dir += gyro * diff_ms / 1000;
+    return _last_gyro_dir;
 }
 
 //! シングルトンオブジェクトへの参照
