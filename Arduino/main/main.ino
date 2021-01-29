@@ -99,7 +99,7 @@ namespace sensors{
     using Echo_t = Sensor<EchoSensor>;
     using Line_t = Sensor<LineSensor>;
 
-    Echo_t echo(EchoSensor(2, 3), EchoSensor(4, 5), EchoSensor(6, 7));
+    Echo_t echo(EchoSensor(7, 6), EchoSensor(4, 5), EchoSensor(8, 9));
     Line_t line(LineSensor(1), LineSensor(3), LineSensor(5));
 }
 

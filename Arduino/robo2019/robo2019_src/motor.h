@@ -358,19 +358,13 @@ void Motor::Set::one_motor(uint8_t pin, int8_t power)
 
 void Motor::Set::all_motors(int8_t a, int8_t b, int8_t c, int8_t d)
 {
-    one_motor(1, a);
-    one_motor(2, b);
-    one_motor(3, c);
-    one_motor(4, d);
-    return;
-    int8_t new_powers[] = {a, b, c, d};
     char dst[64] = "";
     char *ptr = dst;
     for (uint8_t i = 0; i < 4; ++i)
     {
         int8_t &c_power = _motor->_powers[i]; // current
         const int8_t n_power = new_powers[i]; // new
-        if (c_power == n_power) continue;
+        if (abs(c_power - n_power) < 2) continue;
         c_power = n_power;
         Motor::power_str(ptr, i + 1, c_power);
         ptr += 5;

@@ -24,7 +24,7 @@ void loop()
         lw = LineSensor::iswhite(left.read()),
         rw = LineSensor::iswhite(right.read()),
         bw = LineSensor::iswhite(back.read());
-    if (lw && !changed) {
+    if (rw && !changed) {
         dir *= -1;
         changed = true;
     }

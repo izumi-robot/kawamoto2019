@@ -145,8 +145,7 @@ BNO_wrapper &bno_wrapper = BNO_wrapper::instance();
  */
 class _BNO055 : public virtual Adafruit_BNO055, public virtual robo::SingletonBase<_BNO055>
 {
-    using Base = robo::SingletonBase<_BNO055>;
-    friend class Base;
+    friend class robo::SingletonBase<_BNO055>;
 private:
     //! bnoを検知したかどうか
     bool _detected;
@@ -163,8 +162,8 @@ protected:
      * @brief コンストラクタ
      */
     _BNO055()
-        : Adafruit_BNO055(55), Base(),
-        _detected(false), _last_dir(0), _geomag_diff(0) {}
+        : Adafruit_BNO055(55), robo::SingletonBase<_BNO055>(),
+        _detected(false), _last_gyro_dir(0), _geomag_diff(0) {}
 
 public:
     /**
@@ -247,7 +246,7 @@ double _BNO055::update_gyro_dir()
     uint64_t now_ms = millis();
     if (!initialized) {
         last_ms = now_ms;
-        _last_gyro_dir = 0.0
+        _last_gyro_dir = 0.0;
         return _last_gyro_dir;
     }
     uint64_t diff_ms = now_ms - last_ms;
