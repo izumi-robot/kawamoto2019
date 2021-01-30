@@ -24,7 +24,7 @@ namespace robo
  */
 class Motor
 {
-private: // 内部型
+public: // 内部型
     /**
      * @brief モーターの情報を取得する関数群
      */
@@ -117,7 +117,11 @@ private: // 内部型
         Motor *_motor;
 
         /**
-         * @
+         * @fn bool _update(uint8_t pin, int8_t power)
+         * @brief パワー更新用
+         * @param[in] pin モーターのピン番号
+         * @param[in] power モーターのパワー
+         * @return trueならMCBに文字を流すべき
          */
         bool _update(uint8_t, int8_t);
     public:
@@ -272,6 +276,7 @@ public:
      * @note 全体のsetup内で呼ばないと他の機能が使えない。
      */
     void setup();
+
 }; // class Motor
 
 Motor Motor::_singleton;
@@ -346,29 +351,34 @@ void Motor::Get::info(char *dst)
     ptr[1] = '\0';
 }
 
+bool Motor::_update(uint8_t pin, int8_t power)
+{
+    int8_t &c_power = _motor->_power[pin - 1];
+    if (abs(c_power - power) < 2) return false;
+    c_power = power;
+    return true;
+}
+
 void Motor::Set::one_motor(uint8_t pin, int8_t power)
 {
-    int8_t &p = _motor->_powers[pin - 1];
-    if (abs(p - power) < 2) return;
-    String p_str;
-    Motor::power_str(&p_str, pin, power);
+    if (!_update(pin, power)) return;
+    char p_str[8] = "";
+    Motor::power_str(p_str, pin, power);
     Serial2.println(p_str);
-    p = power;
 }
 
 void Motor::Set::all_motors(int8_t a, int8_t b, int8_t c, int8_t d)
 {
+    int8_t new_powers[] = {a, b, c, d};
     char dst[64] = "";
     char *ptr = dst;
     for (uint8_t i = 0; i < 4; ++i)
     {
-        int8_t &c_power = _motor->_powers[i]; // current
         const int8_t n_power = new_powers[i]; // new
-        if (abs(c_power - n_power) < 2) continue;
-        c_power = n_power;
-        Motor::power_str(ptr, i + 1, c_power);
+        if (!_update(i + 1, n_power)) continue;
+        Motor::power_str(ptr, i + 1, n_power);
+        ptr[5] = '\n';
         ptr += 5;
-        ptr[0] = '\n';
     }
     ptr[1] = '\0';
     Serial2.print(dst);
@@ -416,18 +426,18 @@ Motor& Motor::instance()
 String Motor::power_str(uint8_t pin, int8_t power)
 {
     // R: 正転?
-    char buffer[8] = "";
-    Motor::power_str(buffer, pin, power);
+    char p_str[8] = "";
+    Motor::power_str(p_str, pin, power);
     // String dir_s = power < 0 ? "F" : "R";
     // String power_s = String(abs(power));
     // power_s = robo::string::rjust(power_s, 3, '0');
-    return String(buffer);
+    return String(p_str);
 }
 void Motor::power_str(String *dst, uint8_t pin, int8_t power)
 {
-    char buffer[8] = "";
-    Motor::power_str(buffer, pin, power);
-    *dst = String(buffer);
+    char p_str[8] = "";
+    Motor::power_str(p_str, pin, power);
+    *dst = String(p_str);
 }
 void Motor::power_str(char *dst, uint8_t pin, int8_t power)
 {
