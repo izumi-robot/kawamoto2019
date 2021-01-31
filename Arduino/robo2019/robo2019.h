@@ -9,6 +9,7 @@
 #ifdef ARDUINO
 
 #include "robo2019_src/util.h"
+#include "robo2019_src/i2c.h"
 #include "robo2019_src/vec2d.h"
 #include "robo2019_src/interrupt.h"
 #include "robo2019_src/echo.h"
