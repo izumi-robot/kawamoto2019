@@ -56,6 +56,12 @@ public:
      *          buffのサイズを確認せずに書き込むため、バッファオーバーランを起こす可能性がある。
      */
     bool read_data(char *, uint8_t, uint16_t);
+
+    /**
+     * @fn bool read_data(uint8_t *buff, uint8_t addr, uint16_t data_size)
+     * @sa bool read_data(char *buff, uint8_t addr, uint16_t data_size)
+     */
+    bool read_data(uint8_t *, uint8_t, uint16_t);
 };
 
 /**
@@ -92,6 +98,12 @@ public:
      *          buffのサイズを確認せずに書き込むため、バッファオーバーランを起こす可能性がある。
      */
     inline bool read_data(char *, uint16_t);
+
+    /**
+     * @fn bool read_data(uint8_t *buff, uint16_t data_size)
+     * @sa bool read_data(char *buff, uint16_t data_size)
+     */
+    inline bool read_data(uint8_t *, uint16_t);
 };
 
 } // namespace robo
@@ -134,12 +146,30 @@ bool robo::I2CReader::read_data(char *buff, uint8_t addr, uint16_t data_size)
     return true;
 }
 
+bool robo::I2CReader::read_data(uint8_t *buff, uint8_t addr, uint16_t data_size)
+{
+    if (buff == NULL) return false;
+
+    Wire.requestFrom(addr, data_size);
+    if (Wire.available() < data_size) return false;
+
+    for (uint16_t i = 0; i < data_size; ++i) {
+        buff[i] = Wire.read();
+    }
+    return true;
+}
+
 uint16_t robo::I2CReaderWithAddr::read_data_size()
 {
     return I2CReader::read_data_size(address);
 }
 
 bool robo::I2CReaderWithAddr::read_data(char *buff, uint16_t data_size)
+{
+    return I2CReader::read_data(buff, address, data_size);
+}
+
+bool robo::I2CReaderWithAddr::read_data(uint8_t *buff, uint16_t data_size)
 {
     return I2CReader::read_data(buff, address, data_size);
 }

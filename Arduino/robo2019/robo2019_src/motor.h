@@ -351,9 +351,9 @@ void Motor::Get::info(char *dst)
     ptr[1] = '\0';
 }
 
-bool Motor::_update(uint8_t pin, int8_t power)
+bool Motor::Set::_update(uint8_t pin, int8_t power)
 {
-    int8_t &c_power = _motor->_power[pin - 1];
+    int8_t &c_power = _motor->_powers[pin - 1];
     if (abs(c_power - power) < 2) return false;
     c_power = power;
     return true;
