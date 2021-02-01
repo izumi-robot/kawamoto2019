@@ -10,7 +10,7 @@ import pyb, ustruct
 
 text = "Hello World!\n"
 #data = ustruct.pack("<%ds" % len(text), text)
-data = ustruct.pack("<2H", 97, 98)
+data = ustruct.pack("<2h", 97, 98)
 # Use "ustruct" to build data packets to send.
 # "<" puts the data in the struct in little endian order.
 # "%ds" puts a string in the data stream. E.g. "13s" for "Hello World!\n" (13 chars).

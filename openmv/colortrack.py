@@ -44,8 +44,6 @@ while(True):
     if not blobs:
         continue
     for i, blob in enumerate(blobs):
-        img.draw_rectangle(blob.rect())
-        img.draw_cross(blob.cx(), blob.cy())
         area = blob.area()
         if biggest_area < area:
             biggest_area, biggest_index = area, i
