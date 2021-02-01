@@ -10,6 +10,10 @@
 
 #include <Wire.h>
 
+/**
+ * @namespace robo
+ * @brief 自作ライブラリの機能をまとめたもの
+ */
 namespace robo
 {
 
@@ -59,6 +63,11 @@ public:
 
     /**
      * @fn bool read_data(uint8_t *buff, uint8_t addr, uint16_t data_size)
+     * @brief データを読む
+     * @param[out] buff 読み取ったデータの保存先
+     * @param[in]  addr スレーブのアドレス
+     * @param[in]  data_size 読み取るデータのサイズ
+     * @return 読み取りに成功したかどうか
      * @sa bool read_data(char *buff, uint8_t addr, uint16_t data_size)
      */
     bool read_data(uint8_t *, uint8_t, uint16_t);
@@ -116,9 +125,8 @@ void robo::I2CReader::begin()
 
 uint16_t robo::I2CReader::pass_data()
 {
-    uint16_t data_size = 0;
-    while (Wire.available()) {
-        data_size++;
+    uint16_t data_size = Wire.available();
+    for (int i = 0; i < data_size; ++i) {
         Wire.read();
     }
     return data_size;
