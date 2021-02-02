@@ -20,19 +20,22 @@ biggest_area, biggest_index, biggest_blob = 0, 0, None
 area = 0
 
 while True:
-    # find object
-    biggest_area = 0
     clock.tick()
+    # find object
     img = sensor.snapshot()
     blobs = img.find_blobs(thresholds)
+    if not blobs:
+        # there is no object
+        continue
+    # search the biggest object
+    biggest_area = 0
     for i, blob in enumerate(blobs):
         area = blob.area()
-        if biggest_area < area:
+        if area > biggest_area:
             biggest_area, biggest_index = area, i
-    if blobs:
-        biggest_blob = blobs[biggest_index]
-        x_data, y_data = biggest_blob.cx(), biggest_blob.cy()
-        print((x_data, y_data))
+    biggest_blob = blobs[biggest_index]
+    x_data, y_data = biggest_blob.cx(), biggest_blob.cy()
+    print((x_data, y_data))
     img.draw_cross(x_data, y_data)
 
     # send data
