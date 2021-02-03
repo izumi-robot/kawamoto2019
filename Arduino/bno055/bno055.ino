@@ -1,56 +1,22 @@
-#include <Wire.h>
-#include <Adafruit_Sensor.h>
-#include <Adafruit_BNO055.h>
-#include <utility/imumaths.h>
+#include <robo2019.h>
 
-Adafruit_BNO055 _bno055(55);
+using robo::bno055;
 
 void setup()
 {
     Serial.begin(9600);
-    if (_bno055.begin()) {
-        Serial.println("detected");
-        _bno055.setExtCrystalUse(true);
-    }
+    bno055.setup();
+    if (bno055.detected()) Serial.println("detected");
 }
-
-#include <robo2019.h>
-
-//using robo::_bno055;
-using imu_v3 = imu::Vector<3>;
-
-void printVector(const imu_v3 &vec)
-{
-    char buffer[64];
-    sprintf(buffer, "(%+3.2f, %+3.2f, %3.2f)\n", vec.x(), vec.y(), vec.z());
-    Serial.print(buffer);
-}
-
-void printQuat(const imu::Quaternion &quat)
-{
-    char buffer[64];
-    sprintf(buffer, "(%+3.2f, %+3.2f, %+3.2f, %+3.2f)\n", quat.x(), quat.y(), quat.x(), quat.w());
-    Serial.println(buffer);
-}
-
-// void setup()
-// {
-//     Serial.begin(9600);
-//     _bno055.setup();
-// }
 
 void loop()
 {
-    Serial.println("================");
+    static int frame_count;
 
-    Serial.print("Euler: ");
-    printVector(_bno055.getVector(Adafruit_BNO055::VECTOR_EULER));
-
-    Serial.print("Gyroscope: ");
-    printVector(_bno055.getVector(Adafruit_BNO055::VECTOR_GYROSCOPE));
-
-    Serial.print("Quaternion: ");
-    printQuat(_bno055.getQuat());
-
-    delay(1000);
+    double dir = bno055.update_gyro_dir();
+    if (++frame_count % 1000 == 0) {
+        frame_count = 0;
+        Serial.println(degrees(dir));
+    }
+    // delay(10);
 }
