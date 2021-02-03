@@ -128,7 +128,7 @@ void setup()
         sensors::echo.setup();
     }
     if (use_flag::bno) {
-        robo::bno_wrapper.setup();
+        robo::bno055.setup();
     }
     if (use_flag::pixy) {
         robo::pixy::setup();
@@ -168,7 +168,7 @@ void loop()
     }
 
     if (use_flag::bno && m_flag == MotorFlag::stop) {
-        double fdir = robo::bno_wrapper.get_direction();
+        double fdir = robo::bno055.get_direction();
         if (abs(fdir) > PI / 12) {
             m_flag = MotorFlag::rotate;
             m_info.power = fdir * 80 / PI;
@@ -187,8 +187,8 @@ void loop()
             untrack_frame = 0;
             cam_pos = robo::pixy::get_pos(cam_pos);
             ball_dir = robo::pixy::pos2angle(cam_pos);
-            //m_info.dir = ball_dir;
-            m_info.dir = spin_enter_dir(ball_dir);
+            m_info.dir = ball_dir;
+            //m_info.dir = spin_enter_dir(ball_dir);
             if (use_flag::lcd) {
                 lcd.setCursor(0, 1);
                 lcd.print("detect");
