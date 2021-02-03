@@ -19,6 +19,7 @@ namespace robo
 {
 
 /**
+ * @class Motor
  * @brief モーター操作用のシングルトンクラス
  * @details ダイセンのMCBを操作するためのシングルトンクラス。モーターの配置についてはREADMEを参照。
  */
@@ -26,6 +27,7 @@ class Motor
 {
 public: // 内部型
     /**
+     * @class Get
      * @brief モーターの情報を取得する関数群
      */
     class Get
@@ -209,6 +211,7 @@ private: // variables
     static Motor _singleton;
     //! モーターのパワー
     int8_t _powers[4];
+
 public:
     //! 情報取得用の関数群
     Get get;
@@ -354,7 +357,7 @@ void Motor::Get::info(char *dst)
 bool Motor::Set::_update(uint8_t pin, int8_t power)
 {
     int8_t &c_power = _motor->_powers[pin - 1];
-    if (abs(c_power - power) < 2) return false;
+    if (c_power == power) return false;
     c_power = power;
     return true;
 }
@@ -425,12 +428,8 @@ Motor& Motor::instance()
 
 String Motor::power_str(uint8_t pin, int8_t power)
 {
-    // R: 正転?
     char p_str[8] = "";
     Motor::power_str(p_str, pin, power);
-    // String dir_s = power < 0 ? "F" : "R";
-    // String power_s = String(abs(power));
-    // power_s = robo::string::rjust(power_s, 3, '0');
     return String(p_str);
 }
 void Motor::power_str(String *dst, uint8_t pin, int8_t power)
@@ -441,6 +440,7 @@ void Motor::power_str(String *dst, uint8_t pin, int8_t power)
 }
 void Motor::power_str(char *dst, uint8_t pin, int8_t power)
 {
+    // R: 正転?
     if (dst == NULL) return;
     sprintf(
         dst, "%1d%c%03d",
