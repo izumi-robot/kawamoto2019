@@ -110,7 +110,7 @@ public:
     }
 };
 
-}
+} // namespace robo
 
 #else /* ARDUINO */
 

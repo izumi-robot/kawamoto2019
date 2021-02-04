@@ -77,19 +77,16 @@ public: // nonstatic part
     /**
      * @brief x, y成分を指定して初期化
      */
-    Vector2D(const T &x, const T &y)
-        : x(x), y(y) {}
+    Vector2D(const T &x, const T &y) : x(x), y(y) {}
     /**
      * @brief コピーコンストラクタ
      */
-    Vector2D(const Vector2D &p)
-        : x(p.x), y(p.y) {}
+    Vector2D(const Vector2D &p) : x(p.x), y(p.y) {}
     /**
      * @brief 配列から初期化
      * @details 0番の要素がx、1番の要素がy
      */
-    Vector2D(const T_LIST_(p))
-        : x(p[0]), y(p[1]) {}
+    Vector2D(const T_LIST_(p)) : x(p[0]), y(p[1]) {}
     /**
      * @brief リスト初期化
      */
