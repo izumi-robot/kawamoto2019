@@ -168,7 +168,7 @@ void loop()
     }
 
     if (use_flag::bno && m_flag == MotorFlag::stop) {
-        double fdir = robo::bno055.get_direction();
+        double fdir = robo::bno055.get_geomag_direction();
         if (abs(fdir) > PI / 12) {
             m_flag = MotorFlag::rotate;
             m_info.power = fdir * 80 / PI;
