@@ -1,12 +1,14 @@
 import pyb, ustruct
 import sensor, image, time
 
-thresholds = [(20, 80, 20, 80, 40, 75)]
+thresholds = [(20, 80, 40, 75, 40, 75)]
 
 sensor.reset()
 sensor.set_pixformat(sensor.RGB565)
 sensor.set_framesize(sensor.QQVGA)
 sensor.skip_frames(time=300)
+sensor.set_brightness(0)
+sensor.set_saturation(0)
 sensor.set_auto_gain(False)
 sensor.set_auto_exposure(False, 5000)
 sensor.set_auto_whitebal(False)
@@ -39,6 +41,7 @@ while True:
     img.draw_cross(x_data, y_data)
 
     # send data
+    print("send data!")
     data = ustruct.pack("<2h", x_data, y_data)
     try:
         bus.send(length_data, timeout=10000)

@@ -2,7 +2,7 @@ import sensor, image, time
 # Color Tracking Thresholds
 #   (L Min, L Max, A Min, A Max, B Min, B Max)
 thresholds = [
-    (   20,   80,    20,    80,    40,    75)
+    (   20,   80,    40,    75,    40,    75)
 ]
 """
 rgb             -> lab
@@ -18,6 +18,8 @@ sensor.reset()
 sensor.set_pixformat(sensor.RGB565)
 sensor.set_framesize(sensor.QVGA)
 sensor.skip_frames(time=300)
+sensor.set_brightness(0)
+sensor.set_saturation(0)
 sensor.set_auto_gain(False) # must be turned off for color tracking
 sensor.set_auto_exposure(False, 5000)
 sensor.set_auto_whitebal(False) # must be turned off for color tracking

@@ -3,6 +3,7 @@
 using robo::I2CReaderWithAddr;
 using CameraPos = robo::Vector2D<uint16_t>;
 
+
 class OpenMVReader : public I2CReaderWithAddr
 {
 public:
@@ -41,17 +42,18 @@ void loop()
     static uint64_t last_time;
 
     CameraPos pos = openmv_i2c.read_pos(default_pos);
-    if (pos != default_pos) {
-        Serial.println(pos.to_string());
+    /*if (pos != default_pos) {
+        //Serial.println(pos.to_string());
     } else {
-        openmv_i2c.pass_data();
-    }
+        //openmv_i2c.pass_data();
+    }*/
 
     if (++frame_count % 100 == 0) {
         uint64_t cur_time = millis();
-        double fps = 100000. / (cur_time - last_time);
+        double fps = 100000.0 / (cur_time - last_time);
         last_time = cur_time;
         frame_count = 0;
+        //Serial.print("            ");
         Serial.println(fps);
     }
     delay(1); // Don't loop too quickly.
