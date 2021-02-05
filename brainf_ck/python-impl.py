@@ -62,7 +62,7 @@ class Machine(list):
 
     @ptr.getter
     def ptr(self, nptr):
-        assert isinstance(nvalue, int), "ptr must be int"
+        assert isinstance(nptr, int), "ptr must be int"
         self._ptr = nptr
 
     @property
@@ -77,11 +77,12 @@ class Machine(list):
         self[self._ptr] -= 1
         return self[self._ptr]
 
-    def inc_ptt(self):
+    def inc_ptr(self):
         self._ptr += 1
         if self._ptr >= self._mem_len:
-            for _ in range()
-            self.append(0)
+            for _ in range(self._ptr - self._mem_len + 1):
+                self.append(0)
+            self._mem_len = self._ptr
         return self._ptr
 
     def dec_ptr(self):
@@ -104,7 +105,7 @@ class Executor(Machine):
         if isinstance(source, str):
             self._program = parse_program(source)
         self._stdin  = stdin
-        self._stdoit = stdout
+        self._stdout = stdout
         self._execute(self._program)
 
     def char_in(self):
