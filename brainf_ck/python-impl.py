@@ -29,10 +29,10 @@ def parse_program(source):
             nest_in_index = nest_in_index if nest_count else i
             nest_count += 1
         elif cmd is Command.nest_out:
-            nest_count -= 1
-            if nest_count == 0:
+            if nest_count == 1:
                 new_source = source[nest_in_index+1 : i]
                 result.append(parse_program(new_source))
+            nest_count -= 1
         else:
             nest_count or result.append(cmd)
     return result
@@ -107,6 +107,7 @@ class Executor(Machine):
         self._stdin  = stdin
         self._stdout = stdout
         self._execute(self._program)
+        self._stdout.write('\n')
 
     def char_in(self):
         assert isinstance(self._stdin, io.TextIOBase), "stdin must be an instance of io.TextIOBase"
