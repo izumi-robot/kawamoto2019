@@ -28,9 +28,32 @@ namespace brainf_ck {
         virtual void char_out() = 0;
     };
 
-    class ProgramTree {
+    class ProgramNode {
     public:
         virtual std::string to_string() = 0;
+    };
+
+    class ProgramLeaf : ProgramNode {
+    public:
+        const Command value;
+
+        ProgramLeaf() = delete;
+        ProgramLeaf(const Command &cmd) : value(cmd) {}
+        ProgramLeaf(const char &chr) : value(static_cast<Command>(chr)) {}
+
+        std::string to_string() override {
+            switch (value)
+            {
+            case Command::add: return "+";
+            case Command::sub: return "-";
+            case Command::shift_l: return "<";
+            case Command::shift_r: return ">";
+            case Command::char_in:  return ",";
+            case Command::char_out: return ".";
+            default:
+                break;
+            }
+        }
     };
 
 }
