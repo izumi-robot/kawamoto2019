@@ -7,33 +7,30 @@
 namespace brainf_ck {
     using inttype = std::int32_t;
 
-    enum class Command : char {
+    enum class Command : char
+    {
         add     = '+', sub      = '-',
         shift_l = '<', shift_r  = '>',
         char_in = ',', char_out = '.',
         nest_in = '[', nest_out = ']'
     };
 
-    class IExecutor {
+    class ExecutorBase
+    {
     public:
-        virtual inttype val() = 0;
-
-        virtual void inc_val() = 0;
-        virtual void dec_val() = 0;
-
-        virtual void inc_ptr() = 0;
-        virtual void dec_ptr() = 0;
-
-        virtual void char_in()  = 0;
-        virtual void char_out() = 0;
+        virtual inttype get_value() = 0;
+        virtual void eval_cmd(const Command &) = 0;
     };
 
-    class ProgramNode {
+    class ProgramNode
+    {
     public:
-        virtual std::string to_string() = 0;
+        virtual operator std::string () = 0;
+        virtual void execute(Executor *) = 0;
     };
 
-    class ProgramLeaf : ProgramNode {
+    class ProgramLeaf : ProgramNode
+    {
     public:
         const Command value;
 
@@ -41,7 +38,7 @@ namespace brainf_ck {
         ProgramLeaf(const Command &cmd) : value(cmd) {}
         ProgramLeaf(const char &chr) : value(static_cast<Command>(chr)) {}
 
-        std::string to_string() override {
+        operator std::string () override {
             switch (value)
             {
             case Command::add: return "+";
@@ -50,10 +47,26 @@ namespace brainf_ck {
             case Command::shift_r: return ">";
             case Command::char_in:  return ",";
             case Command::char_out: return ".";
-            default:
-                break;
+            default: return "";
             }
         }
+
+        void execute(ExecutorBase *exe_p) override {
+            exe_p->eval_cmd(value);
+        }
+    };
+
+    class ProgramTree : ProgramNode
+    {
+    public:
+        using Nodes = std::vector<ProgramNode>;
+    private:
+        Nodes values;
+    public:
+
+        ProgramTree() {}
+        ProgramTree(const ProgramNode *nodes) : values(nodes) {}
+        ProgramTree(const Nodes &nodes) : values(nodes) {}
     };
 
 }
