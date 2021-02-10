@@ -7,64 +7,74 @@ class Complex {
     }
     Complex(float re) { this(re, 0); }
     Complex() { this(0, 0); }
+    Complex(Complex other) { this(other.real, other.imag); }
 
     float mag() {
         return this.real * this.real + this.imag * this.imag;
     }
 
-    float angle() {
+    float arg() {
         return atan2(this.imag, this.real);
     }
 
+    Complex pos() {
+        return new Complex(this);
+    }
+
+    Complex neg() {
+        return new Complex(-this.real, -this.imag);
+    }
+
+    Complex set(float re, float im) {
+        this.real = re;
+        this.imag = im;
+        return this;
+    }
+
+    Complex set(Complex other) {
+        this.real = other.real;
+        this.imag = other.imag;
+        return this;
+    }
+
+    Complex iadd(Complex other) {
+        this.real += other.real;
+        this.imag += other.imag;
+        return this;
+    }
+
+    Complex isub(Complex other) {
+        this.real -= other.real;
+        this.imag -= other.imag;
+        return this;
+    }
+
+    Complex imul(Complex other) {
+        this.real = this.real * other.real - this.imag * other.imag;
+        this.imag = this.real * other.imag + this.imag * other.real;
+        return this;
+    }
+
+    Complex idiv(Complex other) {
+        float mag = other.mag();
+        this.real = (this.real * other.real + this.imag * other.imag) / mag;
+        this.imag = (this.imag * other.real - this.real * other.imag) / mag;
+        return this;
+    }
+
     Complex add(Complex other) {
-        float re = this.real + other.real;
-        float im = this.imag + other.imag;
-        return new Complex(re, im);
+        return (new Complex(this)).iadd(other);
     }
 
     Complex sub(Complex other) {
-        float re = this.real - other.real;
-        float im = this.imag - other.imag;
-        return new Complex(re, im);
+        return (new Complex(this)).isub(other);
     }
 
     Complex mul(Complex other) {
-        float re = this.real * other.real - this.imag * other.imag;
-        float im = this.real * other.imag + this.imag * other.real;
-        return new Complex(re, im);
+        return (new Complex(this)).imul(other);
     }
 
     Complex div(Complex other) {
-        float re = this.real * other.real + this.imag * other.imag;
-        float im = this.imag * other.real - this.real * other.imag;
-        float mg = other.mag();
-        re /= mg; im /= mg;
-        return new Complex(re, im);
-    }
-
-    void set(float re, float im) {
-        this.real = re;
-        this.imag = im;
-    }
-
-    void set(Complex other) {
-        this.real = other.real;
-        this.imag = other.imag;
-    }
-
-    void iadd(Complex other) {
-        this.set(this.add(other));
-    }
-
-    void isub(Complex other) {
-        this.set(this.sub(other));
-    }
-
-    void imul(Complex other) {
-        this.set(this.mul(other));
-    }
-
-    void idiv(Complex other) {
-        this.set(this.div(other));
+        return (new Complex(this)).idiv(other);
     }
 }
