@@ -1,6 +1,6 @@
 # Processing
 
-この文書では主に、VSCodeでのProcessingの使い方について紹介します。
+この文書では主に、VS CodeでのProcessingの使い方について紹介します。
 
 参考:
 
@@ -9,14 +9,12 @@
 * https://marketplace.visualstudio.com/items?itemName=Tobiah.language-pde
 * https://github.com/TobiahZ/processing-vscode
 
-詳しいことはこちらを見てください。下の2つは公式によるドキュメントです。英語なのでおすすめはしません。
-
-前提として、ProcessingのIDEとVSCodeが入っている必要があります。パス名やキーボードショートカットなど、OSによって異なる部分はWindowsのものを記述します。他のOSの方は適宜読み替えるか、調べるかしてください。VSCodeの操作で分からないことは`~\kawamoto\README.md`を見てください。下の2つのURLは公式のドキュメントです。英語なのでおすすめはしません。
+前提として、ProcessingのIDEとVS Codeが入っている必要があります。パス名やキーボードショートカットなど、OSによって異なる部分はWindowsのものを記述します。他のOSの方は適宜読み替えるか、調べるかしてください。VS Codeの操作で分からないことは`~\kawamoto\README.md`を見てください。下の2つのURLは公式のドキュメントです。英語なのでオススメはしません。
 
 ## 目次
 
 * 拡張機能のインストール
-* VSCodeの設定変更
+* VS Codeの設定変更
 * プロジェクトの準備
 * 終わりに
 
@@ -24,18 +22,18 @@
 
 ## 拡張機能のインストール
 
-Processing Languageという名前の拡張機能です。これをインストールすることで、VSCodeからProcessing関連の操作を手軽に行えるようになります。
+Processing Languageという名前の拡張機能です。これをインストールすることで、VS CodeからProcessing関連の操作を手軽に行えるようになります。
 
-## VSCodeの設定変更
+## VS Codeの設定変更
 
-VSCodeを開いて「Processing: Path」を編集します。
-Processingの実行プログラムのパスを設定します。筆者のパソコンでは`C:\Users\<username>\Documents\processing-3.5.4\processing-java`でした。ロボット部のSurfaceだと`C:\Users\robo\Desktop\processing-3.5.4\processing-java`です。`processing-<version>`という名前のフォルダを探して、その中の`processing-java.exe`というファイルのパスを指定してください(拡張子はいらないです)。
+VS Codeを開いて「Processing: Path」を編集します。
+Processingの実行プログラムのパスを設定します。筆者のパソコンでは`C:\Users\<username>\Documents\processing-3.5.4\processing-java`でした。ロボット部のSurfaceだと`C:\Users\robo\Desktop\processing-3.5.4\processing-java`です。`processing-<version>`という名前のフォルダーを探して、その中の`processing-java.exe`というファイルのパスを指定してください(拡張子はいらないです)。
 
 ## プロジェクトの準備
 
-以降は実際のプロジェクトでの作業になります。ここでは例として、`C:\Users\robo\Desktop\2019\kawamoto\Processing\`のフォルダ(親フォルダとします)内に`sample`という名前のプロジェクトを作る場合の作業を紹介します。
+以降は実際のプロジェクトでの作業になります。ここでは例として、`C:\Users\robo\Desktop\2019\kawamoto\Processing\`のフォルダー(親フォルダーとします)内に`sample`という名前のプロジェクトを作る場合の作業を紹介します。
 
-まずは、親フォルダ内に`sample`という名前のフォルダ(メインフォルダとします)を作成します。メインフォルダをVSCodeで開き、`sample.pde`というファイルを追加します。このファイルの中に実行したいプログラム書き込みます。今はしなくていいです。
+まずは、親フォルダー内に`sample`という名前のフォルダー(メインフォルダーとします)を作成します。メインフォルダーをVS Codeで開き、`sample.pde`というファイルを追加します。このファイルの中に実行したいプログラム書き込みます。今はしなくていいです。
 
 ここまでで、ファイル構造は以下のようになっています:
 
@@ -45,7 +43,7 @@ C:\Users\robo\Desktop\2019\kawamoto\Processing
         └ sample.pde
 ```
 
-次に、Ctrl+Shift+Pでコマンドパレットを開き、「Processing」と検索します。検索結果の中から「Processing: Create Task File」を選択します。メインフォルダ直下に`.vscode`というフォルダが作成され、そしてそのフォルダの中には`tasks.json`というファイルがあります。
+次に、Ctrl+Shift+Pでコマンドパレットを開き、「Processing」と検索します。検索結果の中から「Processing: Create Task File」を選択します。メインフォルダー直下に`.vscode`というフォルダーが作成され、そしてそのフォルダーの中には`tasks.json`というファイルがあります。
 
 この時点でのファイル構造はこんな感じです。
 
@@ -58,7 +56,7 @@ C:\Users\robo\Desktop\2019\kawamoto\Processing
 ```
 
 `tasks.json`に記述されているのはビルドタスクの情報です。より具体的に言うと、ターミナルに打つコマンドの情報が記載されています。
-ビルドタスクはCtrl+Shift+Bで実行できます。今の時点で`sample.pde`に何か書いてCtrl+Shift+Bを押すとアニメーションを実行できます(アニメーション終了後、コンソールの指示に従ってパネルを閉じてください)。ですが、実行と同時に`out`というフォルダが作成され、そこに`sample.pde`のコードがJavaに翻訳されたものが保存されます(このフォルダは消していいです)。この挙動を消すために、`tasks.json`を編集します。
+ビルドタスクはCtrl+Shift+Bで実行できます。今の時点で`sample.pde`に何か書いてCtrl+Shift+Bを押すとアニメーションを実行できます(アニメーション終了後、コンソールの指示にしたがってパネルを閉じてください)。ですが、実行と同時に`out`というフォルダーが作成され、そこに`sample.pde`のコードがJavaに翻訳されたものが保存されます(このフォルダーは消していいです)。この挙動を消すために、`tasks.json`を編集します。
 編集前の`tasks.json`は(Windowsでは)以下のようになっています:
 
 ```JSON
@@ -80,11 +78,11 @@ C:\Users\robo\Desktop\2019\kawamoto\Processing
         "panel": "dedicated"
       },
       "args": [
-		"--force",
-		"--sketch=${workspaceRoot}",
-		"--output=${workspaceRoot}/out",
-		"--run"
-	  ],
+    "--force",
+    "--sketch=${workspaceRoot}",
+    "--output=${workspaceRoot}/out",
+    "--run"
+    ],
       "windows": {
         "args": [
           "--force",
@@ -122,13 +120,13 @@ C:\Users\robo\Desktop\2019\kawamoto\Processing
                 "echo": true,
                 "reveal": "always",
                 "focus": false,
-                "panel": "new"
+                "panel": "shared"
             },
             "args": [
-		            "--force",
-		            "--sketch=${workspaceRoot}",
-		            "--run"
-	          ]
+                "--force",
+                "--sketch=${workspaceRoot}",
+                "--run"
+            ]
         }
     ]
 }
@@ -138,13 +136,13 @@ C:\Users\robo\Desktop\2019\kawamoto\Processing
 
 * インデントを2マスから4マスに変更。めっちゃ見やすくなります。
 * `presentation`内の`panel`の値を`dedicated`(占有)から`new`(新規)に変更。タスク実行時、ログの出力パネルが新たに作成されます。
-* `args`内の`--output=${workspaceRoot}/out`を削除。`out`フォルダが作成されなくなります。ちなみに、argsとはarguments(引数)の略です。
+* `args`内の`--output=${workspaceRoot}/out`を削除。`out`フォルダーが作成されなくなります。ちなみに、argsとはarguments(引数)の略です。
 * `windows`キーを削除。この部分はおそらく`--output=${workspaceRoot}\\out`と指定するためだけにあるので、もう必要ないです。
 
-これで設定は完了です。VSCodeでのProcessingを楽しんでください。
+これで設定は完了です。VS CodeでのProcessingを楽しんでください。
 
 ## 終わりに
 
-この記事ではVSCodeでProcessing使用する方法についてまとめました。このフォルダ内にある`sample`で始まる名前のプロジェクトには、筆者が1年下の後輩にProcessingを教える際に使ったサンプルコードがあります。各フォルダ内の`README.md`にコードの解説を書く予定です。よかったら活用してください。
+この記事ではVS CodeでProcessing使用する方法についてまとめました。このフォルダー内にある`sample`で始まる名前のプロジェクトには、筆者が1年下の後輩にProcessingを教える際に使ったサンプルコードがあります。各フォルダー内の`README.md`にコードの解説を書く予定です。よかったら活用してください。
 
 ちなみに、ファイル構造を表す書式は[こちら](https://qiita.com/paty-fakename/items/c82ed27b4070feeceff6)を参考にしました。
