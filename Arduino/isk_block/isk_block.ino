@@ -159,7 +159,7 @@ void loop()
             lw = LineSensor::iswhite(values.left()),
             rw = LineSensor::iswhite(values.right()),
             bw = LineSensor::iswhite(values.back());
-        if (lw || rw || bw) {
+        if (m_flag == MotorFlag::stop && lw || rw || bw) {
             m_flag = MotorFlag::move;
             if (lw) { m_info.dir =  PI / 2 + (bw ? PI / 4 : 0); }
             if (rw) { m_info.dir = -PI / 2 - (bw ? PI / 4 : 0); }

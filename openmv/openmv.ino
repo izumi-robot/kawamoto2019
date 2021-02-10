@@ -53,7 +53,7 @@ void loop()
 
     CameraPos pos = openmv_i2c.read_pos(pos_on_fail);
     if (pos != pos_on_fail) {
-        //Serial.println(pos.to_string());
+        Serial.println(pos.to_string());
     }
 
     if (++frame_count % 100 == 0) {
