@@ -11,14 +11,12 @@
 #include <Wire.h>
 
 /**
- * @namespace robo
  * @brief 自作ライブラリの機能をまとめたもの
  */
 namespace robo
 {
 
 /**
- * @class I2CReader
  * @brief I2C通信の読み取り用のクラス
  */
 class I2CReader
