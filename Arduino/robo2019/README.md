@@ -6,7 +6,7 @@
 
 ![machine-info.jpeg](./img/machine-info.jpeg)
 
-`#include <robo2019.h>`でインクルードして下さい。以下で紹介するものは全て`robo`ネームスペースに格納されます。
+`#include <robo2019.h>`でインクルードしてください。以下で紹介するものはすべて`robo`ネームスペースに格納されます。
 
 ## util.h
 
@@ -18,7 +18,7 @@
 
 `String string::rjust(const String &target, uint8_t width, const char &padding)`
 
-`target`に与えられた文字列を長さ`width`に右寄せした文字列を返します。余白には`padding`に与えられた文字が使われます。`padding`が`char`型であることに注意して下さい。
+`target`に与えられた文字列を長さ`width`に右寄せした文字列を返します。余白には`padding`に与えられた文字が使われます。`padding`が`char`型であることに注意してください。
 例:
 
 ```C++
@@ -46,7 +46,7 @@ s = robo::string::rjust(s, 10, '+');
 
 ベクトルのx座標、y座標です。
 
-**コンストラクタ**
+**コンストラクター**
 
 * `Vector2D<T>::Vector2D()`
 
@@ -158,7 +158,7 @@ v2 += v1;
 * `Vector2D<T>& operator*=(Vector2D<T> &lh, const T (&rh)[2])`
 * `Vector2D<T>& operator*=(Vector2D<T> &lh, const T &rh)`
 
-乗算の実装です。内積ではないので注意して下さい。ベクトル`(a, b)`とベクトル`(x, y)`の乗算はベクトル`(a*x, b*y)`を返します。
+乗算の実装です。内積ではないので注意してください。ベクトル`(a, b)`とベクトル`(x, y)`の乗算はベクトル`(a*x, b*y)`を返します。
 例:
 
 ```C++
@@ -189,7 +189,7 @@ v2 /= 5;
 // v2.x == 0.6, v2.y == 1.0
 ```
 
-**メンバ関数**
+**メンバー関数**
 
 * `String Vector2D<T>::to_string() const`
 
@@ -242,7 +242,7 @@ double mag = v.mag();
 
 * `static Vector2D<T> Vector2D<T>::from_polar_coord(const double &angle, const T &magnitude)`
 
-極座標のパラメータからベクトルを作成します。第一引数に角度(ラジアン)、第二引数に大きさを渡して下さい。
+極座標のパラメーターからベクトルを作成します。第一引数に角度(ラジアン)、第二引数に大きさを渡してください。
 例:
 
 ```C++
@@ -256,7 +256,7 @@ robo::V2_double v = robo::V2_double::from_polar_coord(PI / 3, 10);
 
 ![motor-info.jpeg](./img/motor-info.jpeg) <!-- TODO -->
 
-このヘッダに含まれているのは`Motor`クラスとそのインスタンス`motor`だけです。`Motor`クラスはシングルトンとして提供しています。インスタンスは`robo::Motor::instance()`か`robo::motor`でアクセスして下さい。
+このヘッダーに含まれているのは`Motor`クラスとそのインスタンス`motor`だけです。`Motor`クラスはシングルトンとして提供しています。インスタンスは`robo::Motor::instance()`か`robo::motor`でアクセスしてください。
 
 **関数群**
 
@@ -266,7 +266,7 @@ robo::V2_double v = robo::V2_double::from_polar_coord(PI / 3, 10);
 
 * `void Motor::setup()`
 
-モーターを初期化します。モーターを使用する場合はスケッチ本体の`setup()`関数内で必ず呼んで下さい。
+モーターを初期化します。モーターを使用する場合はスケッチ本体の`setup()`関数内で必ず呼んでください。
 
 **`set`オブジェクト**
 
@@ -325,7 +325,9 @@ robo::V2_double v = robo::V2_double::from_polar_coord(PI / 3, 10);
 
 ## interrupt.h
 
-割り込み用のユーティリティです。こちらもシングルトンですが、テンプレートパラメータとして割り込み監視用の
+割り込み用のクラス定義です。
+
+こちらもシングルトンですが、テンプレートパラメーターとして割り込み監視用の
 
 <!--
     TODO
@@ -334,4 +336,5 @@ robo::V2_double v = robo::V2_double::from_polar_coord(PI / 3, 10);
     echo
     interrupt
     pixy
+    openmv
 -->

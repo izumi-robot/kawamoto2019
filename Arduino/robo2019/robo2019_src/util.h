@@ -46,6 +46,8 @@ public:
  */
 template<class Derived> class SingletonBase
 {
+    friend Derived;
+
 protected:
     SingletonBase() = default;
     ~SingletonBase() = default;
