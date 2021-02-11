@@ -1,4 +1,5 @@
-import sys, io
+import sys
+import io
 import enum
 import typing as tp
 
@@ -17,7 +18,9 @@ class Command(enum.Enum):
     nest_out = ']'
 
 
-def parse_program(source):
+Commands: tp.TypeVar = tp.List[Command]
+
+def parse_program(source: str):
     result = list()
     nest_count, nest_in_index = 0, 0
     for i, cmd_chr in enumerate(source):
@@ -42,42 +45,40 @@ class Machine(list):
 
     __slots__ = ("_ptr", "_mem_len")
 
-    def __init__(self, ptr=0, mem_len=1024):
+    def __init__(self, ptr: int =0, mem_len: int =1024) -> None:
         super().__init__([0] * mem_len)
         self._ptr = ptr
         self._mem_len = mem_len
 
     @property
-    def val(self):
+    def val(self) -> int:
         return self[self._ptr]
 
     @val.setter
-    def val(self, nvalue):
-        assert isinstance(nvalue, int), "val must be int"
+    def val(self, nvalue: int) -> None:
         self[self._ptr] = nvalue
 
     @property
-    def ptr(self):
+    def ptr(self) -> int:
         return self._ptr
 
     @ptr.getter
-    def ptr(self, nptr):
-        assert isinstance(nptr, int), "ptr must be int"
+    def ptr(self, nptr: int) -> None:
         self._ptr = nptr
 
     @property
-    def mem_len(self):
+    def mem_len(self) -> int:
         return self._mem_len
 
-    def inc_val(self):
+    def inc_val(self) -> int:
         self[self._ptr] += 1
         return self[self._ptr]
 
-    def dec_val(self):
+    def dec_val(self) -> int:
         self[self._ptr] -= 1
         return self[self._ptr]
 
-    def inc_ptr(self):
+    def inc_ptr(self) -> int:
         self._ptr += 1
         if self._ptr >= self._mem_len:
             for _ in range(self._ptr - self._mem_len + 1):
@@ -85,7 +86,7 @@ class Machine(list):
             self._mem_len = self._ptr
         return self._ptr
 
-    def dec_ptr(self):
+    def dec_ptr(self) -> int:
         self._ptr -= 1
         return self._ptr
 
@@ -94,7 +95,7 @@ class Executor(Machine):
 
     __slots__ = ("_program", "_stdin", "_stdout")
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._program = None
         self._stdin  = None
@@ -151,6 +152,11 @@ class Executor(Machine):
 
 if __name__ == "__main__":
     executor = Executor()
-    _, sourcefile_name, *filenames = sys.argv
+    try:
+        _, sourcefile_name, *_ = sys.argv
+    except ValueError:
+        print("error: not enough arguments", file=sys.stderr)
+        sys.exit()
+
     with open(sourcefile_name, "r", encoding="utf-8") as f:
         executor(f.read())
