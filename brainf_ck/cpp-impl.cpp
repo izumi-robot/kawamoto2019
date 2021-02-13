@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <cassert>
 
+
 namespace brainf_ck {
     using inttype = std::int32_t;
     using Memory = std::vector<inttype>;
@@ -48,7 +49,7 @@ namespace brainf_ck {
             case Command::add: _memory[_ptr]++; return;
             case Command::sub: _memory[_ptr]--; return;
             case Command::shift_l:
-            assert(--_ptr >= 0);
+                assert(--_ptr >= 0);
                 return;
             case Command::shift_r:
                 assert(++_ptr < _memory.size());
@@ -113,11 +114,6 @@ namespace brainf_ck {
     public:
         ProgramTree() : values(new ProgramNodes()) {}
         ProgramTree(ProgramNodes *nodes) : values(nodes) {}
-
-        ~ProgramTree()
-        {
-            delete[] values;
-        }
 
         operator std::string () override
         {
@@ -191,6 +187,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    // read source
     std::ifstream ifs(argv[1], std::ios::in);
     if (!ifs) {
         std::cerr
