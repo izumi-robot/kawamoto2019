@@ -49,7 +49,7 @@ namespace brainf_ck {
             case Command::add: _memory[_ptr]++; return;
             case Command::sub: _memory[_ptr]--; return;
             case Command::shift_l:
-                assert(--_ptr >= 0);
+                assert (--_ptr >= 0);
                 return;
             case Command::shift_r:
                 assert(++_ptr < _memory.size());
