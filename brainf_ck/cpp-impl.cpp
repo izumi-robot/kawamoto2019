@@ -4,9 +4,12 @@
 #include <fstream>
 #include <iostream>
 #include <cstdint>
+#include <cassert>
+
 
 namespace brainf_ck {
     using inttype = std::int32_t;
+    using Memory = std::vector<inttype>;
 
     enum class Command : char
     {
@@ -16,18 +19,59 @@ namespace brainf_ck {
         nest_in = '[', nest_out = ']'
     };
 
-    class ProgramExecutor
+    class ExecutorBase
     {
     public:
         virtual inttype get_value() = 0;
         virtual void eval_cmd(const Command &) = 0;
     };
 
+    class ProgramExecutor : public ExecutorBase {
+    private:
+        Memory _memory;
+        int _ptr;
+        std::istream &_istr;
+        std::ostream &_ostr;
+
+    public:
+        ProgramExecutor(std::istream &istr = std::cin, std::ostream &ostr = std::cout)
+            : _memory(256, 0), _ptr(0), _istr(istr), _ostr(ostr) {}
+
+        inttype get_value() override
+        {
+            return _memory[_ptr];
+        }
+
+        void eval_cmd(const Command &cmd) override
+        {
+            switch (cmd)
+            {
+            case Command::add: _memory[_ptr]++; return;
+            case Command::sub: _memory[_ptr]--; return;
+            case Command::shift_l:
+                assert (--_ptr >= 0);
+                return;
+            case Command::shift_r:
+                assert(++_ptr < _memory.size());
+                return;
+            case Command::char_in:
+                char buff;
+                _istr >> buff;
+                _memory[_ptr] = inttype(buff);
+                return;
+            case Command::char_out:
+                _ostr << char(_memory[_ptr]);
+                return;
+            default: return;
+            }
+        }
+    };
+
     class ProgramNode
     {
     public:
         virtual operator std::string () = 0;
-        virtual void execute(ProgramExecutor *) = 0;
+        virtual void execute(ExecutorBase *) = 0;
     };
 
     using ProgramNodes = std::vector<ProgramNode*>;
@@ -55,7 +99,7 @@ namespace brainf_ck {
             }
         }
 
-        void execute(ProgramExecutor *exe_p) override
+        void execute(ExecutorBase *exe_p) override
         {
             if (exe_p == nullptr) return;
             exe_p->eval_cmd(value);
@@ -68,7 +112,7 @@ namespace brainf_ck {
         ProgramNodes *values;
 
     public:
-        ProgramTree() : values(nullptr) {}
+        ProgramTree() : values(new ProgramNodes()) {}
         ProgramTree(ProgramNodes *nodes) : values(nodes) {}
 
         operator std::string () override
@@ -80,7 +124,7 @@ namespace brainf_ck {
             return res + "]";
         }
 
-        void execute(ProgramExecutor *exe_p) override
+        void execute(ExecutorBase *exe_p) override
         {
             if (exe_p == nullptr) return;
             while (exe_p->get_value() != 0) {
@@ -89,17 +133,16 @@ namespace brainf_ck {
                 }
             }
         }
-    };
 
-    class Memory final : private std::vector<inttype>
-    {
-    private:
-        int _ptr;
-    public:
-        Memory() : std::vector<inttype>(256, 0), _ptr(0) {}
+        void add_node(ProgramNode *node)
+        {
+            values->push_back(node);
+        }
 
-        using std::vector<inttype>::size;
-        using std::vector<inttype>::operator[];
+        ProgramNodes *get_values()
+        {
+            return values;
+        }
     };
 
     ProgramNodes* parse_program(const std::string &src) {
@@ -144,6 +187,7 @@ int main(int argc, char* argv[])
         return 1;
     }
 
+    // read source
     std::ifstream ifs(argv[1], std::ios::in);
     if (!ifs) {
         std::cerr
@@ -160,8 +204,9 @@ int main(int argc, char* argv[])
     ifs.close();
 
     brainf_ck::ProgramNodes *nodes = brainf_ck::parse_program(source);
+    brainf_ck::ProgramExecutor *executor = new brainf_ck::ProgramExecutor();;
     for (brainf_ck::ProgramNode *node : *nodes) {
-        std::cout << std::string(*node);
+        node->execute(executor);
     }
     std::cout << std::endl;
 }
