@@ -6,18 +6,23 @@ import java.util.ListIterator;
 //import memory.MemoryIterator;
 
 public class Memory extends ArrayList<Integer> {
-    /**
-     *
-     */
     private static final long serialVersionUID = 1L;
+
+    public MemoryIterator memoryIterator() {
+        return new MemoryIterator(this);
+    }
+
+    public MemoryIterator memoryIterator(int index) {
+        return new MemoryIterator(this, index);
+    }
 
     @Override
     public ListIterator<Integer> listIterator() {
-        return new MemoryIterator(this);
+        return memoryIterator();
     }
 
     @Override
     public ListIterator<Integer> listIterator(int index) {
-        return new MemoryIterator(this, index);
+        return memoryIterator(index);
     }
 }

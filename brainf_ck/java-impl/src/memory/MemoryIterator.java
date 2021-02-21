@@ -16,9 +16,7 @@ public class MemoryIterator implements ListIterator<Integer> {
     public MemoryIterator(List<Integer> list) { this(list, 0); }
 
     @Override
-    public boolean hasNext() {
-        return index < list.size();
-    }
+    public boolean hasNext() { return index < list.size(); }
 
     @Override
     public Integer next() {
@@ -27,9 +25,7 @@ public class MemoryIterator implements ListIterator<Integer> {
     }
 
     @Override
-    public boolean hasPrevious() {
-        return index > 0;
-    }
+    public boolean hasPrevious() { return index > 0; }
 
     @Override
     public Integer previous() {
@@ -38,9 +34,7 @@ public class MemoryIterator implements ListIterator<Integer> {
     }
 
     @Override
-    public int nextIndex() {
-        return index;
-    }
+    public int nextIndex() { return index; }
 
     @Override
     public int previousIndex() {
@@ -49,18 +43,21 @@ public class MemoryIterator implements ListIterator<Integer> {
     }
 
     @Override
-    public void remove() {
-        list.remove(index);
-    }
+    public void remove() { list.remove(index); }
 
     @Override
-    public void set(Integer e) {
-        list.set(index, e);
-    }
+    public void set(Integer e) { list.set(index, e); }
 
     @Override
-    public void add(Integer e) {
-        list.add(index, e);
+    public void add(Integer e) { list.add(index, e); }
+
+    public Integer getNext() {
+        if (!hasNext()) { list.add(0); }
+        return list.get(index);
     }
 
+    public Integer getPrevious() {
+        if (!hasPrevious()) { return null; }
+        return list.get(index - 1);
+    }
 }

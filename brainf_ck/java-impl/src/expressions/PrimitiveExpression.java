@@ -15,11 +15,22 @@ public abstract class PrimitiveExpression implements Expression {
         this(expr_str, 1);
     }
 
+    @Override
     public String toString() {
         String res = "";
         for (int i = 0; i < count; i++) {
             res += expr_str;
         }
         return res;
+    }
+
+    public boolean set_count(int count) {
+        if (count <= 0) { return false; }
+        this.count = count;
+        return true;
+    }
+
+    public boolean change_count_by(int offset) {
+        return set_count(count + offset);
     }
 }
