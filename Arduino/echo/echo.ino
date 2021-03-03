@@ -1,6 +1,6 @@
-#include <echo.h>
+#include <robo2019.h>
 
-robo::Echo e(2, 3);
+robo::EchoSensor e = robo::EchoSensor(9, 8);
 
 void setup() {
     e.setup();
@@ -8,6 +8,7 @@ void setup() {
 }
 
 void loop() {
+    Serial.print("Read: ");
     Serial.println(e.read());
     delay(1000);
 }
