@@ -147,7 +147,7 @@ BNO055 &bno055 = BNO055::instance();
 
 #else /* ARDUINO */
 
-static_assert(0, "This liblary is for Arduino.");
+#error This liblary is for Arduino.
 
 #endif /* ARDUINO */
 

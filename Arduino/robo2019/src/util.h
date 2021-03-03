@@ -136,7 +136,7 @@ void string::rjust(String *target, uint8_t width, const char &padding)
 
 #else /* ARDUINO */
 
-static_assert(0, "This liblary is for Arduino.");
+#error This liblary is for Arduino.
 
 #endif /* ARDUINO */
 

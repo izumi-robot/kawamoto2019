@@ -58,7 +58,7 @@ public:
             }
         }
 
-        //! 
+        //!
         inline const int &left()  const { return _list[0]; }
         inline const int &right() const { return _list[1]; }
         inline const int &back()  const { return _list[2]; }
@@ -114,7 +114,7 @@ public:
 
 #else /* ARDUINO */
 
-static_assert(0, "This liblary is for Arduino.");
+#error This liblary is for Arduino.
 
 #endif /* ARDUINO */
 

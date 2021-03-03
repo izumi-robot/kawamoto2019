@@ -182,7 +182,7 @@ bool robo::I2CReaderWithAddr::read_data(uint8_t *buff, uint16_t data_size)
 
 #else /* ARDUINO */
 
-static_assert(0, "This liblary is for Arduino.");
+#error This liblary is for Arduino.
 
 #endif /* ARDUINO */
 

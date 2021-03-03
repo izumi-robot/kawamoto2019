@@ -435,7 +435,7 @@ TMP bool operator!=(const T_VEC2D &lh, const T_VEC2D &rh)
 
 #else /* ARDUINO */
 
-static_assert(0, "This liblary is for Arduino.");
+#error This liblary is for Arduino.
 
 #endif /* ARDUINO */
 
