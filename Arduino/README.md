@@ -1,6 +1,6 @@
 # Arduino
 
-この文書では主に、VSCodeでのArduinoの連携方法について紹介します。セットアップ的な部分は、Surfaceでは既に行ってあります。自分のパソコンに入れようと思っているのでなければ、飛ばしてください。セットアップの紹介後、VSCodeでコードを機体に読み込ませる方法などを紹介します。
+この文書では主に、VS CodeでのArduinoの連携方法について紹介します。セットアップ的な部分は、Surfaceではすでに行ってあります。自分のパソコンに入れようと思っているのでなければ、飛ばしてください。セットアップの紹介後、VS Codeでコードを機体に読み込ませる方法などを紹介します。
 
 参考:
 
@@ -12,14 +12,14 @@
 * https://marketplace.visualstudio.com/items?itemName=vsciot-vscode.vscode-arduino
 * https://github.com/bfxdev/Arduino/blob/master/VSCode/README.md
 
-詳しいことはこちらを見てください。下の2つは公式によるドキュメントです。英語なのでおすすめはしません。
+詳しいことはこちらを見てください。下の2つは公式によるドキュメントです。英語なのでオススメはしません。
 
-前提として、ArduinoIDEとVSCodeが入っている必要があります。パス名やキーボードショートカットなど、OSによって異なる部分はWindowsのものを記述します。他のOSの方は適宜読み替えるか、調べるかしてください。VSCodeの操作で分からないことは`~\kawamoto\README.md`を見てください。
+前提として、ArduinoIDEとVS Codeが入っている必要があります。パス名やキーボードショートカットなど、OSによって異なる部分はWindowsのものを記述します。他のOSの方は適宜読み替えるか、調べるかしてください。VS Codeの操作で分からないことは`~\kawamoto\README.md`を見てください。
 
 ## 目次
 
 * 拡張機能のインストール
-* VSCodeの設定変更
+* VS Codeの設定変更
 * プロジェクトの準備
 * 基本的な使い方
 * 終わりに
@@ -28,14 +28,14 @@
 
 ## 拡張機能のインストール
 
-Arduinoという名前の拡張機能です。アイコンにもArduinoとあります。インストールすると、C/C++という拡張機能も自動でインストールされます。これをインストールすることで、VSCodeからArduino関連の操作を手軽に行えるようになります。
+Arduinoという名前の拡張機能です。アイコンにもArduinoとあります。インストールすると、C/C++という拡張機能も自動でインストールされます。これをインストールすることで、VS CodeからArduino関連の操作を手軽に行えるようになります。
 
-## VSCodeの設定変更
+## VS Codeの設定変更
 
-まずはVSCodeにArduinoのパスを通します。VSCodeの設定にある、「Arduino: Path」を編集します。
-ArduinoIDEのプログラムがあるフォルダのパスを設定します。Windowsだと(多分)`C:\Program Files (x86)\Arduino`です。
+まずはVS CodeにArduinoのパスを通します。VS Codeの設定にある、「Arduino: Path」を編集します。
+ArduinoIDEのプログラムがあるフォルダーのパスを設定します。Windowsだと(多分)`C:\Program Files (x86)\Arduino`です。
 
-次に、文字化けを予防します。この内容は、Windowsを使っている方のみになります。`C:\Users\<username>\.vscode\extensions\vsciot-vscode.vscode-arduino-<version>\out\src\common\util.js`(`<>`で囲まれた部分は自身の環境に合わせて読み替えてください)を編集します。慣れるためにも、VSCodeで開いて編集することをおすすめします。
+次に、文字化けを予防します。この内容は、Windowsを使っている方のみになります。`C:\Users\<username>\.vscode\extensions\vsciot-vscode.vscode-arduino-<version>\out\src\common\util.js`(`<>`で囲まれた部分は自身の環境に合わせて読み替えてください)を編集します。慣れるためにも、VS Codeで開いて編集することをオススメします。
 
 215行目あたりにある次の部分をコメントアウトします:
 
@@ -71,22 +71,22 @@ ArduinoIDEのプログラムがあるフォルダのパスを設定します。W
 */
 ```
 
-コメントアウトができたら保存して、VSCodeを再起動してください。
+コメントアウトができたら保存して、VS Codeを再起動してください。
 
 ## プロジェクトの準備
 
-それでは、実際のプロジェクトを開いて設定していきます。以降はVSCodeでプロジェクトのフォルダ(以降はメインフォルダと呼びます)をVSCodeで開いた上で行います。
+それでは、実際のプロジェクトを開いて設定します。以降はVS Codeでプロジェクトのフォルダー(以降はメインフォルダーと呼びます)を開いて作業します。
 
-まずはVSCodeの設定にある「C_Cpp: Intelli Sense Engine」を編集します。
+まずはVS Codeの設定にある「C_Cpp: Intelli Sense Engine」を編集します。
 ※「C_Cpp: Intelli Sense Engine Fallback」ではないです。
 **ワークスペースの設定を**「Default」から「Tag Parser」に変換します。ユーザーの設定を変更すると、**ほかのプログラムに影響が出る**からです。「Default」だと本来は存在しないエラーが出ます。「Tag Parser」にすることでそれを回避しています。
 
 次に機体のボードタイプを選択します。コマンドパレットでArduinoと検索し、結果の中から「Arduino: Board Config」を選択し、ボードタイプを選択します。
 
-ここまでの作業でメインフォルダ内に`.vscode`というフォルダが追加され、その中に`settings.json`と`arduino.json`と`c_cpp_properties.json`という3つのJSONファイル(JSONについては`kawamoto\README.md`を読んでください)が追加されたと思います。各ファイルの役割は、次のようになっています。
+ここまでの作業でメインフォルダー内に`.vscode`というフォルダーが追加され、その中に`settings.json`、`arduino.json`、`c_cpp_properties.json`の3つのJSONファイル(JSONについては`kawamoto\README.md`を読んでください)が追加されたと思います。各ファイルの役割は、次のようになっています。
 
-* `settings.json` - そのフォルダ内限定の設定情報
-* `arduino.json` - Arduino の設定情報
+* `settings.json` - そのフォルダー内限定の設定情報
+* `arduino.json` - Arduinoの設定情報
 * `c_cpp_properties.json` - C/C++パーサーの設定情報
 
 となっています。Arduinoの`#include`関係のパスを通すために、`c_cpp_properties.json`を次のように変更します:
@@ -129,19 +129,19 @@ ArduinoIDEのプログラムがあるフォルダのパスを設定します。W
 
 ## 基本的な使い方
 
-コマンドパレットというVSCodeの機能を使って何らかのアクションを行う方法を紹介します。
+コマンドパレットというVS Codeの機能を使って何らかのアクションを行う方法を紹介します。
 
 * `Arduino: Board Manager` - ボード用のパッケージを管理します。サードパーティ製のパッケージを追加できるらしいです。
 * `Arduino: Change Baud Rate` - シリアル通信速度を変更します。初期値は9600です。
 * `Arduino: Change Board Type` - ボードタイプ、プラットフォームを変更します。
-* `Arduino: Close Serial Monitor` - シリアルモニタを閉じます。
+* `Arduino: Close Serial Monitor` - シリアルモニターを閉じます。
 * `Arduino: Examples` - スケッチの例を表示します。
 * `Arduino: Initialize` - スケッチの雛形を作ります。
 * `Arduino: Library Manager` - ライブラリを探索、管理します。
-* `Arduino: Open Serial Monitor` - シリアルモニタを開きます。
+* `Arduino: Open Serial Monitor` - シリアルモニターを開きます。
 * `Arduino: Select Serial Port` - シリアルポートを変更します。
 * `Arduino: Send Text to Serial Port` - 現在のシリアルポートを介して1行のテキストを送信します。
-* `Arduino: Upload` - スケッチをコンパイル及びアップロードします。
+* `Arduino: Upload` - スケッチをコンパイルおよびアップロードします。
 * `Arduino: Upload Using Programmer` - 外部プログラマを使用してアップロードします。
 * `Arduino: Verify` - スケッチをコンパイルします。文法エラーなどがないか確認できます。
 
@@ -153,26 +153,26 @@ ArduinoIDEのプログラムがあるフォルダのパスを設定します。W
 
 * `<Select Board Type>`、またはArduinoのボード名が書いてあるボタンでArduino: Board Configを実行できます。
 * `<Select Serial Port>`というボタンでArduino: Select Serial Portが実行できます。
-* これら2つのボタンの間にある電源プラグのボタンを押すとシリアルモニタが開きます。シリアル通信でのログが出力されます。
+* これら2つのボタンの間にある電源プラグのボタンを押すとシリアルモニターが開きます。シリアル通信でのログが出力されます。
 
-`.ino`ファイルを編集中、画面右上に青いチェックマークがついたボタンと、青い点が並んだボタンが表示されます。1つ目のボタンでは`Arduino: Verify`、2つ目では`Arduino: Upload`が実行されます。
+`.ino`ファイルを編集中、`Arduino: Verify`と`Arduino: Upload`のボタンが画面右上に表示されます。
 
 ## 終わりに
 
-VSCodeでのArduinoの使い方の紹介は以上です。これ読んで分からなかったところは調べてください。
+VS CodeでのArduinoの使い方の紹介は以上です。これ読んで分からなかったところは調べてください。
 Arduinoの入門で参考になったサイトのリンクを載せておきます。
 
 https://deviceplus.jp/hobby/arduino-listicle-01/
 
 ## 追記
 
-**VSCodeで編集、ArduinoIDEで実行** (2020/11/12追記)
+**VS Codeで編集、ArduinoIDEで実行** (2020/11/12追記)
 
 ここまで長々と書きましたが、正直こっちの方法のほうが簡単です。
 
-まずはArduinoIDEの設定を編集します。Arduinoを開き、ファイル > 環境設定と進みます。「外部エディタを使用する」にチェックを入れます。設定ウィンドウ右下のOKボタンを押すと、コード編集画面が暗くなって編集ができなくなります。
+まずはArduinoIDEの設定を編集します。Arduinoを開き、ファイル > 環境設定と進みます。「外部エディターを使用する」にチェックを入れます。設定ウィンドウ右下のOKボタンを押すと、コード編集画面が暗くなって編集ができなくなります。
 
-次に、メインフォルダ(プロジェクトのフォルダ)をVSCodeで開きます。ArduinoIDEは閉じないでください。「プロジェクトの準備」節と同様の操作を行います。プログラムを編集し、上書き保存(Ctrl+S)するとプログラムの変更がArduinoIDEにも反映されます。タイトルにもつけましたが、VSCodeでプログラムを編集し、ArduinoIDEを開いて実行という方法が取れます。
+次に、メインフォルダー(プロジェクトのフォルダー)をVS Codeで開きます。ArduinoIDEは閉じないでください。「プロジェクトの準備」節と同様の操作を行います。プログラムを編集し、上書き保存(Ctrl+S)するとプログラムの変更がArduinoIDEにも反映されます。タイトルにもつけましたが、VS Codeでプログラムを編集し、ArduinoIDEを開いて実行という方法が取れます。
 
 **ArduinoIDEの設定をいい感じにする** (2020/11/12追記)
 
@@ -184,7 +184,7 @@ IDEの「環境設定」でもある程度はいじれるのですが、もっ�
 * Linux - `~/.arduino15/preferences.txt`
 
 このファイルは壊すとArduinoIDEが動かなくなるので、コピーを作り、原本を編集してIDEが動かなくなったら元に戻すという形を取りましょう。
-このファイルの記述形式は`<key>=<value>`です。例として、`editor.advanced`を`true`に設定して下さい(既に設定されている項目がないか探して、なければ適当な所に新しい行を追加して書いて下さい)。IDEのエディタが少し便利になります。他にも便利な設定がいくつかあります。気になったら下のリンクを参考にして下さい。
+このファイルの記述形式は`<key>=<value>`です。例として、`editor.advanced`を`true`に設定してください(すでに設定されている項目がないか探して、なければ適当な所に新しい行を追加して書いてください)。IDEのエディターが少し便利になります。他にも便利な設定がいくつかあります。気になったら下のリンクを参考にしてください。
 
 参考:
 https://jumbleat.comk/2018/08/25/customize_ide_preferences_file/
