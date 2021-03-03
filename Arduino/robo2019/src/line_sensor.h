@@ -3,6 +3,8 @@
  * @brief ラインセンサー操作用のクラス定義
  */
 
+#pragma once
+
 #ifndef ROBO2019_LINE_SENSOR_H
 #define ROBO2019_LINE_SENSOR_H
 
@@ -36,7 +38,7 @@ public:
      * @param[in] c 検査する値
      * @return 白色かどうか
      */
-    static bool iswhite(int);
+    static bool iswhite(int c);
 
     LineSensor() = delete;
     /**

@@ -3,6 +3,8 @@
  * @brief 自作のベクトル型
  */
 
+#pragma once
+
 #ifndef ROBO2019_VEC2D_H
 #define ROBO2019_VEC2D_H
 

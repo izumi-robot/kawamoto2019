@@ -3,6 +3,8 @@
  * @brief OpenMVの情報を読み取るためのクラス定義
  */
 
+#pragma once
+
 #ifndef ROBO2019_OPENMV_H
 #define ROBO2019_OPENMV_H
 
@@ -33,7 +35,7 @@ public:
      * @param[in] pos_on_fail 読み取りに失敗した時に返される座標
      * @return CameraPos OpenMV上の座標
      */
-    CameraPos read_pos(const CameraPos &);
+    CameraPos read_pos(const CameraPos & pos_on_fail);
 };
 
 CameraPos OpenMVReader::read_pos(const CameraPos &pos_on_fail = CameraPos{0, 0})

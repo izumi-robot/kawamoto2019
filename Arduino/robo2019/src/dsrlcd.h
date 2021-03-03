@@ -3,6 +3,8 @@
  * @brief ダイセンのLCD操作用の関数群
  */
 
+#pragma once
+
 #ifndef ROBO2019_DSRLCD_H
 #define ROBO2019_DSRLCD_H
 
@@ -17,6 +19,10 @@
  */
 namespace robo {
 
+/**
+ * @namespace dsr_lcd
+ * @brief ダイセンのLCD操作用の関数群
+ */
 namespace dsr_lcd {
 
     void setup();

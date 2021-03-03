@@ -42,7 +42,7 @@ public:
      * @return データのサイズ(byte)
      * @details リクエストに失敗した場合は0。`Wire.read()`は行われない。
      */
-    uint16_t read_data_size(uint8_t);
+    uint16_t read_data_size(uint8_t addr);
 
     /**
      * @fn bool read_data(char *buff, uint8_t addr, uint16_t data_size)
@@ -57,7 +57,7 @@ public:
      *          読み取り失敗となった場合、`Wire.read()`は行われない。
      *          buffのサイズを確認せずに書き込むため、バッファオーバーランを起こす可能性がある。
      */
-    bool read_data(char *, uint8_t, uint16_t);
+    bool read_data(char * buff, uint8_t addr, uint16_t data_size);
 
     /**
      * @fn bool read_data(uint8_t *buff, uint8_t addr, uint16_t data_size)
@@ -68,7 +68,7 @@ public:
      * @return 読み取りに成功したかどうか
      * @sa bool read_data(char *buff, uint8_t addr, uint16_t data_size)
      */
-    bool read_data(uint8_t *, uint8_t, uint16_t);
+    bool read_data(uint8_t * buff, uint8_t addr, uint16_t data_size);
 };
 
 /**

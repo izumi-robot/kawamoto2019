@@ -3,6 +3,8 @@
  * @brief 割り込み用のクラス定義
  */
 
+#pragma once
+
 #ifndef ROBO2019_INTERRUPT_H
 #define ROBO2019_INTERRUPT_H
 
@@ -22,8 +24,9 @@ namespace robo {
 #define INTERRUPT Interrupt<in_pin, mode>
 
 /**
- * @brief 割り込み用のテンプレートクラス
+ * @brief 割り込み用のテンプレートクラス(シングルトン)
  * @tparam in_pin 割り込みで監視するピン番号
+ * @tparam mode 割り込みの監視モード。デフォルトはRISING
  */
 template<int in_pin, int mode=RISING>
 class Interrupt : public robo::SingletonBase<INTERRUPT>

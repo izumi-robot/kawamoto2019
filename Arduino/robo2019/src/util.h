@@ -3,6 +3,8 @@
  * @brief ユーティリティ
  */
 
+#pragma once
+
 #ifndef ROBO2019_UTIL_H
 #define ROBO2019_UTIL_H
 

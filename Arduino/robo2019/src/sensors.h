@@ -3,6 +3,8 @@
  * @brief センサー統合用のクラス定義
  */
 
+#pragma once
+
 #ifndef ROBO2019_SENSORS_H
 #define ROBO2019_SENSORS_H
 

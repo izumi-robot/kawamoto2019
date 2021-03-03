@@ -3,6 +3,8 @@
  * @brief Pixy2操作用の関数群
  */
 
+#pragma once
+
 #ifndef ROBO2019_PIXY_H
 #define ROBO2019_PIXY_H
 

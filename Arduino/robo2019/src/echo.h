@@ -3,6 +3,8 @@
  * @brief 超音波センサーHC-SR04操作用のクラス定義
  */
 
+#pragma once
+
 #ifndef ROBO2019_ECHO_H
 #define ROBO2019_ECHO_H
 

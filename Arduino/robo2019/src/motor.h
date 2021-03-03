@@ -3,6 +3,8 @@
  * @brief Daisen MCB 操作用のクラス定義
  */
 
+#pragma once
+
 #ifndef ROBO2019_MOTOR_H
 #define ROBO2019_MOTOR_H
 
@@ -23,8 +25,8 @@ class MotorGetter;
 class MotorSetter;
 
 /**
- * @brief モーター操作用のシングルトンクラス
- * @details ダイセンのMCBを操作するためのシングルトンクラス。モーターの配置についてはREADMEを参照。
+ * @brief MCB操作用のシングルトンクラス
+ * @details モーターの配置についてはREADMEを参照
  */
 class Motor : public robo::SingletonBase<Motor>
 {

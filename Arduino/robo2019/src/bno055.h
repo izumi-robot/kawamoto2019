@@ -3,6 +3,8 @@
  * @brief BNO055センサー操作用のクラス定義
  */
 
+#pragma once
+
 #ifndef ROBO2019_BNO055_H
 #define ROBO2019_BNO055_H
 
@@ -26,49 +28,40 @@ namespace robo {
  * @brief Adafruit_BNO055の子クラス
  * @note シングルトン
  */
-class BNO055 : public robo::SingletonBase<BNO055>, public virtual Adafruit_BNO055
+class BNO055 final : public virtual Adafruit_BNO055
 {
-    friend class robo::SingletonBase<BNO055>;
 private:
     //! bnoを検知したかどうか
-    bool _detected;
+    bool _detected = false;
     //! 最新の、ジャイロセンサーで算出した方向
-    double _last_gyro_dir;
+    double _last_gyro_dir = 0;
     /**
      * @brief 地磁気のズレ
      * @details `0`が指す向きの、最初の向きとのズレ
      */
-    double _geomag_diff;
+    double _geomag_diff = 0;
 
-protected:
-    /**
-     * @brief コンストラクタ
-     */
-    BNO055()
-        : Adafruit_BNO055(55), robo::SingletonBase<BNO055>(),
-        _detected(false), _last_gyro_dir(0), _geomag_diff(0) {}
+public:
+    using Adafruit_BNO055::Adafruit_BNO055;
 
 public:
     /**
-     * @fn void setup();
      * @brief bno055のセットアップを行う
      * @note 全体のsetup内で呼ばないと他の機能が使えない
      */
     void setup();
     /**
-     * @fn double get_geomag_direction()
      * @brief 現在向いている方向をラジアンで取得
-     * @return dst 現在向いている方向
+     * @return 現在向いている方向
      * @note ラジアンの値は、0を最初の向きとして、そこから正回転が反時計回り
      */
     double get_geomag_direction();
     /**
-     * @fn void get_geomag_direction(double *dst)
      * @brief 現在向いている方向をラジアンで取得
-     * @param[out] dst 現在向いている方向
+     * @param{out} dst 現在向いている方向
      * @note ラジアンの値は、0を最初の向きとして、そこから正回転が反時計回り
      */
-    void get_geomag_direction(double *);
+    void get_geomag_direction(double *dst);
 
     /**
      * @fn bool detected()
@@ -133,15 +126,12 @@ double BNO055::update_gyro_dir()
         _last_gyro_dir = 0.0;
         return _last_gyro_dir;
     }
-    double gyro = this->getVector(Adafruit_BNO055::VECTOR_GYROSCOPE).x();
+    double gyro = Adafruit_BNO055::getVector(Adafruit_BNO055::VECTOR_GYROSCOPE).x();
     uint64_t diff_ms = now_ms - last_ms;
     last_ms = now_ms;
     _last_gyro_dir += gyro * diff_ms / 1000.0;
     return _last_gyro_dir;
 }
-
-//! シングルトンオブジェクトへの参照
-BNO055 &bno055 = BNO055::instance();
 
 } // namespace robo
 
