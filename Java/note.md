@@ -4,7 +4,7 @@ tags: VSCode Java Java入門
 author: msakamoto_sf
 slide: false
 ---
-VSCode で Java プログラミングを始めるときの、最初の一歩についてメモです。
+VS Code で Java プログラミングを始めるときの、最初の一歩についてメモです。
 2020-04 時点で、以下のバージョンで試しています。
 
 - Windows 10 Pro 日本語版

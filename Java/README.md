@@ -80,6 +80,40 @@ PS C:\path\to\directory>
 https://qiita.com/pitan109/items/ba62ac1973f727ba719f
 こっちのほうが詳しく書いてあります。
 
-## use in VSCode
+## use in VS Code
 
-拡張機能「Java Extension Pack」をインストールします。少し時間がかかります。
+VS Code内でのJavaの使用方法です。
+
+まずは拡張機能「Java Extension Pack」をインストールします。名前の通り複数の拡張機能をまとめたものなので、少し時間がかかります。
+
+インストールしたら`Ctrl + ,`で設定を開き、`java.home`をインストールしたJDKがある場所に設定します。`C:\Program Foles(x86)\Java\openjdk-14.0.2\bin\`といった具合です。jdk内の`bin`フォルダーまで指定してください。
+
+これで準備完了です。以降は使い方を説明します。
+
+**プロジェクトを作る**
+
+1. コマンドパレットを開く(`Ctrl + Shift + P`)
+2. `Java: Create Java Project`を選択
+3. プロジェクトを作るフォルダーを設定
+
+これでプロジェクトが作成できます。プロジェクト内のファイル構造は以下のとおりです。
+
+```
+ProjectFolder/
+    |- src/
+    |- app/
+    |   |- App.java
+    |- README.md
+```
+
+**実行する**
+
+`main`関数は`App.java`内にあります。`Run | Build`のオプションが`main`関数の上に表示されているはずです。
+
+**余談**
+
+実は、こんなに面倒なことをしなくても良かったりします。`main`関数の上には必ず`Run | Build`が表示されます。また、`.java`ファイルを作ると自動でそのファイル名と同じ名前のクラスができます。
+
+## 参考
+
+
