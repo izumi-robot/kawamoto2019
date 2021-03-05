@@ -49,7 +49,7 @@ Java HotSpot(TM) 64-Bit Server VM (build 14.0.2+12-46, mixed mode, sharing)
 
 次はPowerShellでの使用例です。
 
-```
+```PowerShell
 PS C:\path\to\directory> ls
 
 Mode                 LastWriteTime         Length Name

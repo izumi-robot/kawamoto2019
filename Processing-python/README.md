@@ -21,7 +21,7 @@ VSCode内の設定を開き、ワークスペース内の`Python > Linting: Enab
 
 こうすることで`processing-py`内に`.vscode`というフォルダが自動で作成され、その中に`settings.json`というものができます。中身はこんな感じです。
 
-```json
+```json:settings.json
 {
     "python.linting.enabled": false
 }
