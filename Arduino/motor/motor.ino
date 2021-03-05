@@ -1,44 +1,24 @@
-#include <robo2019.h>
+#include "lib.h"
 
-using robo::EchoSensor;
-using robo::motor;
-
-double dir = - PI / 2;
-bool changed = false;
-
-namespace echo {
-    EchoSensor sensors[] = {EchoSensor(7, 6), EchoSensor(4, 5), EchoSensor(8, 9)};
-    EchoSensor &left = sensors[0], &right = sensors[1], &back = sensors[2];
-    int values[] = {0, 0, 0};
-    int &left_v = values[0], &right_v = values[1], &back_v = values[2];
-    void setup()
-    {
-        for (int i = 0; i < 3; i++) sensors[i].setup();
-    }
-    void update()
-    {
-        for (int i = 0; i < 3; i++) {
-            values[i] = sensors[i].read();
-        }
-    }
-}
+robo::Motor2 motor(Serial);
 
 void setup()
 {
     Serial.begin(9600);
-    motor.setup();
-    echo::setup();
+    motor.setup(9600);
 }
 
 void loop()
 {
-    Serial.println("======================");
-    echo::update();
-    for (auto &v : echo::values) Serial.println(v);
-    if (!changed && echo::right_v < 20) {
-        dir *= -1;
-        changed = true;
+    int ms = millis() / 1000 % 5;
+    if (0 < ms && ms < 1) {
+        motor.stop();
+    } else if (ms < 2) {
+        motor.set_all_motors(70, 70, 70, 70);
+    } else if (ms < 3) {
+        motor.set_left_right(50, -20);
+    } else if (ms < 4) {
+        motor.set_rotate(false, 50);
     }
-    motor.set.direction_and_speed(dir, 80);
-    delay(500);
+    delay(100);
 }

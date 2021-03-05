@@ -69,21 +69,24 @@ public:
      * @brief Construct a new Motor object
      * @note シリアルポートがSerialであるものとして初期化
      */
-    Motor() : _powers{0, 0, 0, 0}, _serial(Serial) {}
+    Motor2() : _powers{0, 0, 0, 0}, _serial(Serial) {}
     /**
      * @brief Construct a new Motor object
      * @param serial MCBがつながっているシリアルポート
      */
-    Motor(HardwareSerial& serial) : _powers{0, 0, 0, 0}, _serial(serial) {}
+    Motor2(HardwareSerial& serial) : _powers{0, 0, 0, 0}, _serial(serial) {}
 
     /** @brief 停止させる */
     void stop();
 
     /**
      * @brief モーターのセットアップを行う
+     * @param[in] baud MCBとの通信速度
+     * @param[in] config 通信設定
      * @note 全体のsetup内で呼ばないと他の機能が使えない
+     *       引数は https://garretlab.web.fc2.com/arduino_reference/language/functions/communication/serial/begin.html を参照
      */
-    void setup();
+    void setup(const unsigned long &baud, int8_t config);
 
     /**
      * @brief モーターのパワーを取得する
@@ -211,7 +214,7 @@ void robo::Motor2::stop()
 
 void robo::Motor2::setup(const unsigned long &baud = 19200, int8_t config = SERIAL_8N1)
 {
-    if (!_serial) _serial.begin(baud, confing);
+    if (!_serial) _serial.begin(baud, config);
     stop();
 }
 
@@ -246,8 +249,8 @@ void robo::Motor2::set_all_motors(int8_t m1, int8_t m2, int8_t m3, int8_t m4)
     char *buf_ptr = buffer;
     int8_t ps[] = { m1, m2, m3, m4 };
     for (int pin = 1; pin <= 4; pin++) {
-        uint8_t &p = ps[i];
-        if (!_update(i + 1, p)) continue;
+        int8_t &p = ps[pin - 1];
+        if (!_update(pin, p)) continue;
         robo::Motor2::power_str(buf_ptr, pin, p);
         buf_ptr[5] = '\n';
         buf_ptr += 6;
