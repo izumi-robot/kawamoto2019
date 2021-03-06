@@ -20,9 +20,6 @@ public:
 class I2CReaderWithAddr : public I2CReader
 {
 public:
-    using I2CReader::begin;
-    using I2CReader::pass_data;
-
     const uint8_t address;
     I2CReaderWithAddr(uint8_t addr) : I2CReader(), address(addr) {}
 
