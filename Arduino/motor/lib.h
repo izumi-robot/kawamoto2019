@@ -180,7 +180,8 @@ void robo::Motor2::power_str(char *dst, uint8_t pin, int8_t power)
         dst,
         "%1d%c%03d",
         pin,
-        power < 0 ? 'F' : 'R'
+        power < 0 ? 'F' : 'R',
+        abs(power)
     );
 }
 

@@ -10,7 +10,7 @@ void setup()
 
 void loop()
 {
-    int ms = millis() / 1000 % 5;
+    int ms = millis() / 2000 % 5;
     if (0 < ms && ms < 1) {
         motor.stop();
     } else if (ms < 2) {
