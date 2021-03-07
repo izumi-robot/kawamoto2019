@@ -19,6 +19,7 @@
 #include "src/openmv.h"
 #include "src/motor.h"
 #include "src/bno055.h"
+#include "src/lcd.h"
 
 #else /* ARDUINO */
 
