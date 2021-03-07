@@ -12,7 +12,8 @@ namespace use_flag
         pixy  = true,
         bno   = true,
         motor = true,
-        lcd   = true;
+        lcd   = true,
+        debug = false;
 }
 
 
@@ -107,6 +108,7 @@ namespace sensors{
 enum class MotorFlag : int { stop, move, rotate };
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
+robo::Motor motor(Serial2);
 
 double spin_enter_dir(const double &ball_dir)
 {
@@ -146,7 +148,8 @@ void loop()
 {
     static robo::pixy::Camera_pos cam_pos;
     static int untrack_frame = 100;
-    static union { double dir; double power; } m_info;
+    // static union { double dir; double power; } m_info;
+    static double m_info;
     static long time;
 
     MotorFlag m_flag = MotorFlag::stop;
@@ -161,9 +164,9 @@ void loop()
             bw = LineSensor::iswhite(values.back());
         if (m_flag == MotorFlag::stop && lw || rw || bw) {
             m_flag = MotorFlag::move;
-            if (lw) { m_info.dir =  PI / 2 + (bw ? PI / 4 : 0); }
-            if (rw) { m_info.dir = -PI / 2 - (bw ? PI / 4 : 0); }
-            if (bw) { m_info.dir =  0; }
+            if (lw) { m_info =  PI / 2 + (bw ? PI / 4 : 0); }
+            if (rw) { m_info = -PI / 2 - (bw ? PI / 4 : 0); }
+            if (bw) { m_info =  0; }
         }
     }
 
@@ -171,7 +174,7 @@ void loop()
         double fdir = robo::bno055.get_geomag_direction();
         if (abs(fdir) > PI / 12) {
             m_flag = MotorFlag::rotate;
-            m_info.power = fdir * 80 / PI;
+            m_info = fdir * 80 / PI;
         }
         if (use_flag::lcd) {
             lcd.clear();
@@ -187,8 +190,8 @@ void loop()
             untrack_frame = 0;
             cam_pos = robo::pixy::get_pos(cam_pos);
             ball_dir = robo::pixy::pos2angle(cam_pos);
-            m_info.dir = ball_dir;
-            //m_info.dir = spin_enter_dir(ball_dir);
+            m_info = ball_dir;
+            //m_info = spin_enter_dir(ball_dir);
             if (use_flag::lcd) {
                 lcd.setCursor(0, 1);
                 lcd.print("detect");
@@ -210,13 +213,13 @@ void loop()
         switch (m_flag)
         {
         case MotorFlag::move:
-            motor.set.direction_and_speed(m_info.dir, 90);
+            motor.set.direction_and_speed(m_info, 90);
             break;
 
         case MotorFlag::rotate:
             motor.set.rotate(
-                m_info.power > 0,
-                min(abs(m_info.power), 40)
+                m_info > 0,
+                min(abs(m_info), 40)
             );
             break;
 

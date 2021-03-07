@@ -3,6 +3,8 @@
  * @brief I2C通信の読み取り用のクラス定義
  */
 
+#pragma once
+
 #ifndef ROBO2019_I2C_H
 #define ROBO2019_I2C_H
 
@@ -23,10 +25,10 @@ class I2CReader
 {
 public:
     /**
-     * @fn static void begin()
+     * @fn static void setup()
      * @brief I2C通信が行えるようにセットアップする
      */
-    static void begin();
+    static void setup();
 
     /**
      * @fn uint16_t pass_data()
@@ -78,10 +80,13 @@ public:
 class I2CReaderWithAddr : public I2CReader
 {
 public:
-    using I2CReader::begin;
-    using I2CReader::pass_data;
-
+    //! 保存するアドレス
     const uint8_t address;
+
+    /**
+     * @brief コンストラクター
+     * @param addr 保存するアドレス
+     */
     I2CReaderWithAddr(uint8_t addr) : I2CReader(), address(addr) {}
 
     /**
@@ -116,7 +121,7 @@ public:
 } // namespace robo
 
 
-void robo::I2CReader::begin()
+void robo::I2CReader::setup()
 {
     Wire.begin();
 }
