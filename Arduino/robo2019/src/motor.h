@@ -21,7 +21,7 @@ namespace robo
  * @brief MCB操作用のクラス
  * @details モーターの配置についてはREADMEを参照
  */
-class Motor2
+class Motor
 {
 public: // static functions
     /**
@@ -69,12 +69,12 @@ public:
      * @brief Construct a new Motor object
      * @note シリアルポートがSerialであるものとして初期化
      */
-    Motor2() : _powers{0, 0, 0, 0}, _serial(Serial) {}
+    Motor() : _powers{0, 0, 0, 0}, _serial(Serial) {}
     /**
      * @brief Construct a new Motor object
      * @param serial MCBがつながっているシリアルポート
      */
-    Motor2(HardwareSerial& serial) : _powers{0, 0, 0, 0}, _serial(serial) {}
+    Motor(HardwareSerial& serial) : _powers{0, 0, 0, 0}, _serial(serial) {}
 
     /** @brief 停止させる */
     void stop();
@@ -173,7 +173,7 @@ public:
 
 } // namespace robo
 
-void robo::Motor2::power_str(char *dst, uint8_t pin, int8_t power)
+void robo::Motor::power_str(char *dst, uint8_t pin, int8_t power)
 {
     if (dst == NULL) return;
     sprintf(
@@ -185,21 +185,21 @@ void robo::Motor2::power_str(char *dst, uint8_t pin, int8_t power)
     );
 }
 
-void robo::Motor2::power_str(String *dst, uint8_t pin, int8_t power)
+void robo::Motor::power_str(String *dst, uint8_t pin, int8_t power)
 {
     char buffer[8] = "";
-    robo::Motor2::power_str(buffer, pin, power);
+    robo::Motor::power_str(buffer, pin, power);
     *dst = String(buffer);
 }
 
-String robo::Motor2::power_str(uint8_t pin, int8_t power)
+String robo::Motor::power_str(uint8_t pin, int8_t power)
 {
     char buffer[8] = "";
-    robo::Motor2::power_str(buffer, pin, power);
+    robo::Motor::power_str(buffer, pin, power);
     return String(buffer);
 }
 
-bool robo::Motor2::_update(uint8_t pin, int8_t power)
+bool robo::Motor::_update(uint8_t pin, int8_t power)
 {
     int8_t &dst_power = _powers[pin - 1];
     if (dst_power == power) return false;
@@ -207,44 +207,44 @@ bool robo::Motor2::_update(uint8_t pin, int8_t power)
     return true;
 }
 
-void robo::Motor2::stop()
+void robo::Motor::stop()
 {
     _serial.print("1F000\n2F000\n3F000\n4F000\n");
     memset(_powers, 0, 4);
 }
 
-void robo::Motor2::setup(const unsigned long &baud = 19200, int8_t config = SERIAL_8N1)
+void robo::Motor::setup(const unsigned long &baud = 19200, int8_t config = SERIAL_8N1)
 {
     if (!_serial) _serial.begin(baud, config);
     stop();
 }
 
-int8_t robo::Motor2::get_power(uint8_t pin) const { return _powers[pin]; }
+int8_t robo::Motor::get_power(uint8_t pin) const { return _powers[pin]; }
 
-void robo::Motor2::get_power_str(char *dst, uint8_t pin)
+void robo::Motor::get_power_str(char *dst, uint8_t pin)
 {
-    robo::Motor2::power_str(dst, pin, get_power(pin));
+    robo::Motor::power_str(dst, pin, get_power(pin));
 }
 
-void robo::Motor2::get_power_str(String *dst, uint8_t pin)
+void robo::Motor::get_power_str(String *dst, uint8_t pin)
 {
-    robo::Motor2::power_str(dst, pin, get_power(pin));
+    robo::Motor::power_str(dst, pin, get_power(pin));
 }
 
-String robo::Motor2::get_power_str(uint8_t pin) const
+String robo::Motor::get_power_str(uint8_t pin) const
 {
-    return robo::Motor2::power_str(pin, get_power(pin));
+    return robo::Motor::power_str(pin, get_power(pin));
 }
 
-void robo::Motor2::set_one_motor(uint8_t pin, int8_t power)
+void robo::Motor::set_one_motor(uint8_t pin, int8_t power)
 {
     if (!_update(pin, power)) return;
     char buffer[8] = "";
-    robo::Motor2::power_str(buffer, pin, power);
+    robo::Motor::power_str(buffer, pin, power);
     _serial.println(buffer);
 }
 
-void robo::Motor2::set_all_motors(int8_t m1, int8_t m2, int8_t m3, int8_t m4)
+void robo::Motor::set_all_motors(int8_t m1, int8_t m2, int8_t m3, int8_t m4)
 {
     char buffer[32] = "";
     char *buf_ptr = buffer;
@@ -252,7 +252,7 @@ void robo::Motor2::set_all_motors(int8_t m1, int8_t m2, int8_t m3, int8_t m4)
     for (int pin = 1; pin <= 4; pin++) {
         int8_t &p = ps[pin - 1];
         if (!_update(pin, p)) continue;
-        robo::Motor2::power_str(buf_ptr, pin, p);
+        robo::Motor::power_str(buf_ptr, pin, p);
         buf_ptr[5] = '\n';
         buf_ptr += 6;
     }
@@ -260,7 +260,7 @@ void robo::Motor2::set_all_motors(int8_t m1, int8_t m2, int8_t m3, int8_t m4)
     _serial.print(buffer);
 }
 
-void robo::Motor2::set_velocity(const double &vx, const double &vy)
+void robo::Motor::set_velocity(const double &vx, const double &vy)
 {
     static const double root2 = sqrt(2.);
     int8_t e1 = int8_t((vx + vy) / root2);
@@ -268,22 +268,22 @@ void robo::Motor2::set_velocity(const double &vx, const double &vy)
     set_all_motors(e2, e1, e1, e2);
 }
 
-void robo::Motor2::set_velocity(const robo::V2_double &vel)
+void robo::Motor::set_velocity(const robo::V2_double &vel)
 {
     set_velocity(vel.x, vel.y);
 }
 
-void robo::Motor2::set_left_right(int8_t left, int8_t right)
+void robo::Motor::set_left_right(int8_t left, int8_t right)
 {
     set_all_motors(left, right, left, right);
 }
 
-void robo::Motor2::set_dir_and_speed(const double &dir, int8_t speed)
+void robo::Motor::set_dir_and_speed(const double &dir, int8_t speed)
 {
     set_velocity(speed * cos(dir), speed * sin(dir));
 }
 
-void robo::Motor2::set_rotate(bool clockwise, int8_t speed)
+void robo::Motor::set_rotate(bool clockwise, int8_t speed)
 {
     int8_t d = clockwise ? 1 : -1;
     set_left_right(speed * d, -speed * d);
