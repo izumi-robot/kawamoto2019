@@ -1,7 +1,6 @@
 #include <robo2019.h>
 
 
-
 struct MoveInfo
 {
     virtual void apply(robo::Motor &motor) = 0;
@@ -75,21 +74,35 @@ constexpr double HPI = PI / 2;
 constexpr double QPI = PI / 4;
 constexpr int8_t max_speed = 100;
 
+#ifdef USE_MOTOR
 robo::Motor motor(Serial);
+MoveInfo *m_stop;
+#endif /* USE_MOTOR */
 
 namespace lines {
+    #ifdef USE_LINE
     robo::LineSensor left(1), right(3), back(5);
+    #endif /* USE_LINE */
 }
 
 namespace echos {
+    #ifdef USE_ECHO
     robo::EchoSensor left(7, 6), right(4, 5), back(8, 9);
+    #endif /* USE_ECHO */
 }
 
+#ifdef USE_OPENMV
 robo::OpenMVReader openmv(0x12);
-robo::BNO055 bno055(55);
-robo::LCD lcd(0x27, 16, 2);
+const robo::CameraPos pos_on_fail{0, 0};
+#endif /* USE_OPENMV */
 
-MoveInfo *m_stop;
+#ifdef USE_BNO055
+robo::BNO055 bno055(55);
+#endif /* USE_ */
+
+#ifdef USE_LCD
+robo::LCD lcd(0x27, 16, 2);
+#endif /* USE_LCD */
 
 void setup()
 {
@@ -129,13 +142,13 @@ void setup()
 
 void loop()
 {
-    static MoveInfo *m_info;
+    MoveInfo *m_info = m_stop;
+    //bool fetch_echo = false;
 
-    m_info = m_stop;
-    bool fetch_echo = false;
-
+    LINE:
     #ifdef USE_LINE
-    LINE: {
+    {
+
     using robo::LineSensor;
     bool w_left = LineSensor::iswhite(lines::left.read()),
         w_right = LineSensor::iswhite(lines::right.read()),
@@ -149,7 +162,6 @@ void loop()
         double d = 0.0;
 
         #ifdef USE_ECHO
-        using robo::EchoSensor;
         int e_left  = echos::left.read() || 1024,
             e_right = echos::right.read() || 1024,
             e_back  = echos::back.read() || 1024;
@@ -159,8 +171,7 @@ void loop()
                 (e_left < e_right)
                 ? (e_left < e_back ? -HPI : 0.0)
                 : (e_right < e_back ? HPI : 0.0)
-            )
-            : LINE_DIR
+            ) : LINE_DIR
         );
         #else /* USE_ECHO */
         d = LINE_DIR;
@@ -171,30 +182,55 @@ void loop()
             max_speed * sin(d)
         );
     } // if (w_left || w_right || w_back)
-    } // tag LINE
+
+    }
     #endif /* USE_LINE */
 
+    BNO055:
     #ifdef USE_BNO055
-    BNO055: {
+    {
+
     double fdir = bno055.get_geomag_direction();
     double adir = abs(fdir);
     if (adir > 1.0) { // 1.0: PI / 3
-        m_info = new Rotate(fdir > 0, int8_t())
-        pmap(adir, 0, PI, 40, 100);
+        m_info = new Rotate(fdir > 0, int8_t(adir * 19 + 40))
+        // (adir - 0) / (PI - 0) * (100 - 40) + 40
+        // -> adir * 19 + 40
     }
+
     }
     #endif /* USE_BNO055 */
 
+    OPENMV:
     #ifdef USE_OPENMV
+    {
 
+    robo::CameraPos cpos = openmv.read_pos();
+    robo::V2_double bpos{cpos.x, cpos.y}; // CameraPos to ball pos
+    double bdir = bpos.angle();
+    m_info = new Translate(bdir, max_speed);
+
+    } // tag OPENMV
     #endif /* USE_OPENMV */
 
+    MOTOR:
     #ifdef USE_MOTOR
+    {
+
+    m_info->apply(motor);
+
+    }
     #endif /* USE_MOTOR */
 
     #ifdef USE_LCD
     #endif /* USE_LCD */
 
     #ifdef DO_DEBUG
+
+    Serial.println(m_info->to_string());
+
     #endif /* DO_DEBUG */
+
+    END:
+    if (m_info != m_stop) delete m_info;
 }
