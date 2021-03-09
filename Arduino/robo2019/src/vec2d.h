@@ -1,12 +1,9 @@
 /**
- * @file vec2d.h
+ * @file vec2d_.h
  * @brief 自作のベクトル型
  */
 
 #pragma once
-
-#ifndef ROBO2019_VEC2D_H
-#define ROBO2019_VEC2D_H
 
 #ifdef ARDUINO
 
@@ -14,15 +11,8 @@
 #include <ArxContainer.h>
 
 #define T_LIST T(&)[2]
-
-#define T_VEC2D robo::Vector2D<T>
-#define TMP template <class T>
-
-// _tor_ : operator
-#define OP_VEC(_lh_, _rh_, _tor_) T_VEC2D(_lh_.x _tor_ _rh_.x, _lh_.y _tor_ _rh_.y)
-#define OP_LIST(_lh_, _ls_, _tor_) T_VEC2D(_lh_.x _tor_ _ls_[0], _lh_.y _tor_ _ls_[1])
-
 #define T_LIST_(_name_) T(&_name_)[2]
+#define TMP template<typename T>
 
 /**
  * @namespace robo
@@ -31,41 +21,42 @@
 namespace robo {
 
 /**
- * @class Vector2D
  * @brief 自作のベクトル型
  * @tparam T 成分の型。算術型でなければならない
  * @details
-        実装している演算
+ *  実装している演算(`v`, `v1`, `v2`をベクトル値、`t`をT型の値とする):
+ *  - `v1 [+,-,*,/] v2` -> `(v1.x [+,-,*,/] v2.x, v1.y [+,-,*,/] v2.y)`
+ *  - `v [*,/] t` -> `(v.x [*,/] t, v.y [*,/] t)` 左右交換も可
+ *  `+=`なども同様。
+ *  任意のベクトルを要素数2の配列に置き換えることができる。ただし、ベクトルが絡む文脈でなければいけない。
  */
-template<class T> class Vector2D
+TMP class Vector2D
 {
 private: // static part
     static_assert(std::is_arithmetic<T>::value, "must be a number type");
 public:
     /**
-     * @fn Vector2D from_polar_coord(const double &angle, const T &magnitude)
      * @brief 極形式から座標形式のベクトルを作成する
      * @param[in] angle 偏角。ラジアンで指定する点に注意
      * @param[in] magnitude 大きさ
      * @return 座標形式に変換したベクトル
      * @details
-            返されるベクトルの式
-            (x, y) = (cos(angle) * magnitude, sin(angle) * magnitude)
+     *  返されるベクトルの式
+     *  `(x, y)` = `(cos(angle) * magnitude, sin(angle) * magnitude)`
      */
-    static Vector2D from_polar_coord(const double &, const T &);
+    static Vector2D from_polar_coord(const double &angle, const T &magnitude);
     /**
-     * @fn Vector2D from_polar_coord(Vector2D *dst, const double &angle, const T &magnitude)
      * @brief 極形式から座標形式のベクトルを作成する
      * @param[in] angle 偏角。ラジアンで指定する点に注意
      * @param[in] magnitude 大きさ
      * @param[out] dst 座標形式に変換したベクトル
      * @details
-            返されるベクトルの式
-            (x, y) = (cos(angle) * magnitude, sin(angle) * magnitude)
+     *  返されるベクトルの式
+     *  `(x, y)` = `(cos(angle) * magnitude, sin(angle) * magnitude)`
      */
-    static void from_polar_coord(Vector2D *, const double &, const T &);
+    static void from_polar_coord(Vector2D *, const double &angle, const T &magnitude);
 
-public: // nonstatic part
+public: // instance properties
     //! ベクトルのx成分
     T x;
     //! ベクトルのy成分
@@ -76,22 +67,16 @@ public: // nonstatic part
      * @details x, yともに0で初期化される
      */
     Vector2D() : x(0), y(0) {}
-    /**
-     * @brief x, y成分を指定して初期化
-     */
+    /** @brief x, y成分を指定して初期化 */
     Vector2D(const T &x, const T &y) : x(x), y(y) {}
-    /**
-     * @brief コピーコンストラクタ
-     */
+    /** @brief コピーコンストラクター */
     Vector2D(const Vector2D &p) : x(p.x), y(p.y) {}
     /**
      * @brief 配列から初期化
      * @details 0番の要素がx、1番の要素がy
      */
     Vector2D(const T_LIST_(p)) : x(p[0]), y(p[1]) {}
-    /**
-     * @brief リスト初期化
-     */
+    /** @brief リスト初期化 */
     Vector2D(const std::initializer_list<T> &init)
     {
         auto beg = init.begin();
@@ -99,103 +84,89 @@ public: // nonstatic part
         y = *(beg + 1);
     }
 
-    // TODO: クラスの説明に書く
-    Vector2D& operator=(const Vector2D &);
-    Vector2D& operator=(const T_LIST);
+    Vector2D& operator=(const Vector2D &rh);
+    Vector2D& operator=(const T_LIST_(rh));
 
-    inline const T& operator[](size_t) const;
-    inline T& operator[](size_t);
+    inline const T& operator[](size_t index) const;
+    inline T& operator[](size_t index);
 
     /**
-     * @fn String to_string() const
      * @brief ベクトルの文字列表現を返す
-     * @return "(x, y)"
+     * @return String "(x, y)"
      */
     String to_string() const;
     /**
-     * @fn void to_string(String *dst)
      * @brief ベクトルの文字列表現を返す
      * @param[out] dst "(x, y)"
      */
-    void to_string(String *);
+    void to_string(String *dst);
     /**
-     * @fn void to_string(char *dst)
      * @brief ベクトルの文字列表現を返す
      * @param[out] dst "(x, y)"
      * @note 配列の容量チェックは行っていないので注意すること。
      */
-    void to_string(char *);
+    void to_string(char *dst);
 
     /**
-     * @fn T dot(const Vector2D &v) const
      * @brief ベクトルvとの内積を返す
      * @param[in] v 内積をとるベクトル
      * @return x * v.x + y * v.y
      */
-    inline T dot(const Vector2D &) const;
+    inline T dot(const Vector2D &v) const;
     /**
-     * @fn T dot(const T (&tmp)[2]) const
      * @brief 配列tmpをベクトルとみなし、それとの内積を返す
      * @param[in] tmp 内積をとるベクトルの配列形式
      * @return x * tmp[0] + y * tmp[1]
      */
-    inline T dot(const T_LIST) const;
+    inline T dot(const T_LIST_(tmp)) const;
     /**
-     * @fn T dot(const T &x, const T &y) const
      * @brief ベクトル(x, y)との内積を返す
      * @param[in] x 内積をとるベクトルのx成分
      * @param[in] y 内積をとるベクトルのy成分
      * @return this->x * x + this->y * y
      */
-    inline T dot(const T &, const T &) const;
+    inline T dot(const T &x, const T &y) const;
 
     /**
-     * @fn void dot(T *dst, const Vector2D &v)
      * @brief ベクトルvとの内積を返す
      * @param[in] v 内積をとるベクトル
      * @param[out] dst x * v.x + y * v.y
      */
-    void dot(T *, const Vector2D &);
+    void dot(T *dst, const Vector2D &v);
     /**
-     * @fn void dot(T *dst, const T (&tmp)[2]) const
      * @brief 配列tmpをベクトルとみなし、それとの内積を返す
      * @param[in] tmp 内積をとるベクトルの配列形式
      * @param[out] dst x * tmp[0] + y * tmp[1]
      */
-    void dot(T *, const T_LIST);
+    void dot(T *dst, const T_LIST_(tmp));
     /**
-     * @fn void dot(T *dst, const T &x, const T &y) const
      * @brief ベクトル(x, y)との内積を返す
      * @param[in] x 内積をとるベクトルのx成分
      * @param[in] y 内積をとるベクトルのy成分
      * @param[out] dst this->x * x + this->y * y
      */
-    void dot(T *, const T &, const T &);
+    void dot(T *dst, const T &x, const T &y);
 
     /**
-     * @fn double angle() const
      * @brief ベクトルの偏角を返す
      * @return 偏角(ラジアン)
      */
     inline double angle() const;
     /**
-     * @fn void angle(double *dst)
      * @brief ベクトルの偏角を返す
      * @param[out] dst 偏角(ラジアン)
      */
-    void angle(double *);
+    void angle(double *dst);
     /**
-     * @fn double mag() const
      * @brief ベクトルの大きさを返す
      * @return ベクトルの大きさ
      */
     inline double mag() const;
     /**
-     * @fn void mag(double *dst)
      * @brief ベクトルの大きさを返す
      * @param[out] dst ベクトルの大きさ
      */
-    void mag(double *);
+    void mag(double *dst);
 };
 
 //! Vector2D<double>のエイリアス
@@ -205,19 +176,21 @@ using V2_int = Vector2D<int>;
 
 } // namespace robo
 
+#undef T_LIST
 
-TMP T_VEC2D T_VEC2D::from_polar_coord(const double &angle, const T &magnitude)
-{
-    return T_VEC2D{
-        magnitude * cos(angle),
-        magnitude * sin(angle)
-    };
-}
+#define T_VEC2D robo::Vector2D<T>
+
 TMP void T_VEC2D::from_polar_coord(T_VEC2D *dst, const double &angle, const T &magnitude)
 {
     if (dst == NULL) return;
     dst->x = magnitude * cos(angle);
     dst->y = magnitude * sin(angle);
+}
+TMP T_VEC2D T_VEC2D::from_polar_coord(const double &angle, const T &magnitude)
+{
+    T_VEC2D result;
+    from_poler_coord(&result, angle, magnitude);
+    return result;
 }
 
 TMP T_VEC2D& T_VEC2D::operator=(const T_VEC2D &tmp)
@@ -234,22 +207,37 @@ TMP T_VEC2D& T_VEC2D::operator=(const T_LIST_(tmp))
     return *this;
 }
 
-TMP const T& T_VEC2D::operator[](size_t index) const
+#define SUBSCRIBE_IMPL(_type_, _spec_) TMP inline _type_ T_VEC2D::operator[](size_t index) _spec_ { return index ? x : y; }
+
+SUBSCRIBE_IMPL(const T&, const)
+SUBSCRIBE_IMPL(T&,)
+
+#undef SUBSCRIBE_IMPL
+
+#define ENABLE_IF_V(_cond_) typename std::enable_if<(_cond_), void>::type
+#define TO_STR T_VEC2D::to_string(char * dst)
+
+TMP ENABLE_IF_V(std::is_floating_point<T>::value) TO_STR
 {
-    return index == 1 ? y : x;
+    if (dst == NULL) return;
+    sprintf(dst, "(%f, %f)", x, y);
 }
 
-TMP T& T_VEC2D::operator[](size_t index)
+TMP ENABLE_IF_V(std::is_integral<T>::value && std::is_signed<T>::value) TO_STR
 {
-    return index == 1 ? y : x;
+    if (dst == NULL) return;
+    sprintf(dst, "(%d, %d)", x, y);
 }
 
-TMP String T_VEC2D::to_string() const
+TMP ENABLE_IF_V(std::is_unsigned<T>::value) TO_STR
 {
-    char buffer[64] = "";
-    to_string(buffer);
-    return String(buffer);
+    if (dst == NULL) return;
+    sprintf(dst, "(%u, %u)", x, y);
 }
+
+#undef ENABLE_IF_V
+#undef TO_STR
+
 TMP void T_VEC2D::to_string(String *dst)
 {
     if (dst == NULL) return;
@@ -257,26 +245,16 @@ TMP void T_VEC2D::to_string(String *dst)
     to_string(buffer);
     *dst = buffer;
 }
-TMP void T_VEC2D::to_string(char *dst)
+TMP String T_VEC2D::to_string() const
 {
-    if (dst == NULL) return;
-    String x_s = String(x);
-    String y_s = String(y);
-    sprintf(dst, "(%s, %s)", x_s.c_str(), y_s.c_str());
+    char buffer[64] = "";
+    to_string(buffer);
+    return String(buffer);
 }
 
-TMP T T_VEC2D::dot(const T_VEC2D &v) const
-{
-    return x * v.x + y * v.y;
-}
-TMP T T_VEC2D::dot(const T_LIST_(tmp)) const
-{
-    return x * tmp[0] + y * tmp[1];
-}
-TMP T T_VEC2D::dot(const T &x, const T &y) const
-{
-    return this->x * x + this->y * y;
-}
+TMP T T_VEC2D::dot(const T_VEC2D &v) const { return x * v.x + y * v.y; }
+TMP T T_VEC2D::dot(const T_LIST_(tmp)) const { return x * tmp[0] + y * tmp[1]; }
+TMP T T_VEC2D::dot(const T &x, const T &y) const { return this->x * x + this->y * y; }
 
 TMP void T_VEC2D::dot(T *dst, const T_VEC2D &v)
 {
@@ -301,7 +279,7 @@ TMP double T_VEC2D::angle() const
 TMP void T_VEC2D::angle(double *dst)
 {
     if (dst == NULL) return;
-    *dst = atan2(y, x);
+    *dst = angle();
 }
 
 TMP double T_VEC2D::mag() const
@@ -311,128 +289,84 @@ TMP double T_VEC2D::mag() const
 TMP void T_VEC2D::mag(double *dst)
 {
     if (dst == NULL) return;
-    *dst = sqrt(x * x + y * y);
+    *dst = mag();
 }
 
+#define IM4(_mc_) _mc_(+) _mc_(-) _mc_(*) _mc_(/)
+#define IM2(_mc_) _mc_(*) _mc_(/)
 
-TMP inline T_VEC2D operator+(const T_VEC2D &lh, const T_VEC2D &rh) {
-    return OP_VEC(lh, rh, +);
-}
+// operator(Vec2D, Vec2D)
+#define OP_IMPL(_op_) TMP inline T_VEC2D operator _op_ (const T_VEC2D &lh, const T_VEC2D &rh) {\
+    return T_VEC2D(lh.x _op_ rh.x, lh.y _op_ rh.y); }
 
-TMP inline T_VEC2D operator-(const T_VEC2D &lh, const T_VEC2D &rh) {
-    return OP_VEC(lh, rh, -);
-}
+IM4(OP_IMPL)
 
-TMP inline T_VEC2D operator*(const T_VEC2D &lh, const T_VEC2D &rh) {
-    return OP_VEC(lh, rh, *);
-}
+#undef OP_IMPL
 
-TMP inline T_VEC2D operator/(const T_VEC2D &lh, const T_VEC2D &rh) {
-    return OP_VEC(lh, rh, /);
-}
+#define IOP_IMPL(_op_) TMP T_VEC2D& operator _op_ ## = (T_VEC2D &lh, const T_VEC2D &rh) {\
+    lh.x _op_ ## = rh.x; lh.y _op_ ## = rh.y;\
+    return lh; }
 
-TMP T_VEC2D& operator+=(T_VEC2D& lh, const T_VEC2D& rh) {
-    lh.x += rh.x;
-    lh.y += rh.y;
-    return lh;
-}
+IM4(IOP_IMPL)
 
-TMP T_VEC2D& operator-=(T_VEC2D& lh, const T_VEC2D& rh) {
-    lh.x -= rh.x;
-    lh.y -= rh.y;
-    return lh;
-}
+#undef IOP_IMPL
 
-TMP T_VEC2D& operator*=(T_VEC2D& lh, const T_VEC2D& rh) {
-    lh.x *= rh.x;
-    lh.y *= rh.y;
-    return lh;
-}
+// operator(Vec2D, T (&)[2])
+#define OP_IMPL(_op_) TMP inline T_VEC2D operator _op_ (const T_VEC2D &lh, const T (&rh)[2]) {\
+    return T_VEC2D(lh.x _op_ rh[0], lh.y _op_ rh[1]); }
 
-TMP T_VEC2D& operator/=(T_VEC2D& lh, const T_VEC2D& rh) {
-    lh.x /= rh.x;
-    lh.y /= rh.y;
-    return lh;
-}
+IM4(OP_IMPL)
 
-TMP inline T_VEC2D operator+(const T_VEC2D &lh, const T_LIST_(rh)) {
-    return OP_LIST(lh, rh, +);
-}
+#undef OP_IMPL
 
-TMP inline T_VEC2D operator-(const T_VEC2D &lh, const T_LIST_(rh)) {
-    return OP_LIST(lh, rh, -);
-}
+#define IOP_IMPL(_op_) TMP T_VEC2D& operator _op_ ## = (T_VEC2D &lh, const T (&rh)[2]) {\
+    lh.x _op_ ## = rh[0]; lh.y _op_ ## = rh[1];\
+    return lh; }
 
-TMP inline T_VEC2D operator*(const T_VEC2D &lh, const T_LIST_(rh)) {
-    return OP_LIST(lh, rh, *);
-}
+IM4(IOP_IMPL)
 
-TMP inline T_VEC2D operator/(const T_VEC2D &lh, const T_LIST_(rh)) {
-    return OP_LIST(lh, rh, /);
-}
+#undef IOP_IMPL
 
-TMP T_VEC2D& operator+=(T_VEC2D &lh, const T_LIST_(rh)) {
-    lh.x += rh[0];
-    lh.y += rh[1];
-    return lh;
-}
+// operator(T (&)[2], Vec2D)
+#define OP_IMPL(_op_) TMP inline T_VEC2D operator _op_ (const T (&lh)[2], const T_VEC2D &rh) {\
+    return T_VEC2D(lh[0] _op_ rh.x, lh[1] _op_ rh.y); }
 
-TMP T_VEC2D& operator-=(T_VEC2D &lh, const T_LIST_(rh)) {
-    lh.x -= rh[0];
-    lh.y -= rh[1];
-    return lh;
-}
+IM4(OP_IMPL)
 
-TMP T_VEC2D& operator*=(T_VEC2D &lh, const T_LIST_(rh)) {
-    lh.x *= rh[0];
-    lh.y *= rh[1];
-    return lh;
-}
+#undef OP_IMPL
 
-TMP T_VEC2D& operator/=(T_VEC2D &lh, const T_LIST_(rh)) {
-    lh.x /= rh[0];
-    lh.y /= rh[1];
-    return lh;
-}
+// operator(Vec2D, T)
+#define OP_IMPL(_op_) TMP inline T_VEC2D operator _op_ (const T_VEC2D &lh, const T &rh) {\
+    return T_VEC2D(lh.x _op_ rh, lh.y _op_ rh); }
 
-TMP inline T_VEC2D operator*(const T_VEC2D &lh, const T &rh) {
-    return T_VEC2D(lh.x * rh, lh.y * rh);
-}
+IM2(OP_IMPL)
 
-TMP inline T_VEC2D operator/(const T_VEC2D &lh, const T &rh) {
-    return T_VEC2D(lh.x / rh, lh.y / rh);
-}
+#undef OP_IMPL
 
-TMP T_VEC2D& operator*=(T_VEC2D &lh, const T &rh) {
-    lh.x *= rh;
-    lh.y *= rh;
-    return lh;
-}
+#define IOP_IMPL(_op_) TMP T_VEC2D& operator _op_ ## = (T_VEC2D &lh, const T &rh) {\
+    lh.x _op_ ## = rh; lh.y _op_ ## = rh;\
+    return lh; }
 
-TMP T_VEC2D& operator/=(T_VEC2D &lh, const T &rh) {
-    lh.x /= rh;
-    lh.y /= rh;
-    return lh;
-}
+IM2(IOP_IMPL)
 
-TMP bool operator==(const T_VEC2D &lh, const T_VEC2D &rh)
-{
-    return lh.x == rh.x && lh.y == rh.y;
-}
+#undef IOP_IMPL
 
-TMP bool operator!=(const T_VEC2D &lh, const T_VEC2D &rh)
-{
-    return lh.x != rh.x || lh.y != rh.y;
-}
+// operator(T, Vec2D)
+#define OP_IMPL(_op_) TMP inline T_VEC2D operator _op_ (const T &lh, const T_VEC2D &rh) {\
+    return T_VEC2D(lh _op_ rh.x, lh _op_ rh.y); }
 
-#undef T_LIST
+IM2(OP_IMPL)
+
+#undef OP_IMPL
+
+#undef IM4
+#undef IM2
+
+TMP inline bool operator==(const T_VEC2D &lh, const T_VEC2D &rh) { return lh.x == rh.x && lh.y == rh.y; }
+TMP inline bool operator!=(const T_VEC2D &lh, const T_VEC2D &rh) { return lh.x != rh.x || lh.y != rh.y; }
 
 #undef T_VEC2D
 #undef TMP
-
-#undef OP_VEC
-#undef OP_LIST
-
 #undef T_LIST_
 
 #else /* ARDUINO */
@@ -440,5 +374,3 @@ TMP bool operator!=(const T_VEC2D &lh, const T_VEC2D &rh)
 #error This liblary is for Arduino.
 
 #endif /* ARDUINO */
-
-#endif /* ROBO2019_VEC2D_H */
