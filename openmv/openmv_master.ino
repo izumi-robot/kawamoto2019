@@ -1,4 +1,4 @@
-//#include <Wire.h>
+#include <Wire.h>
 
 struct CameraPos {
 public:
@@ -79,7 +79,7 @@ public:
             : pos_on_fail
         );
     }
-}
+};
 
 OpenMV openmv_i2c(0x12);
 const CameraPos pos_on_fail{0, 0};
