@@ -1,7 +1,12 @@
 #include <Wire.h>
 #include <HardwareSerial.h>
 
-struct EchoSensor {
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <utility/imumaths.h>
+
+class EchoSensor {
+public:
     const uint8_t echo_pin, trig_pin;
     EchoSensor(uint8_t e, uint8_t t) : echo_pin(e), trig_pin(t) {}
     void setup() {
@@ -20,15 +25,17 @@ struct EchoSensor {
     }
 };
 
-struct LineSensor {
+class LineSensor {
+public:
     const uint8_t input_pin;
     LineSensor(uint8_t i) : input_pin(i) {}
     void setup() { pinMode(input_pin, INPUT); }
     int read() { return analogRead(input_pin); }
 };
 
-struct Vector2 {
-    static Vector2 from_polar_coord(const double &angle, const double &mag) {
+class Vector2 {
+public:
+    static inline Vector2 from_polar_coord(const double &angle, const double &mag) {
         return Vector2{ mag * cos(angle), mag * sin(angle) };
     }
     double x, y;
@@ -50,16 +57,37 @@ inline bool operator==(const Vector2 &lh, const Vector2 &rh) { return lh.x == rh
 inline bool operator!=(const Vector2 &lh, const Vector2 &rh) { return lh.x != rh.x || lh.y != rh.y; }
 
 #define IM4(_macro_) _macro_(+) _macro_(-) _macro_(*) _macro_(/)
-#define CMPOS_IOP(_operator_) Vector2& operator _operator_ ## = (Vector2 &lh, const Vector2 &rh) {\
+#define VEC_IOP(_operator_) Vector2& operator _operator_ ## = (Vector2 &lh, const Vector2 &rh) {\
     lh.x _operator_ ## = rh.x; lh.y _operator_ ## = rh.y; return lh; }
-IM4(CMPOS_IOP)
-#undef CMPOS_IOP
-#define CMPOS_OP(_operator_) Vector2 operator _operator_ (const Vector2 &lh, const Vector2 &rh) {\
+IM4(VEC_IOP)
+#undef VEC_IOP
+#define VEC_OP(_operator_) Vector2 operator _operator_ (const Vector2 &lh, const Vector2 &rh) {\
     Vector2 res = lh; res _operator_ ## = rh; return res; }
-IM4(CMPOS_OP)
-#undef CMPOS_OP
+IM4(VEC_OP)
+#undef VEC_OP
 #undef IM4
 
+
+class BNO055 : public Adafruit_BNO055 {
+private:
+    bool _detected = false;
+public:
+    using Adafruit_BNO055::Adafruit_BNO055;
+    void setup() {
+        _detected = Adafruit_BNO055::begin();
+        Adafruit_BNO055::setExtCrystalUse(true);
+    }
+    double get_geomag_dir() {
+        if (!_detected) return 0;
+        double dir_degree = Adafruit_BNO055::getVector(Adafruit_BNO055::VECTOR_EULER).x();
+        double dir_radian = (
+            (0 <= dir_degree && dir_degree <= 180)
+            ? dir_degree
+            : dir_degree - 360
+        ) * -PI / 180;
+    }
+    inline bool detected() { return _detected; }
+};
 
 class OpenMV {
 private:
@@ -68,7 +96,7 @@ public:
     const uint8_t address;
     OpenMV() : _wire(Wire), address(0x12) {}
     OpenMV(uint8_t addr) : _wire(Wire), address(addr) {}
-    OpenMV(TwoWire wire, uint8_t addr) : _wire(wire), address(adddr) {}
+    OpenMV(TwoWire wire, uint8_t addr) : _wire(wire), address(addr) {}
     void setup() { _wire.begin(); }
     uint16_t read_2byte() { return _wire.read() | (uint16_t(_wire.read()) << 8); }
     uint16_t read_data_size() {
@@ -167,14 +195,17 @@ uint8_t frame_count = 0;
 EchoSensor e23(2, 3), e45(4, 5), e67(6, 7);
 LineSensor l1(1), l2(2), l3(3);
 const Vector2 pos_on_fail{0, 0};
+//         id, addr
+BNO055 bno(-1, 0x28);
 OpenMV openmv(0x12);
-const V2ctor2 test_vel{-42, 90};
+const Vector2 test_vel{-42, 90};
 Motor motor(Serial); /* TODO */
 
 void setup() {
     Serial.begin(9600);
     e23.setup(); e45.setup(); e67.setup();
     l1.setup(); l2.setup();
+    bno.setup();
     openmv.setup();
     motor.setup();
 }
@@ -200,6 +231,10 @@ void loop() {
         uint8_t len = cam_pos.to_string(ptr); ptr += len;
         *(ptr++) = '\n';
     }
+
+    double bnodir = bno.get_geomag_dir();
+    sprintf(ptr, "bno = %4f\n", bnodir);
+    ptr += 7;
 
     switch (frame_count % 5) {
         case 1: motor.set_all_motors(50, 50, 50, 50); break;
