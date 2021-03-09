@@ -22,29 +22,23 @@ bool operator!=(const CameraPos &lh, const CameraPos &rh) {
     return lh.x != rh.x || lh.y != rh.y;
 }
 
-#define CMPOS_IOP(_operator_) CameraPos& operator _operator_ ## = (CameraPos &lh, const CameraPos &rh) {\
-                            lh.x _operator_ ## = rh.x;\
-                            lh.y _operator_ ## = rh.y;\
-                            return lh; }
+#define IM4(_macro_) _macro_(+) _macro_(-) _macro_(*) _macro_(/)
 
-CMPOS_IOP(+)
-CMPOS_IOP(-)
-CMPOS_IOP(*)
-CMPOS_IOP(/)
+#define CMPOS_IOP(_operator_) CameraPos& operator _operator_ ## = (CameraPos &lh, const CameraPos &rh) {\
+    lh.x _operator_ ## = rh.x; lh.y _operator_ ## = rh.y; return lh; }
+
+IM4(CMPOS_IOP)
 
 #undef CMPOS_IOP
 
 #define CMPOS_OP(_operator_) CameraPos operator _operator_ (const CameraPos &lh, const CameraPos &rh) {\
-                            CameraPos res = lh;\
-                            res _operator_ ## = rh;\
-                            return res; }
+    CameraPos res = lh; res _operator_ ## = rh; return res; }
 
-CMPOS_OP(+)
-CMPOS_OP(-)
-CMPOS_OP(*)
-CMPOS_OP(/)
+IM4(CMPOS_OP)
 
 #undef CMPOS_OP
+
+#undef IM4
 
 class OpenMV {
 private:
@@ -72,16 +66,17 @@ public:
 
     CameraPos read_pos(
         const CameraPos &pos_on_fail = CameraPos{0, 0},
-        uint16_t default_val = 0xffff
+        uint16_t default_value = 0xffff
     ) {
         uint16_t data_size = read_data_size();
-        if (data_size != 4) return pos_on_fail;
+        _wire.requestFrom(address, data_size);
+        if (_wire.available() != 4) return pos_on_fail;
         uint16_t x = read_2byte();
         uint16_t y = read_2byte();
         return (
-            (x == default_value && y == default_value)
-            ? pos_on_fail
-            : CameraPos{x, y}
+            (x != default_value || y != default_value)
+            ? CameraPos{x, y}
+            : pos_on_fail
         );
     }
 }
