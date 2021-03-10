@@ -1,9 +1,12 @@
 #include <Wire.h>
 #include <HardwareSerial.h>
 
+#include <LiquidCrystal_I2C.h>
+
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
+
 
 class EchoSensor {
 public:
@@ -140,7 +143,7 @@ public:
         memset(_powers, 0, 4);
     }
     void setup(const unsigned long &baud = 19200, int8_t config = SERIAL_8N1) {
-        if (_serial) _serial.begin(baud, config);
+        if (!_serial) _serial.begin(baud, config);
         stop();
     }
     int8_t info(char *dst) {
@@ -154,6 +157,15 @@ public:
             ptr += 2;
         }
         return 26; // 7 * 3 + 5
+    }
+    int8_t shortinfo(char *dst) {
+        if (dst == NULL) return 0;
+        for (uint8_t i = 0; i < 4; i++) {
+            sprintf(dst, "%4d", _powers[i]);
+            dst += 4;
+        }
+        *dst = '\0';
+        return 16;
     }
     void set_one_motor(uint8_t pin, int8_t power) {
         if (!_update(pin, power)) return;
@@ -190,6 +202,7 @@ public:
     }
 };
 
+Interrupt<12> &start_interrupt = Interrupt<12>::instance();
 uint8_t frame_count = 0;
 EchoSensor e23(2, 3), e45(4, 5), e67(6, 7);
 LineSensor l1(1), l2(2), l3(3);
@@ -197,11 +210,19 @@ const Vector2 pos_on_fail{0, 0};
 //         id, addr
 BNO055 bno(-1, 0x28);
 OpenMV openmv(0x12);
+LiquidCrystal_I2C lcd(0x27);
 const Vector2 test_vel{-42, 90};
 Motor motor(Serial); /* TODO */
 
+//#define DEBUG_ECHO
+#define DEBUG_LINE
+//#define DEBUG_BNO
+#define DEBUG_OPENMV
+//#define DEBUG_MOTOR
+
 void setup() {
-    Serial.begin(9600);
+    start_interrupt.setup();
+    lcd.begin(16, 2);
     e23.setup(); e45.setup(); e67.setup();
     l1.setup(); l2.setup();
     bno.setup();
@@ -210,30 +231,47 @@ void setup() {
 }
 
 void loop() {
+    if (!(PORTB & 0x40)) return;
     frame_count++;
     frame_count &= 0xff;
 
     char buffer[128] = "";
     char *ptr = buffer;
+    uint8_t row = 0;
+    #define LCD_LOG lcd.setCursor(0, row++); lcd.print(buffer);
 
-    #define READ(_reader_) sprintf(ptr, #_reader_ " = %4d\n", _reader_.read())
-    #define E_READ(_reader_) READ(_reader_); ptr += 11;
+    #define READ(_reader_) sprintf(ptr, "%4d ", _reader_.read())
+
+    #ifdef DEBUG_ECHO
+    #define E_READ(_reader_) READ(_reader_); ptr += 4;
     E_READ(e23) E_READ(e45) E_READ(e67)
     #undef E_READ
-    #define L_READ(_reader_) READ(_reader_); ptr += 10;
+    *ptr = '\0';
+    ptr = buffer;
+    LCD_LOG
+    #endif /* DEBUG_ECHO */
+
+    #ifdef DEBUG_LINE
+    #define L_READ(_reader_) READ(_reader_); ptr += 5;
     L_READ(l1) L_READ(l2) L_READ(l3)
     #undef L_READ
+    *ptr = '\0';
+    ptr = buffer;
+    LCD_LOG
+    #endif /* DEBUG_LINE */
 
+    #ifdef DEBUG_OPENMV
     Vector2 cam_pos = openmv.read_pos();
-    if (cam_pos != pos_on_fail) {
-        sprintf(ptr, "openmv = "); ptr += 9;
-        uint8_t len = cam_pos.to_string(ptr); ptr += len;
-        *(ptr++) = '\n';
-    }
+    uint8_t len = cam_pos.to_string(ptr);
+    ptr[len] = '\0';
+    LCD_LOG
+    #endif /* DEBUG_OPENMV */
 
+    #ifdef DEBUG_BNO
     double bnodir = bno.get_geomag_dir();
-    sprintf(ptr, "bno = %4f\n", bnodir);
-    ptr += 7;
+    sprintf(ptr, "bno = %4f", bnodir);
+    LCD_LOG
+    #endif /* DEBUG_BNO */
 
     switch (frame_count % 5) {
         case 1: motor.set_all_motors(50, 50, 50, 50); break;
@@ -242,10 +280,11 @@ void loop() {
         case 4: motor.set_dir_and_speed(PI / 6, 70); break;
         case 0: default: motor.stop(); break;
     }
-    uint8_t len = motor.info(ptr); ptr += len;
-    *(ptr++) = '\n';
+    #ifdef DEBUG_MOTOR
+    uint8_t len = motor.shortinfo(ptr);
+    ptr[len] = '\0';
+    LCD_LOG
+    #endif /* DEBUG_MOTOR */
 
-    *ptr = '\0';
-    Serial.print(buffer);
     delay(1000);
 }
