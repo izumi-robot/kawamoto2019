@@ -40,7 +40,7 @@ public:
 
 CameraPos OpenMVReader::read_pos(const CameraPos &pos_on_fail = CameraPos{0, 0})
 {
-    static constexpr uint16_t default_value = (1 << 16) - 1;
+    static constexpr uint16_t default_value = 0xffff;
     uint16_t data_size = I2CReaderWithAddr::read_data_size();
     if (data_size < 4) {
         return pos_on_fail;

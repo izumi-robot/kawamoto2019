@@ -31,7 +31,7 @@ public:
 
     void apply(robo::Motor &motor) override
     {
-        motor.set_velocity(x, y);
+        motor.set_velocity(vec);
     }
 
     String to_string() override
@@ -196,7 +196,7 @@ void loop()
     double fdir = bno055.get_geomag_direction();
     double adir = abs(fdir);
     if (adir > 1.0) { // 1.0: PI / 3
-        m_info = new Rotate(fdir > 0, int8_t(adir * 19 + 40))
+        m_info = new Rotate(fdir > 0, int8_t(adir * 19 + 40));
         // (adir - 0) / (PI - 0) * (100 - 40) + 40
         // -> adir * 19 + 40
         goto MOTOR;
