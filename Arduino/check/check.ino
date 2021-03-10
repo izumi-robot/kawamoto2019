@@ -82,8 +82,7 @@ public:
         double dir_degree = Adafruit_BNO055::getVector(Adafruit_BNO055::VECTOR_EULER).x();
         double dir_radian = (
             (0 <= dir_degree && dir_degree <= 180)
-            ? dir_degree
-            : dir_degree - 360
+            ? dir_degree : dir_degree - 360
         ) * -PI / 180;
     }
     inline bool detected() { return _detected; }
@@ -96,12 +95,12 @@ public:
     const uint8_t address;
     OpenMV() : _wire(Wire), address(0x12) {}
     OpenMV(uint8_t addr) : _wire(Wire), address(addr) {}
-    OpenMV(TwoWire wire, uint8_t addr) : _wire(wire), address(addr) {}
+    OpenMV(TwoWire &wire, uint8_t addr) : _wire(wire), address(addr) {}
     void setup() { _wire.begin(); }
     uint16_t read_2byte() { return _wire.read() | (uint16_t(_wire.read()) << 8); }
     uint16_t read_data_size() {
-        _wire.requestFrom(address, 2);
-        if (_wire.available() == 2) { return read_2byte(); }
+        uint8_t size = _wire.requestFrom(address, (uint8_t)2);
+        if (size == 2) { return read_2byte(); }
         return 0;
     }
     Vector2 read_pos(
@@ -109,8 +108,8 @@ public:
         uint16_t default_value = 0xffff
     ) {
         uint16_t data_size = read_data_size();
-        _wire.requestFrom(address, data_size);
-        if (_wire.available() != 4) return pos_on_fail;
+        uint8_t size = _wire.requestFrom((int)address, (int)data_size);
+        if (size != 4) return pos_on_fail;
         uint16_t x = read_2byte();
         uint16_t y = read_2byte();
         return (x != default_value || y != default_value) ? Vector2{x, y} : pos_on_fail;

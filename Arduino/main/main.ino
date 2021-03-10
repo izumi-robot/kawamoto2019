@@ -19,7 +19,7 @@ public:
     {
         return "MoveInfo: Stop";
     }
-}
+};
 
 struct Translate : public MoveInfo
 {
@@ -150,21 +150,22 @@ void loop()
     {
 
     using robo::LineSensor;
-    bool w_left = LineSensor::iswhite(lines::left.read()),
-        w_right = LineSensor::iswhite(lines::right.read()),
-        w_back  = LineSensor::iswhite(lines::back.read());
+    #define IS_WHITE robo::LineSensor::iswhite
+    bool w_left = IS_WHITE (lines::left.read()),
+        w_right = IS_WHITE (lines::right.read()),
+        w_back  = IS_WHITE (lines::back.read());
 
-    #define LINE_DIR (w_back\
-            ? (w_left == w_right ? 0.0 : (w_left ? -QPI : QPI))\
-            : (w_left == w_right ? 0.0 : (w_left ? -HPI : HPI)))
+    #define LINE_DIR (w_left == w_right ? 0.0 : (w_left \
+        ? (w_back ? -QPI : QPI) \
+        : (w_back ? -HPI : HPI) ))
 
     if (w_left || w_right || w_back) {
         double d = 0.0;
 
         #ifdef USE_ECHO
-        int e_left  = echos::left.read() || 1024,
+        int e_left  = echos::left.read()  || 1024,
             e_right = echos::right.read() || 1024,
-            e_back  = echos::back.read() || 1024;
+            e_back  = echos::back.read()  || 1024;
         d = (
             (e_left != e_right || e_right != e_back)
             ? (
@@ -181,6 +182,8 @@ void loop()
             max_speed * cos(d),
             max_speed * sin(d)
         );
+
+        goto MOTOR;
     } // if (w_left || w_right || w_back)
 
     }
@@ -196,6 +199,7 @@ void loop()
         m_info = new Rotate(fdir > 0, int8_t(adir * 19 + 40))
         // (adir - 0) / (PI - 0) * (100 - 40) + 40
         // -> adir * 19 + 40
+        goto MOTOR;
     }
 
     }
@@ -206,9 +210,10 @@ void loop()
     {
 
     robo::CameraPos cpos = openmv.read_pos();
-    robo::V2_double bpos{cpos.x, cpos.y}; // CameraPos to ball pos
+    robo::V2_double bpos{cpos.x, cpos.y}; // TODO: CameraPos to ball pos
     double bdir = bpos.angle();
     m_info = new Translate(bdir, max_speed);
+    goto MOTOR;
 
     } // tag OPENMV
     #endif /* USE_OPENMV */
