@@ -1,8 +1,13 @@
 import pyb, ustruct
 import sensor, image, time
 
-thresholds = [(20, 80, 40, 75, 40, 75)]
+# Color Tracking Thresholds
+#   (L Min, L Max, A Min, A Max, B Min, B Max)
+thresholds = [
+    (   20,    80,    40,    75,    40,    75)
+]
 
+# https://docs.openmv.io/library/omv.sensor.html
 sensor.reset()
 sensor.set_pixformat(sensor.RGB565)
 sensor.set_framesize(sensor.QQVGA)
@@ -16,10 +21,13 @@ clock = time.clock()
 
 bus = pyb.I2C(2, mode=pyb.I2C.SLAVE, addr=0x12)
 data, length_data = None, ustruct.pack("<H", 2 * 2) # 2byte * 2
-default_value = (1 << 16) - 1
+default_value = 0xffff
 
 def send(a, b, i2c_bus=bus):
+    # https://docs.python.org/ja/3/library/struct.html
+    # https://docs.openmv.io/library/ustruct.html
     data = ustruct.pack("<2H", a, b)
+    # https://docs.openmv.io/library/pyb.I2C.html
     try:
         bus.send(length_data, timeout=10000)
         bus.send(data,        timeout=10000)
@@ -27,23 +35,25 @@ def send(a, b, i2c_bus=bus):
         return False
     return True
 
-x_data, y_data = 0, 0
-biggest_area, biggest_index, biggest_blob = 0, 0, None
-area = 0
 
 while True:
     clock.tick()
     # find object
     img = sensor.snapshot()
-    blobs = img.find_blobs(thresholds)
+    # https://docs.openmv.io/library/omv.image.html#class-image-image-object
+    blobs = img.find_blobs(
+        thresholds,
+        #pixels_threshold=5,
+        #area_threshold=5
+    )
     if not blobs:
         # there is no object -- send template data
-        print("send default data!")
         send(default_value, default_value)
         continue
     # search the biggest object
     biggest_area = 0
     for i, blob in enumerate(blobs):
+        # https://docs.openmv.io/library/omv.image.html#class-blob-blob-object
         area = blob.area()
         if area > biggest_area:
             biggest_area, biggest_index = area, i
@@ -53,5 +63,4 @@ while True:
     img.draw_cross(x_data, y_data)
 
     # send data
-    print("send data!")
     send(x_data, y_data)
