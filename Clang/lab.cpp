@@ -1,53 +1,31 @@
 #include <iostream>
-#include <vector>
-#include <string>
+#include <type_traits>
 
-using vint = std::vector<int>;
-using std::string;
+template<typename T>
+struct Foo {
+    T val;
+    template<typename _ = void>
+    void f();
+};
 
-namespace N {
-
-    class A {
-        private:
-        int x, y;
-        public:
-        A() : x(0), y(0) {}
-
-        A(int x, int _y) {
-            this->x = x;
-            y = _y;
-        }
-        int f();
-        int getx() {
-            return x;
-        }
-        void setx(int val) {
-            x = val >= 0 ? val : -val;
-        }
-    };
-
+template<typename T>
+void Foo<T>::f< std::enable_if_t<std::is_floating_point<T>::value, void>>() {
+    std::cout << "floating point: " << val << std::endl;
 }
 
-int N::A::f() {
-    return x * y;
+template<typename T>
+void Foo<T>::f<std::enable_if_t<std::is_integral<T>::value && std::is_unsigned<T>::value, void>>() {
+    std::cout << "unsigned integral: " << val << std::endl;
 }
 
-
-vint v1 = vint(3, 5);
-vint v2{2, 4, 4};
-
-string vector_to_string(const vint *vp) {
-    string result = "[";
-    for (auto it = vp->begin(); it != vp->end(); it++) {
-        result += std::to_string(*it) + ", ";
-    }
-    auto end = result.end();
-    result.erase(end - 2, end);
-    return result + "]";
+template<typename T>
+void Foo<T>::f<std::enable_if_t<std::is_integral<T>::value && std::is_signed<T>::value, void>>() {
+    std::cout << "signed integral: " << val << std::endl;
 }
 
 int main() {
-    N::A a(2, 4);
-    std::cout << a.f() << std::endl;
-    std::cout << vector_to_string(&v2) << std::endl;
+    Foo f1{0.1};
+    Foo f2{1};
+    Foo f3{3u};
+    f1.f(); f2.f(); f3.f();
 }

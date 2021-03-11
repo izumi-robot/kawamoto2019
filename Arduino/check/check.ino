@@ -16,7 +16,7 @@ public:
         pinMode(echo_pin, INPUT);
         pinMode(trig_pin, OUTPUT);
     }
-    int read() {
+    int16_t read() {
         #define DELAY_MS10 delayMicroseconds(10)
         digitalWrite(trig_pin, LOW);
         DELAY_MS10;
@@ -33,7 +33,7 @@ public:
     const uint8_t input_pin;
     LineSensor(uint8_t i) : input_pin(i) {}
     void setup() { pinMode(input_pin, INPUT); }
-    int read() { return analogRead(input_pin); }
+    int16_t read() { return analogRead(input_pin); }
 };
 
 class Vector2 {
@@ -46,8 +46,7 @@ public:
     Vector2(const double &x, const double &y) : x(x), y(y) {}
     uint8_t to_string(char *dst) {
         if (dst == NULL) return 0;
-        sprintf(dst, "(%f, %f)", x, y);
-        return strlen(dst);
+        return sprintf(dst, "(%f, %f)", x, y);
     }
     String to_string() {
         char buff[16] = "";
@@ -100,7 +99,7 @@ public:
     OpenMV(uint8_t addr) : _wire(Wire), address(addr) {}
     OpenMV(TwoWire &wire, uint8_t addr) : _wire(wire), address(addr) {}
     void setup() { _wire.begin(); }
-    uint16_t read_2byte() { return _wire.read() | (uint16_t(_wire.read()) << 8); }
+    uint16_t read_2byte() { return _wire.read() | ((uint16_t)_wire.read() << 8); }
     uint16_t read_data_size() {
         uint8_t size = _wire.requestFrom(address, (uint8_t)2);
         if (size == 2) { return read_2byte(); }
@@ -123,15 +122,14 @@ class Motor {
 public:
     static uint8_t power_str(char *dst, uint8_t pin, int8_t power) {
         if (dst == NULL) return 0;
-        sprintf(dst, "%1d%c%03d", pin, power < 0 ? 'F' : 'R',abs(power));
-        return strlen(dst);
+        return sprintf(dst, "%1d%c%03d", pin, power < 0 ? 'F' : 'R', abs(power));
     }
 private:
     int8_t _powers[4];
     HardwareSerial &_serial;
     bool _update(uint8_t pin, int8_t power) {
         int8_t &p = _powers[pin - 1];
-        if (p == power) return false;
+        if (power == p) return false;
         p = power;
         return true;
     }
@@ -150,22 +148,22 @@ public:
         if (dst == NULL) return 0;
         char *ptr = dst;
         for (uint8_t i = 0; i < 4; i++) {
-            Motor::power_str(ptr, i + 1, _powers[i]);
-            ptr += 5;
+            uint8_t diff = Motor::power_str(ptr, i + 1, _powers[i]);
+            ptr += diff;
             if (i == 3) break;
-            sprintf(ptr, ", ");
-            ptr += 2;
+            ptr[0] = ','; ptr[1] = ' '; ptr += 2;
         }
-        return 26; // 7 * 3 + 5
+        return ptr - dst;
     }
     int8_t shortinfo(char *dst) {
         if (dst == NULL) return 0;
+        char *ptr = dst;
         for (uint8_t i = 0; i < 4; i++) {
-            sprintf(dst, "%4d", _powers[i]);
-            dst += 4;
+            uint8_t len = sprintf(ptr, "%4d", _powers[i]);
+            ptr += len;
         }
-        *dst = '\0';
-        return 16;
+        *ptr = '\0';
+        return ptr - dst;
     }
     void set_one_motor(uint8_t pin, int8_t power) {
         if (!_update(pin, power)) return;
@@ -202,89 +200,93 @@ public:
     }
 };
 
-Interrupt<12> &start_interrupt = Interrupt<12>::instance();
+constexpr uint8_t start_pin = 12;
 uint8_t frame_count = 0;
 EchoSensor e23(2, 3), e45(4, 5), e67(6, 7);
 LineSensor l1(1), l2(2), l3(3);
 const Vector2 pos_on_fail{0, 0};
 //         id, addr
-BNO055 bno(-1, 0x28);
+BNO055 bno( 0, 0x28);
 OpenMV openmv(0x12);
-LiquidCrystal_I2C lcd(0x27);
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 const Vector2 test_vel{-42, 90};
 Motor motor(Serial); /* TODO */
 
-//#define DEBUG_ECHO
-#define DEBUG_LINE
-//#define DEBUG_BNO
-#define DEBUG_OPENMV
-//#define DEBUG_MOTOR
+//#define DEBUG_ECHO /* echo */
+//#define DEBUG_LINE /* line sensor */
+//#define DEBUG_OPENMV_AND_BNO /* OpenMV and BNO055 */
+#define DEBUG_MOTOR /* motor */
+#define USE_LCD
 
 void setup() {
-    start_interrupt.setup();
-    lcd.begin(16, 2);
+    pinMode(start_pin, INPUT);
+    #ifdef USE_LCD
+    lcd.init();
+    lcd.backlight();
+    #endif /* USE_LCD */
+    #ifdef DEBUG_ECHO
     e23.setup(); e45.setup(); e67.setup();
+    #endif /* DEBUG_ECHO */
+    #ifdef DEBUG_LINE
     l1.setup(); l2.setup();
+    #endif /* DEBUG_ECHO */
+    #ifdef DEBUG_OPENMV_AND_BNO
     bno.setup();
     openmv.setup();
+    #endif /* DEBUG_OPENMV_AND_BNO */
+    #ifdef DEBUG_MOTOR
     motor.setup();
+    #endif /* DEBUG_MOTOR */
 }
 
 void loop() {
-    if (!(PORTB & 0x40)) return;
+    if (!digitalRead(start_pin)) { return; }
     frame_count++;
-    frame_count &= 0xff;
-
+    frame_count %= 5;
     char buffer[128] = "";
     char *ptr = buffer;
     uint8_t row = 0;
-    #define LCD_LOG lcd.setCursor(0, row++); lcd.print(buffer);
+    #ifdef USE_LCD
+    lcd.clear();
+    #define LCD_LOG lcd.setCursor(0, row++); lcd.print(String(buffer));
+    #else /* USE_LCD */
+    #define LCD_LOG
+    #endif /* USE_LCD */
 
-    #define READ(_reader_) sprintf(ptr, "%4d ", _reader_.read())
-
+    #define READ(_reader_) sprintf(ptr, "%4d ", _reader_.read()); ptr += 5;
     #ifdef DEBUG_ECHO
-    #define E_READ(_reader_) READ(_reader_); ptr += 4;
-    E_READ(e23) E_READ(e45) E_READ(e67)
-    #undef E_READ
+    READ(e23) READ(e45) READ(e67)
     *ptr = '\0';
     ptr = buffer;
     LCD_LOG
     #endif /* DEBUG_ECHO */
-
     #ifdef DEBUG_LINE
-    #define L_READ(_reader_) READ(_reader_); ptr += 5;
-    L_READ(l1) L_READ(l2) L_READ(l3)
-    #undef L_READ
+    READ(l1) READ(l2) READ(l3)
     *ptr = '\0';
     ptr = buffer;
     LCD_LOG
     #endif /* DEBUG_LINE */
-
-    #ifdef DEBUG_OPENMV
+    #undef READ
+    #ifdef DEBUG_OPENMV_AND_BNO
     Vector2 cam_pos = openmv.read_pos();
     uint8_t len = cam_pos.to_string(ptr);
-    ptr[len] = '\0';
-    LCD_LOG
-    #endif /* DEBUG_OPENMV */
-
-    #ifdef DEBUG_BNO
+    ptr += len; *(ptr++) = ' ';
     double bnodir = bno.get_geomag_dir();
-    sprintf(ptr, "bno = %4f", bnodir);
+    sprintf(ptr, "%4f", bnodir);
     LCD_LOG
-    #endif /* DEBUG_BNO */
-
-    switch (frame_count % 5) {
+    ptr = buffer;
+    #endif /* DEBUG_OPENMV_AND_BNO */
+    #ifdef DEBUG_MOTOR
+    switch (frame_count) {
         case 1: motor.set_all_motors(50, 50, 50, 50); break;
         case 2: motor.set_rotate(true, 80); break;
         case 3: motor.set_velocity(test_vel); break;
         case 4: motor.set_dir_and_speed(PI / 6, 70); break;
         case 0: default: motor.stop(); break;
     }
-    #ifdef DEBUG_MOTOR
     uint8_t len = motor.shortinfo(ptr);
     ptr[len] = '\0';
     LCD_LOG
     #endif /* DEBUG_MOTOR */
-
     delay(1000);
 }
