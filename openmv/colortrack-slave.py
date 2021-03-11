@@ -20,7 +20,7 @@ sensor.set_auto_whitebal(False)
 clock = time.clock()
 
 bus = pyb.I2C(2, mode=pyb.I2C.SLAVE, addr=0x12)
-data, length_data = None, ustruct.pack("<H", 2 * 2) # 2byte * 2
+data, length_data = None, ustruct.pack("<H", 4) # 2byte * 2
 default_value = 0xffff
 
 def send(a, b, i2c_bus=bus):
