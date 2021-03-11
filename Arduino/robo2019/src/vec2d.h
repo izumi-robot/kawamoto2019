@@ -92,9 +92,10 @@ public: // instance properties
 
     /**
      * @brief ベクトルの文字列表現を返す
-     * @return String "(x, y)"
+     * @param[out] dst "(x, y)"
+     * @note 配列の容量チェックは行っていないので注意すること。
      */
-    String to_string() const;
+    void to_string(char *dst);
     /**
      * @brief ベクトルの文字列表現を返す
      * @param[out] dst "(x, y)"
@@ -102,10 +103,9 @@ public: // instance properties
     void to_string(String *dst);
     /**
      * @brief ベクトルの文字列表現を返す
-     * @param[out] dst "(x, y)"
-     * @note 配列の容量チェックは行っていないので注意すること。
+     * @return String "(x, y)"
      */
-    void to_string(char *dst);
+    String to_string();
 
     /**
      * @brief ベクトルvとの内積を返す
@@ -250,7 +250,7 @@ TMP void T_VEC2D::to_string(String *dst)
     to_string(buffer);
     *dst = buffer;
 }
-TMP String T_VEC2D::to_string() const
+TMP String T_VEC2D::to_string()
 {
     char buffer[64] = "";
     to_string(buffer);
