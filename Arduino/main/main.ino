@@ -228,13 +228,11 @@ void loop()
     #endif /* USE_MOTOR */
 
     #ifdef USE_LCD
-    
+    lcd.clear();
     #endif /* USE_LCD */
 
     #ifdef DO_DEBUG
-
     Serial.println(m_info->to_string());
-
     #endif /* DO_DEBUG */
 
     END:
