@@ -1,17 +1,15 @@
 /**
  * @file openmv.h
- * @brief OpenMVの情報を読み取るためのクラス定義
+ * @brief I2C通信の読み取り用のクラス定義
  */
 
 #pragma once
 
-#ifndef ROBO2019_OPENMV_H
-#define ROBO2019_OPENMV_H
-
 #ifdef ARDUINO
 
+#include <Wire.h>
+
 #include "vec2d.h"
-#include "i2c.h"
 
 /**
  * @brief 自作ライブラリの機能をまとめたもの
@@ -19,53 +17,75 @@
 namespace robo
 {
 
-using robo::I2CReaderWithAddr;
-using CameraPos = robo::Vector2D<uint16_t>;
+/** @brief OpenMV関連の機能をまとめたもの */
+namespace openmv {
+    /** @brief ボールのカメラ視点の座標を表すエイリアス */
+    using Position = robo::Vector2D<uint16_t>;
 
-/**
- * @brief OpenMVの読み取り用のクラス
- */
-class OpenMVReader : public I2CReaderWithAddr
-{
-public:
-    using I2CReaderWithAddr::I2CReaderWithAddr;
+    /** @brief オブジェクトの種類を表現する列挙型 */
+    enum class Kind : uint8_t { ball, yellow_goal, blue_goal };
 
-    /**
-     * @brief ボールのOpenMV上の座標を読み取る
-     * @param[in] pos_on_fail 読み取りに失敗した時に返される座標
-     * @return CameraPos OpenMV上の座標
-     */
-    CameraPos read_pos(const CameraPos & pos_on_fail);
-};
+    /** @brief カメラから見たオブジェクトの情報 */
+    struct ObjInfo {
+    public:
+        //! オブジェクトの種類
+        const Kind kind;
+        //! オブジェクトの位置
+        const Position pos;
 
-CameraPos OpenMVReader::read_pos(const CameraPos &pos_on_fail = CameraPos{0, 0})
-{
-    static constexpr uint16_t default_value = 0xffff;
-    uint16_t data_size = I2CReaderWithAddr::read_data_size();
-    if (data_size < 4) {
-        return pos_on_fail;
-    }
-    delayMicroseconds(10);
-    uint8_t buff[data_size];
-    if (!I2CReaderWithAddr::read_data(buff, data_size)) {
-        pass_data();
-        return pos_on_fail;
-    }
-    uint16_t x = buff[0] | (buff[1] << 8);
-    uint16_t y = buff[2] | (buff[3] << 8);
-    return (
-        (x == default_value && y == default_value)
-        ? pos_on_fail
-        : CameraPos{x, y}
-    );
-}
+        ObjInfo() = delete;
+        /** @brief 種類と座標を指定して初期化 */
+        ObjInfo(Kind kind, const uint16_t &x, const uint16_t &y) : kind(kind), pos(x, y) {}
+        /** @brief 種類と座標を指定して初期化 */
+        ObjInfo(Kind kind, const Position &pos) : kind(kind), pos(pos) {}
+
+        /**
+         * @brief 文字列表現を取得する
+         * @param[out] dst 文字列を書き込むバッファ
+         * @return uint8_t 書き込んだ文字数
+         * @note バッファオーバーランに注意。容量は30文字あると安心。
+         */
+        uint8_t to_string(char *dst);
+    };
+
+    class Reader {
+    private:
+        TwoWire &_wire;
+
+        uint16_t read_2byte() {
+            return _wire.read() | (_wire.read() << 8);
+        }
+    public:
+        uint8_t address;
+
+        Reader(uint8_t addr) : _wire(Wire),address(addr) {}
+        Reader(uint8_t addr, TwoWire &wire) : _wire(wire), address(addr) {}
+
+        ObjInfo* read_obj() {
+            uint8_t size = _wire.requestFrom(address, 5);
+            if (size != 5) return NULL;
+            Kind kind = static_cast<Kind>(_wire.read());
+            uint16_t x = read_2byte();
+            uint16_t y = read_2byte();
+            return new ObjInfo(kind, x, y);
+        }
+    };
+} // namespace openmv
 
 } // namespace robo
+
+uint8_t robo::openmv::ObjInfo::to_string(char *dst) {
+    if (dst == NULL) return;
+    return sprintf(dst, "%s: (%u, %u)", (
+        kind == Kind::ball ? "ball"
+        : kind == Kind::yellow_goal ? "yellow goal"
+        : kind == Kind::blue_goal ? "blue goal"
+        : "unknown kind"
+    ), x, y);
+}
 
 #else /* ARDUINO */
 
 #error This liblary is for Arduino.
 
 #endif /* ARDUINO */
-
-#endif /* ROBO2019_OPENMV_H */
