@@ -8,7 +8,11 @@ ball_thresholds = [
 ]
 
 yellow_goal_ths = [
-    ()
+    () # TODO
+]
+
+blue_goal_ths = [
+    () # TODO
 ]
 
 # https://docs.openmv.io/library/omv.sensor.html
@@ -23,7 +27,7 @@ sensor.set_auto_exposure(False, 5000)
 sensor.set_auto_whitebal(False)
 clock = time.clock()
 
-BALL, YELLOW_GOAL, BLUE_GOAL = range(3)
+BALL, YELLOW_GOAL, BLUE_GOAL = 0, 1, 2
 
 bus = pyb.I2C(2, mode=pyb.I2C.SLAVE, addr=0x12)
 data, length_data = None, ustruct.pack("<H", 4) # 2byte * 2
@@ -40,7 +44,7 @@ def find_biggest_blob(blobs):
 def send(kind, x, y, i2c_bus=bus):
     # https://docs.python.org/ja/3/library/struct.html
     # https://docs.openmv.io/library/ustruct.html
-    data = ustruct.pack("<B2H", kind, x, y)
+    data = ustruct.pack("<BHH", kind, x, y)
     # https://docs.openmv.io/library/pyb.I2C.html
     try:
         bus.send(data, timeout=10000)
@@ -48,28 +52,33 @@ def send(kind, x, y, i2c_bus=bus):
         return False
     return True
 
-def send_biggest_blob(kind, blobs):
+def send_biggest_blob(kind, blobs, i2c_bus=bus):
     if not blobs:
         return False
     big_blob = find_biggest_blob(blobs)
-    return send(kind, big_blob.cx(), big_blob.cy())
+    return send(kind, big_blob.cx(), big_blob.cy(), i2c_bus)
 
 while True:
-    clock.tick()
+    #clock.tick()
     # find object
     img = sensor.snapshot()
     # https://docs.openmv.io/library/omv.image.html#class-image-image-object
     blobs = img.find_blobs(
-        thresholds,
+        ball_thresholds,
         #pixels_threshold=5,
         #area_threshold=5
     )
-    find_biggest_blob(blobs)
-    # search the biggest object
-    biggest_blob = blobs[biggest_index]
-    x_data, y_data = biggest_blob.cx(), biggest_blob.cy()
-    print((x_data, y_data))
-    img.draw_cross(x_data, y_data)
+    send_biggest_blob(BALL, blobs)
+    blobs = img.find_blobs(
+        yellow_goal_ths,
+        #pixels_threshold=5,
+        #area_threshold=5
+    )
+    send_biggest_blob(YELLOW_GOAL, blobs)
+    blobs = img.find_blobs(
+        blue_goal_ths,
+        #pixels_threshold=5,
+        #area_threshold=5
+    )
+    send_biggest_blob(BLUE_GOAL, blobs)
 
-    # send data
-    send(x_data, y_data)

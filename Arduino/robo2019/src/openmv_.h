@@ -17,43 +17,72 @@
 namespace robo
 {
 
+/** @brief OpenMV関連の機能をまとめたもの */
 namespace openmv {
+    /** @brief ボールのカメラ視点の座標を表すエイリアス */
     using Position = robo::Vector2D<uint16_t>;
 
+    /** @brief オブジェクトの種類を表現する列挙型 */
     enum class Kind : uint8_t { ball, yellow_goal, blue_goal };
 
-    struct ObjInfo : public Position {
+    /** @brief カメラから見たオブジェクトの情報 */
+    struct ObjInfo {
     public:
+        //! オブジェクトの種類
+        const Kind kind;
+        //! オブジェクトの位置
+        const Position pos;
+
+        ObjInfo() = delete;
+        /** @brief 種類と座標を指定して初期化 */
+        ObjInfo(Kind kind, const uint16_t &x, const uint16_t &y) : kind(kind), pos(x, y) {}
+        /** @brief 種類と座標を指定して初期化 */
+        ObjInfo(Kind kind, const Position &pos) : kind(kind), pos(pos) {}
+
+        /**
+         * @brief 文字列表現を取得する
+         * @param[out] dst 文字列を書き込むバッファ
+         * @return uint8_t 書き込んだ文字数
+         * @note バッファオーバーランに注意。容量は30文字あると安心。
+         */
+        uint8_t to_string(char *dst);
     };
-}
 
-/** @brief カメラ視点でのボールの座標を表現する型 */
-using CameraPos = robo::Vector2D<uint16_t>;
+    class Reader {
+    private:
+        TwoWire &_wire;
 
-class OpenMV {
-private:
-    TwoWire &_wire;
-public:
-    const uint8_t address;
+        uint16_t read_2byte() {
+            return _wire.read() | (_wire.read() << 8);
+        }
+    public:
+        uint8_t address;
 
-    OpenMV() : _wire(Wire), address(0x12) {}
-    OpenMV(uint8_t addr) : _wire(Wire), address(addr) {}
-    OpenMV(TwoWire &wire, uint8_t addr) : _wire(wire), address(addr) {}
+        Reader(uint8_t addr) : _wire(Wire),address(addr) {}
+        Reader(uint8_t addr, TwoWire &wire) : _wire(wire), address(addr) {}
 
-    void setup() { _wire.begin(); }
-    uint16_t read_2byte() { return _wire.read() | ((uint16_t)_wire.read() << 8); }
-
-    CameraPos read_pos(const CameraPos &pos_on_fail = CameraPos{0, 0}) {
-        uint16_t data_size = read_data_size();
-        uint8_t size = _wire.requestFrom(address, data_size);
-        if (size != 4) return pos_on_fail;
-        uint16_t x = read_2byte();
-        uint16_t y = read_2byte();
-        return (x != 0xffff || y != 0xffff) ? Vector2{x, y} : pos_on_fail;
-    }
-};
+        ObjInfo* read_obj() {
+            uint8_t size = _wire.requestFrom(address, 5);
+            if (size != 5) return NULL;
+            Kind kind = static_cast<Kind>(_wire.read());
+            uint16_t x = read_2byte();
+            uint16_t y = read_2byte();
+            return new ObjInfo(kind, x, y);
+        }
+    };
+} // namespace openmv
 
 } // namespace robo
+
+uint8_t robo::openmv::ObjInfo::to_string(char *dst) {
+    if (dst == NULL) return;
+    return sprintf(dst, "%s: (%u, %u)", (
+        kind == Kind::ball ? "ball"
+        : kind == Kind::yellow_goal ? "yellow goal"
+        : kind == Kind::blue_goal ? "blue goal"
+        : "unknown kind"
+    ), x, y);
+}
 
 #else /* ARDUINO */
 

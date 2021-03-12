@@ -1,5 +1,4 @@
 #include <Wire.h>
-#include <ArxSmartPtr.h>
 
 class CamPos {
 public:
@@ -31,7 +30,7 @@ public:
             kind == ObjKind::ball ? "ball"
             : kind == ObjKind::yellow_goal ? "yellow goal"
             : kind == ObjKind::blue_goal ? "blue goal"
-            : "others"
+            : "unknown kind"
         ), x, y);
     }
 };
@@ -80,12 +79,19 @@ void loop() {
     static uint8_t frame_count;
     static uint last_time = 0;
     CamObj* obj = openmv->read_obj();
-    if (obj) {
+    if (obj != NULL) {
         char buffer[32] = "";
-        obj.to_string(buffer);
+        obj->to_string(buffer);
         Serial.println(buffer);
+        delete obj;
     }
     if (++frame_count == 100) {
-        int time
+        uint time = millis();
+        double fps = 1000000. / (time - last_time);
+        buffer[16] = "fps: ";
+        sprintf(buffer + 5, "%f\n", fps);
+        Serial.print(buffer);
+        frame_count = 0;
+        last_time = time;
     }
 }
