@@ -1,4 +1,5 @@
 #include <robo2019.h>
+#include <Wire.h>
 
 
 struct MoveInfo
@@ -92,8 +93,7 @@ namespace echos {
 }
 
 #ifdef USE_OPENMV
-robo::OpenMVReader openmv(0x12);
-const robo::CameraPos pos_on_fail{0, 0};
+robo::openmv::Reader mv_reader(0x12);
 #endif /* USE_OPENMV */
 
 #ifdef USE_BNO055
@@ -124,7 +124,7 @@ void setup()
     #endif /* USE_LINE */
 
     #ifdef USE_OPENMV
-    openmv.setup();
+    mv_reader.setup();
     #endif /* USE_OPENMV */
 
     #ifdef USE_BNO055
@@ -209,10 +209,13 @@ void loop()
     #ifdef USE_OPENMV
     {
 
-    robo::CameraPos cpos = openmv.read_pos();
-    robo::V2_double bpos{cpos.x, cpos.y}; // TODO: CameraPos to ball pos
-    double bdir = bpos.angle();
-    m_info = new Translate(bdir, max_speed);
+    robo::openmv::Frame* frame = mv_reader.read_frame();
+    if (frame != NULL) {
+        robo::openmv::Position ball = *(frame->ball_pos) - robo::openmv::center;
+        // TODO: ball pos to real pos
+        m_info = new Translate(double(ball.x), double(ball.y));
+        delete frame;
+    }
     goto MOTOR;
 
     } // tag OPENMV

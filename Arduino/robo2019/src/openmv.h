@@ -22,6 +22,8 @@ namespace openmv {
     /** @brief ボールのカメラ視点の座標を表すエイリアス */
     using Position = robo::Vector2D<uint16_t>;
 
+    const Position center{80, 60};
+
     class Frame {
     public:
         using PosPtr = Position *;
@@ -36,7 +38,8 @@ namespace openmv {
             uint16_t b_goal_x, uint16_t b_goal_y
         ) : INIT_POS(ball), INIT_POS(y_goal), INIT_POS(b_goal) {}
         #undef INIT_POS
-        Frame(Positoin *ball_p, Position *y_goal_p, Position *b_goal_p)
+
+        Frame(Position *ball_p, Position *y_goal_p, Position *b_goal_p)
         : ball_pos(ball_p), y_goal_pos(y_goal_p), b_goal_pos(b_goal_p) {}
         ~Frame() {
             #define DELETE(_name_) if (_name_ ## _pos != NULL) delete _name_ ## _pos;
@@ -46,11 +49,11 @@ namespace openmv {
             #undef DELETE
         }
         uint8_t to_string(char *dst) {
-            if (dst == NULL) return;
+            if (dst == NULL) return 0;
             char *ptr = dst;
             #define WRITE_LABEL(_name_) ptr += sprintf(ptr, #_name_ "pos: ");
             #define WRITE_POS(_name_) if (_name_ ## _pos != NULL) ptr += _name_ ## _pos->to_string(ptr);
-            #define WRITE(_name_) WRITE_LABLE(_name_) WRITE_POS(_name_) NEWLINE
+            #define WRITE(_name_) WRITE_LABEL(_name_) WRITE_POS(_name_) NEWLINE
             #define NEWLINE *(ptr++) = '\n';
             WRITE(ball)
             WRITE(y_goal)
@@ -77,6 +80,8 @@ namespace openmv {
         Reader(uint8_t addr) : _wire(Wire),address(addr) {}
         Reader(uint8_t addr, TwoWire &wire) : _wire(wire), address(addr) {}
 
+        void setup() { _wire.begin(); }
+
         Position* read_pos() {
             constexpr uint16_t default_value = 0xffff;
             uint8_t size = _wire.requestFrom(address, (uint8_t)4);
@@ -87,9 +92,9 @@ namespace openmv {
         }
 
         Frame* read_frame() {
-            Position ball_pos = read_pos();
-            Position y_goal_pos = read_pos();
-            Position b_goal_pos = read_pos();
+            Position *ball_pos = read_pos();
+            Position *y_goal_pos = read_pos();
+            Position *b_goal_pos = read_pos();
             if (ball_pos == NULL && y_goal_pos == NULL && b_goal_pos == NULL) return NULL;
             return new Frame(ball_pos, y_goal_pos, b_goal_pos);
         }

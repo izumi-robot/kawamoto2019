@@ -216,7 +216,7 @@ SUBSCRIBE_IMPL(T&,)
 #undef SUBSCRIBE_IMPL
 
 TMP uint8_t T_VEC2D::to_string(char *dst) {
-    if (dst == NULL) return;
+    if (dst == NULL) return 0;
     if (std::is_floating_point<T>::value) {
         char *ptr = dst;
         *(ptr++) = '(';
