@@ -93,9 +93,10 @@ public: // instance properties
     /**
      * @brief ベクトルの文字列表現を返す
      * @param[out] dst "(x, y)"
+     * @return uint8_t 書き込んだ文字数
      * @note 配列の容量チェックは行っていないので注意すること。
      */
-    void to_string(char *dst);
+    uint8_t to_string(char *dst);
     /**
      * @brief ベクトルの文字列表現を返す
      * @param[out] dst "(x, y)"
@@ -214,34 +215,22 @@ SUBSCRIBE_IMPL(T&,)
 
 #undef SUBSCRIBE_IMPL
 
-TMP void T_VEC2D::to_string(char *dst) {
+TMP uint8_t T_VEC2D::to_string(char *dst) {
     if (dst == NULL) return;
     if (std::is_floating_point<T>::value) {
-        sprintf(dst, "(%f, %f)", x, y);
+        char *ptr = dst;
+        *(ptr++) = '(';
+        dtostrf(x, 5, 2, ptr); ptr += 5;
+        ptr[0] = ','; ptr[1] = ' '; ptr += 2;
+        dtostrf(y, 5, 2, ptr); ptr += 5;
+        *(ptr++) = ')'; ptr[0] = '\0';
+        return ptr - dst;
     } else if (std::is_signed<T>::value) {
-        sprintf(dst, "(%d, %d)", x, y);
+        return sprintf(dst, "(%d, %d)", x, y);
     } else {
-        sprintf(dst, "(%u, %u)", x, y);
+        return sprintf(dst, "(%u, %u)", x, y);
     }
 }
-/*
-#define ENABLE_IF_V(_cond_) typename std::enable_if<_cond_, void>::type
-#define TO_STR T_VEC2D::to_string(char *dst)
-TMP ENABLE_IF_V(std::is_floating_point<T>::value) TO_STR {
-    if (dst == NULL) return;
-    sprintf(dst, "(%f, %f)", x, y);
-}
-TMP ENABLE_IF_V(std::is_integral<T>::value && std::is_signed<T>::value) TO_STR {
-    if (dst == NULL) return;
-    sprintf(dst, "(%d, %d)", x, y);
-}
-TMP ENABLE_IF_V(std::is_integral<T>::value && std::is_unsigned<T>::value) TO_STR {
-    if (dst == NULL) return;
-    sprintf(dst, "(%u, %u)", x, y);
-}
-#undef ENABLE_IF_V
-#undef TO_STR
-*/
 
 TMP void T_VEC2D::to_string(String *dst)
 {
