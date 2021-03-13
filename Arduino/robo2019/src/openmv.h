@@ -22,30 +22,46 @@ namespace openmv {
     /** @brief ボールのカメラ視点の座標を表すエイリアス */
     using Position = robo::Vector2D<uint16_t>;
 
-    /** @brief オブジェクトの種類を表現する列挙型 */
-    enum class Kind : uint8_t { ball, yellow_goal, blue_goal };
-
-    /** @brief カメラから見たオブジェクトの情報 */
-    struct ObjInfo {
+    class Frame {
     public:
-        //! オブジェクトの種類
-        const Kind kind;
-        //! オブジェクトの位置
-        const Position pos;
+        using PosPtr = Position *;
+        Position *ball_pos;
+        Position *y_goal_pos;
+        Position *b_goal_pos;
 
-        ObjInfo() = delete;
-        /** @brief 種類と座標を指定して初期化 */
-        ObjInfo(Kind kind, const uint16_t &x, const uint16_t &y) : kind(kind), pos(x, y) {}
-        /** @brief 種類と座標を指定して初期化 */
-        ObjInfo(Kind kind, const Position &pos) : kind(kind), pos(pos) {}
-
-        /**
-         * @brief 文字列表現を取得する
-         * @param[out] dst 文字列を書き込むバッファ
-         * @return uint8_t 書き込んだ文字数
-         * @note バッファオーバーランに注意。容量は30文字あると安心。
-         */
-        uint8_t to_string(char *dst);
+        #define INIT_POS(_name_) _name_ ## _pos(new Position(_name_ ## _x, _name_ ## _y))
+        Frame(
+            uint16_t ball_x, uint16_t ball_y,
+            uint16_t y_goal_x, uint16_t y_goal_y,
+            uint16_t b_goal_x, uint16_t b_goal_y
+        ) : INIT_POS(ball), INIT_POS(y_goal), INIT_POS(b_goal) {}
+        #undef INIT_POS
+        Frame(Positoin *ball_p, Position *y_goal_p, Position *b_goal_p)
+        : ball_pos(ball_p), y_goal_pos(y_goal_p), b_goal_pos(b_goal_p) {}
+        ~Frame() {
+            #define DELETE(_name_) if (_name_ ## _pos != NULL) delete _name_ ## _pos;
+            DELETE(ball)
+            DELETE(y_goal)
+            DELETE(b_goal)
+            #undef DELETE
+        }
+        uint8_t to_string(char *dst) {
+            if (dst == NULL) return;
+            char *ptr = dst;
+            #define WRITE_LABEL(_name_) ptr += sprintf(ptr, #_name_ "pos: ");
+            #define WRITE_POS(_name_) if (_name_ ## _pos != NULL) ptr += _name_ ## _pos->to_string(ptr);
+            #define WRITE(_name_) WRITE_LABLE(_name_) WRITE_POS(_name_) NEWLINE
+            #define NEWLINE *(ptr++) = '\n';
+            WRITE(ball)
+            WRITE(y_goal)
+            WRITE(b_goal)
+            #undef WRITE_LABEL
+            #undef WRITE_POS
+            #undef WRITE
+            #undef NEWLINE
+            *ptr = '\0';
+            return ptr - dst;
+        }
     };
 
     class Reader {
@@ -61,28 +77,26 @@ namespace openmv {
         Reader(uint8_t addr) : _wire(Wire),address(addr) {}
         Reader(uint8_t addr, TwoWire &wire) : _wire(wire), address(addr) {}
 
-        ObjInfo* read_obj() {
-            uint8_t size = _wire.requestFrom(address, 5);
-            if (size != 5) return NULL;
-            Kind kind = static_cast<Kind>(_wire.read());
+        Position* read_pos() {
+            constexpr uint16_t default_value = 0xffff;
+            uint8_t size = _wire.requestFrom(address, (uint8_t)4);
+            if (size != 4) return NULL;
             uint16_t x = read_2byte();
             uint16_t y = read_2byte();
-            return new ObjInfo(kind, x, y);
+            return (x != default_value || y != default_value) ? new Position(x, y) : NULL;
+        }
+
+        Frame* read_frame() {
+            Position ball_pos = read_pos();
+            Position y_goal_pos = read_pos();
+            Position b_goal_pos = read_pos();
+            if (ball_pos == NULL && y_goal_pos == NULL && b_goal_pos == NULL) return NULL;
+            return new Frame(ball_pos, y_goal_pos, b_goal_pos);
         }
     };
 } // namespace openmv
 
 } // namespace robo
-
-uint8_t robo::openmv::ObjInfo::to_string(char *dst) {
-    if (dst == NULL) return;
-    return sprintf(dst, "%s: (%u, %u)", (
-        kind == Kind::ball ? "ball"
-        : kind == Kind::yellow_goal ? "yellow goal"
-        : kind == Kind::blue_goal ? "blue goal"
-        : "unknown kind"
-    ), x, y);
-}
 
 #else /* ARDUINO */
 

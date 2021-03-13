@@ -18,6 +18,22 @@ bool operator!=(const CamPos &lh, const CamPos &rh) {
     return lh.x != rh.x || lh.y != rh.y;
 }
 
+#define IOP_IMPL(_op_) CamPos& operator _op_ ## = (CamPos &lh, const CamPos &rh) {\
+    lh.x _op_ ## = rh.x; lh.y _op_ ## = rh.y; return lh; }
+IOP_IMPL(+)
+IOP_IMPL(-)
+IOP_IMPL(*)
+IOP_IMPL(/)
+#undef IOP_IMPL
+
+#define OP_IMPL(_op_) CamPos operator _op_ (const CamPos &lh, const CamPos &rh) {\
+    CamPos res = lh; res _op_ ## = rh; return res; }
+OP_IMPL(+)
+OP_IMPL(-)
+OP_IMPL(*)
+OP_IMPL(/)
+#undef OP_IMPL
+
 class Frame {
 public:
     CamPos *ball_pos, *yellow_goal_pos, *blue_goal_pos;
@@ -63,24 +79,6 @@ public:
     }
 };
 
-enum class ObjKind : uint8_t { ball, yellow_goal, blue_goal };
-
-class CamObj : public CamPos {
-public:
-    const ObjKind kind;
-    CamObj(ObjKind kind, uint16_t x, uint16_t y) : kind(kind), CamPos(x, y) {}
-    CamObj(ObjKind kind, const CamPos &pos) : kind(kind), CamPos(pos) {}
-    uint8_t to_string(char *dst) {
-        if (!dst) return 0;
-        return sprintf(dst, "%s: (%u, %u)", (
-            kind == ObjKind::ball ? "ball"
-            : kind == ObjKind::yellow_goal ? "yellow goal"
-            : kind == ObjKind::blue_goal ? "blue goal"
-            : "unknown kind"
-        ), x, y);
-    }
-};
-
 class OpenMV {
 private:
     TwoWire &_wire;
@@ -104,19 +102,11 @@ public:
         uint16_t y = read_2byte();
         return (x != default_value || y != default_value) ? new CamPos(x, y) : NULL;
     }
-    CamObj* read_obj() {
-        uint8_t size = _wire.requestFrom(address, uint8_t(5));
-        if (size != uint8_t(5)) return NULL;
-        ObjKind kind = static_cast<ObjKind>(_wire.read());
-        uint16_t x = read_2byte();
-        uint16_t y = read_2byte();
-        return new CamObj(kind, x, y);
-    }
     Frame* read_frame() {
-        const uint16_t default_value = 0xffff;
         CamPos *ball = read_pos();
         CamPos *yellow = read_pos();
         CamPos *blue = read_pos();
+        if (ball == NULL && yellow == NULL && blue == NULL) return NULL;
         return new Frame(ball, yellow, blue);
     }
 };
@@ -133,21 +123,27 @@ void setup() {
 void loop() {
     static uint8_t frame_count = 0;
     static uint16_t last_time = 0;
+    char *ptr = buffer;
+    buffer[0] = '\0';
+
     Frame *frame = openmv->read_frame();
-    //CamObj* obj = openmv->read_obj();
     if (frame != NULL) {
-        frame->to_string(buffer);
-        Serial.println(buffer);
+        ptr += frame->to_string(ptr);
+        ptr[0] = '\n';
+        ptr[1] = '\0';
+        ptr++;
         delete frame;
     }
+
     if (++frame_count == 100) {
         uint16_t time = millis();
         double fps = 100000.0 / (time - last_time);
-        char buffer[16] = "fps: ";
-        dtostrf(fps, 5, 2, buffer + 5);
-        buffer[10] = '\0';
-        Serial.println(buffer);
+        sprintf(ptr, "fps: ");
+        dtostrf(fps, 5, 2, ptr + 5);
+        ptr[10] = '\n'; ptr[11] = '\0';
         frame_count = 0;
         last_time = time;
     }
+
+    Serial.print(buffer);
 }
