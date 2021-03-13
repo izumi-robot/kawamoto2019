@@ -93,10 +93,9 @@ public: // instance properties
     /**
      * @brief ベクトルの文字列表現を返す
      * @param[out] dst "(x, y)"
-     * @return uint8_t 配列に書き込んだ文字数
      * @note 配列の容量チェックは行っていないので注意すること。
      */
-    uint8_t to_string(char *dst);
+    void to_string(char *dst);
     /**
      * @brief ベクトルの文字列表現を返す
      * @param[out] dst "(x, y)"
@@ -218,17 +217,11 @@ SUBSCRIBE_IMPL(T&,)
 TMP void T_VEC2D::to_string(char *dst) {
     if (dst == NULL) return;
     if (std::is_floating_point<T>::value) {
-        char *ptr = dst;
-        *(ptr++) = '(';
-        dtostrf(x, 5, 2, ptr); ptr += 5;
-        ptr[0] = ','; ptr[1] = ' '; ptr += 2;
-        dtostrf(y, 5, 2, ptr); ptr += 5;
-        *(ptr++) = ')'; ptr[0] = '\0';
-        return ptr - dst;
+        sprintf(dst, "(%f, %f)", x, y);
     } else if (std::is_signed<T>::value) {
-        return sprintf(dst, "(%d, %d)", x, y);
+        sprintf(dst, "(%d, %d)", x, y);
     } else {
-        return sprintf(dst, "(%u, %u)", x, y);
+        sprintf(dst, "(%u, %u)", x, y);
     }
 }
 /*
