@@ -2,13 +2,15 @@
 #include <Wire.h>
 
 
-struct MoveInfo
+class MoveInfo
 {
+public:
     virtual void apply(robo::Motor &motor) = 0;
+    virtual uint8_t to_string(char *dst) = 0;
     virtual String to_string() = 0;
 };
 
-struct Stop : public MoveInfo
+class Stop : public MoveInfo
 {
 public:
     void apply(robo::Motor &motor) override
@@ -16,16 +18,25 @@ public:
         motor.stop();
     }
 
+    uint8_t to_string(char *dst) override
+    {
+        if (dst == NULL) return 0;
+        return sprintf(dst, "MoveInfo: Stop");
+    }
+
     String to_string() override
     {
-        return "MoveInfo: Stop";
+        char buffer[16] = "";
+        to_string(buffer);
+        return String(buffer);
     }
 };
 
-struct Translate : public MoveInfo
+class Translate : public MoveInfo
 {
 private:
     const robo::V2_double vec;
+
 public:
     Translate(const double &x, const double &y) : vec(x, y) {}
     Translate(const robo::V2_double &vec) : vec(vec) {}
@@ -35,17 +46,29 @@ public:
         motor.set_velocity(vec);
     }
 
+    uint8_t to_string(char *dst) override
+    {
+        if (dst == NULL) return 0;
+        char *ptr = dst;
+        ptr += sprintf(ptr, "MoveInfo: Translate");
+        ptr += vec.to_string(ptr);
+        return ptr - dst;
+    }
+
     String to_string() override
     {
-        return "MoveInfo: Translate" + vec.to_string();
+        char buffer[64] = "";
+        to_string(buffer);
+        return String(buffer);
     }
 };
 
-struct Rotate : public MoveInfo
+class Rotate : public MoveInfo
 {
 private:
     const bool clockwise;
     const int8_t speed;
+
 public:
     Rotate(const bool clockwise, const int8_t speed)
     : clockwise(clockwise), speed(speed) {}
@@ -55,13 +78,27 @@ public:
         motor.set_rotate(clockwise, speed);
     }
 
+    uint8_t to_string(char *dst) {
+        if (dst == NULL) return 0;
+        return sprintf(
+            dst,
+            "MoveInfo: Rotate(clockwise=%s, %d)",
+            clockwise ? "true" : "false",
+            speed
+        );
+    }
+
     String to_string() override
     {
-        char buffer[32];
-        sprintf(buffer, "MoveInfo: Rotate(%d)", speed);
+        char buffer[64];
+        to_string(buffer);
         return String(buffer);
     }
 };
+
+inline constexpr uint16_t proc_echo(uint16_t before) {
+    return before ? before : 1024;
+}
 
 #define USE_MOTOR
 #define USE_ECHO
@@ -74,23 +111,23 @@ public:
 constexpr double HPI = PI / 2;
 constexpr double QPI = PI / 4;
 constexpr int8_t max_speed = 100;
+MoveInfo *m_stop;
 
 #ifdef USE_MOTOR
-robo::Motor motor(Serial);
-MoveInfo *m_stop;
+robo::Motor motor(Serial2);
 #endif /* USE_MOTOR */
 
+#ifdef USE_LINE
 namespace lines {
-    #ifdef USE_LINE
     robo::LineSensor left(1), right(3), back(5);
-    #endif /* USE_LINE */
 }
+#endif /* USE_LINE */
 
+#ifdef USE_ECHO
 namespace echos {
-    #ifdef USE_ECHO
     robo::EchoSensor left(7, 6), right(4, 5), back(8, 9);
-    #endif /* USE_ECHO */
 }
+#endif /* USE_ECHO */
 
 #ifdef USE_OPENMV
 robo::openmv::Reader mv_reader(0x12);
@@ -98,7 +135,7 @@ robo::openmv::Reader mv_reader(0x12);
 
 #ifdef USE_BNO055
 robo::BNO055 bno055(55);
-#endif /* USE_ */
+#endif /* USE_BNO055 */
 
 #ifdef USE_LCD
 robo::LCD lcd(0x27, 16, 2);
@@ -106,9 +143,10 @@ robo::LCD lcd(0x27, 16, 2);
 
 void setup()
 {
+    m_stop = new Stop();
+
     #ifdef USE_MOTOR
     motor.setup(19200);
-    m_stop = new Stop();
     #endif /* USE_MOTOR */
 
     #ifdef USE_ECHO
@@ -143,17 +181,19 @@ void setup()
 void loop()
 {
     MoveInfo *m_info = m_stop;
-    //bool fetch_echo = false;
+
+    #ifdef USE_LCD
+    lcd.clear();
+    #endif /* USE_LCD */
 
     LINE:
     #ifdef USE_LINE
     {
 
-    using robo::LineSensor;
     #define IS_WHITE robo::LineSensor::iswhite
-    bool w_left = IS_WHITE (lines::left.read()),
-        w_right = IS_WHITE (lines::right.read()),
-        w_back  = IS_WHITE (lines::back.read());
+    bool w_left = IS_WHITE(lines::left.read()),
+        w_right = IS_WHITE(lines::right.read()),
+        w_back  = IS_WHITE(lines::back.read());
 
     #define LINE_DIR (w_left == w_right ? 0.0 : (w_left \
         ? (w_back ? -QPI : QPI) \
@@ -163,9 +203,9 @@ void loop()
         double d = 0.0;
 
         #ifdef USE_ECHO
-        int e_left  = echos::left.read()  || 1024,
-            e_right = echos::right.read() || 1024,
-            e_back  = echos::back.read()  || 1024;
+        int e_left  = proc_echo(echos::left.read()),
+            e_right = proc_echo(echos::right.read()),
+            e_back  = proc_echo(echos::back.read());
         d = (
             (e_left != e_right || e_right != e_back)
             ? (
@@ -211,14 +251,19 @@ void loop()
 
     robo::openmv::Frame* frame = mv_reader.read_frame();
     if (frame != NULL) {
-        robo::openmv::Position ball = *(frame->ball_pos) - robo::openmv::center;
+        robo::openmv::Position ball;
+        if (frame->ball_pos != NULL) {
+            ball = *(frame->pall_pos) - robo::openmv::center;
+        } else {
+            ball = robo::openmv::center;
+        }
         // TODO: ball pos to real pos
         m_info = new Translate(double(ball.x), double(ball.y));
         delete frame;
     }
     goto MOTOR;
 
-    } // tag OPENMV
+    }
     #endif /* USE_OPENMV */
 
     MOTOR:
@@ -230,14 +275,16 @@ void loop()
     }
     #endif /* USE_MOTOR */
 
-    #ifdef USE_LCD
-    lcd.clear();
-    #endif /* USE_LCD */
-
     #ifdef DO_DEBUG
-    Serial.println(m_info->to_string());
+    {
+
+    char buffer[64] = "";
+    m_info->to_string(buffer);
+    Serial.println(buffer);
+
+    }
     #endif /* DO_DEBUG */
 
     END:
-    if (m_info != m_stop) delete m_info;
+    if (m_info != NULL && m_info != m_stop) delete m_info;
 }
