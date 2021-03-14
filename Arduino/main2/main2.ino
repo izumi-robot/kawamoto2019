@@ -1,99 +1,9 @@
 #include <Wire.h>
 #include <robo2019.h>
 
-class MoveInfo
-{
-public:
-    virtual void apply(robo::Motor &motor) = 0;
-    virtual uint8_t to_string(char *dst) = 0;
-    virtual String to_string() = 0;
-};
-
-class Stop : public MoveInfo
-{
-public:
-    void apply(robo::Motor &motor) override
-    {
-        motor.stop();
-    }
-
-    uint8_t to_string(char *dst) override
-    {
-        if (dst == NULL) return 0;
-        return sprintf(dst, "MoveInfo: Stop");
-    }
-
-    String to_string() override
-    {
-        char buffer[16] = "";
-        to_string(buffer);
-        return String(buffer);
-    }
-};
-
-class Translate : public MoveInfo
-{
-private:
-    const robo::V2_double vec;
-
-public:
-    Translate(const double &x, const double &y) : vec(x, y) {}
-    Translate(const robo::V2_double &vec) : vec(vec) {}
-
-    void apply(robo::Motor &motor) override
-    {
-        motor.set_velocity(vec);
-    }
-
-    uint8_t to_string(char *dst) override
-    {
-        if (dst == NULL) return 0;
-        char *ptr = dst;
-        ptr += sprintf(ptr, "MoveInfo: Translate");
-        ptr += vec.to_string(ptr);
-        return ptr - dst;
-    }
-
-    String to_string() override
-    {
-        char buffer[64] = "";
-        to_string(buffer);
-        return String(buffer);
-    }
-};
-
-class Rotate : public MoveInfo
-{
-private:
-    const bool clockwise;
-    const int8_t speed;
-
-public:
-    Rotate(const bool clockwise, const int8_t speed)
-    : clockwise(clockwise), speed(speed) {}
-
-    void apply(robo::Motor &motor) override
-    {
-        motor.set_rotate(clockwise, speed);
-    }
-
-    uint8_t to_string(char *dst) {
-        if (dst == NULL) return 0;
-        return sprintf(
-            dst,
-            "MoveInfo: Rotate(clockwise=%s, %d)",
-            clockwise ? "true" : "false",
-            speed
-        );
-    }
-
-    String to_string() override
-    {
-        char buffer[64];
-        to_string(buffer);
-        return String(buffer);
-    }
-};
+namespace info {
+    using namespace robo::move_info;
+}
 
 inline constexpr uint16_t proc_echo(uint16_t before) {
     return before ? before : 1024;
@@ -102,7 +12,7 @@ inline constexpr uint16_t proc_echo(uint16_t before) {
 constexpr double HPI = PI / 2;
 constexpr double QPI = PI / 4;
 constexpr int8_t max_speed = 100;
-MoveInfo *m_stop;
+info::MoveInfo *m_stop;
 robo::Motor motor(Serial2);
 
 namespace lines {
@@ -126,20 +36,47 @@ void setup() {
     lines::back.setup();
     mv_reader.setup();
     bno055.setup();
+
     Serial.begin(19200);
     motor.setup(19200);
+    m_stop = new info::Stop();
     lcd.setup();
 }
 
 void loop() {
-    bool w_left = IS_WHITE(lines::left.read()),
-        w_right = IS_WHITE(lines::right.read()),
-        w_back  = IS_WHITE(lines::back.read());
-    robo::openmv::Frame *frame = mv_reader.read_frame();
+    info::MoveInfo *m_info = m_stop;
+    #define BIND(_name_) w_ ## _name_ = robo::LineSensor::iswhite(lines::_name_.read())
+    bool BIND(left), BIND(right), BIND(back);
+    #undef BIND
+    if (w_left || w_right || w_back) { // 線を踏んだ
+        double d = 0.0;
+        #define BIND(_name_) e_ ## _name_ = echos::_name_.read()
+        uint16_t BIND(left), BIND(right), BIND(back);
+        #undef BIND
+        bool lt_lr = e_left < e_right,
+            lt_br  = e_back < e_right,
+            lt_bl  = e_back < e_left;
+        if (lt_lr || lt_br || lt_bl) { // 超音波の値が信頼できる
+            d = (lt_br && lt_bl)
+                ? 0.0 // 後ろの壁が一番近い => 前に進む
+                : lt_lr ? -HPI : HPI // 左の方が近い ? 右に進む : 左に進む
+        } else { // 超音波の値が信頼できない
+            d = w_back
+                ? (w_left ? -QPI // 後ろと左の線を踏んだ => 右前に進む
+                    : w_right ? QPI : 0.0) // 右の線を踏んだ ? 左前 : 真ん前
+                // else: 後ろの線を踏んでいない
+                : w_left ? -HPI : HPI // 右 : 左
+        }
+        m_info = new info::Translate(d, max_speed);
+    }
+    // bno
     double bno_dir = bno055.read_geomag_direction();
-    if (frame->ball_pos != NULL) {
-        
+
+    // openmv
+    robo::openmv::Frame *frame = mv_reader.read_frame();
+    robo::openmv::Position *ball_pos = frame == NULL ? NULL : 
+    if (frame != NULL) {
     } else {
-        
+
     }
 }

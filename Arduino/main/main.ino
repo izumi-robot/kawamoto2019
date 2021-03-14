@@ -35,7 +35,7 @@ public:
 class Translate : public MoveInfo
 {
 private:
-    const robo::V2_double vec;
+    robo::V2_double vec;
 
 public:
     Translate(const double &x, const double &y) : vec(x, y) {}
@@ -253,7 +253,7 @@ void loop()
     if (frame != NULL) {
         robo::openmv::Position ball;
         if (frame->ball_pos != NULL) {
-            ball = *(frame->pall_pos) - robo::openmv::center;
+            ball = *(frame->ball_pos) - robo::openmv::center;
         } else {
             ball = robo::openmv::center;
         }
