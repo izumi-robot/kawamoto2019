@@ -50,8 +50,6 @@ void EchoSensor::setup()
 }
 
 int EchoSensor::read() {
-    digitalWrite(order_pin, LOW);
-    delayMicroseconds(10);
     digitalWrite(order_pin, HIGH);
     delayMicroseconds(10);
     digitalWrite(order_pin, LOW);
