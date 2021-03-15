@@ -5,10 +5,6 @@ namespace info {
     using namespace robo::move_info;
 }
 
-inline constexpr uint16_t proc_echo(uint16_t before) {
-    return before ? before : 1024;
-}
-
 constexpr double HPI = PI / 2;
 constexpr double QPI = PI / 4;
 constexpr int8_t max_speed = 100;
@@ -44,38 +40,39 @@ void setup() {
 }
 
 void loop() {
+    using robo::openmv::Position;
     info::MoveInfo *m_info = m_stop;
     #define BIND(_name_) w_ ## _name_ = robo::LineSensor::iswhite(lines::_name_.read())
     bool BIND(left), BIND(right), BIND(back);
     #undef BIND
-    if (w_left || w_right || w_back) { // 線を踏んだ
+    robo::openmv::Frame *frame = mv_reader.read_frame();
+
+    if (w_left || w_right || w_back) {
+        // 線を踏んだ
         double d = 0.0;
+        Position *y_goal_pos = frame == NULL ? NULL : frame->y_goal_pos,
+                *b_goal_pos = frame == NULL ? NULL : frame->b_goal_pos;
+        if (b_goal_pos != NULL) {
+            
+        }
         #define BIND(_name_) e_ ## _name_ = echos::_name_.read()
         uint16_t BIND(left), BIND(right), BIND(back);
         #undef BIND
         bool lt_lr = e_left < e_right,
             lt_br  = e_back < e_right,
             lt_bl  = e_back < e_left;
-        if (lt_lr || lt_br || lt_bl) { // 超音波の値が信頼できる
-            d = (lt_br && lt_bl)
-                ? 0.0 // 後ろの壁が一番近い => 前に進む
-                : lt_lr ? -HPI : HPI // 左の方が近い ? 右に進む : 左に進む
-        } else { // 超音波の値が信頼できない
-            d = w_back
-                ? (w_left ? -QPI // 後ろと左の線を踏んだ => 右前に進む
-                    : w_right ? QPI : 0.0) // 右の線を踏んだ ? 左前 : 真ん前
-                // else: 後ろの線を踏んでいない
-                : w_left ? -HPI : HPI // 右 : 左
-        }
+        d = (lt_br && lt_bl)
+            ? 0.0 // 後ろの壁が一番近い => 前に進む
+            : lt_lr ? -HPI : HPI // 左の方が近い ? 右に進む : 左に進む
         m_info = new info::Translate(d, max_speed);
     }
     // bno
     double bno_dir = bno055.read_geomag_direction();
 
     // openmv
-    robo::openmv::Frame *frame = mv_reader.read_frame();
-    robo::openmv::Position *ball_pos = frame == NULL ? NULL : 
+    Position *ball_pos = frame == NULL ? NULL : frame->ball_pos;
     if (frame != NULL) {
+
     } else {
 
     }
