@@ -5,8 +5,13 @@ namespace info {
     using namespace robo::move_info;
 }
 
+namespace omv {
+    using namespace robo::openmv;
+}
+
 constexpr double HPI = PI / 2;
 constexpr double QPI = PI / 4;
+constexpr double bno_threshold = PI / 18;
 constexpr int8_t max_speed = 100;
 info::MoveInfo *m_stop;
 robo::Motor motor(Serial2);
@@ -19,18 +24,21 @@ namespace echos {
     robo::EchoSensor left(7, 6), right(4, 5), back(8, 9);
 }
 
-robo::openmv::Reader mv_reader(0x12);
-robo::BNO055 bno055(55);
+omv::Reader mv_reader(0x12);
+robo::BNO055 bno055(0, 0x28);
 robo::LCD lcd(0x27, 16, 2);
 
 void setup() {
     echos::left.setup();
     echos::right.setup();
     echos::back.setup();
+
     lines::left.setup();
     lines::right.setup();
     lines::back.setup();
+
     mv_reader.setup();
+
     bno055.setup();
 
     Serial.begin(19200);
@@ -40,21 +48,17 @@ void setup() {
 }
 
 void loop() {
-    using robo::openmv::Position;
+    using omv::Position;
     info::MoveInfo *m_info = m_stop;
     #define BIND(_name_) w_ ## _name_ = robo::LineSensor::iswhite(lines::_name_.read())
     bool BIND(left), BIND(right), BIND(back);
     #undef BIND
-    robo::openmv::Frame *frame = mv_reader.read_frame();
+    omv::Frame *frame = mv_reader.read_frame();
+    Position *ball_pos = frame == NULL ? NULL : frame->ball_pos;
 
     if (w_left || w_right || w_back) {
         // 線を踏んだ
         double d = 0.0;
-        Position *y_goal_pos = frame == NULL ? NULL : frame->y_goal_pos,
-                *b_goal_pos = frame == NULL ? NULL : frame->b_goal_pos;
-        if (b_goal_pos != NULL) {
-            
-        }
         #define BIND(_name_) e_ ## _name_ = echos::_name_.read()
         uint16_t BIND(left), BIND(right), BIND(back);
         #undef BIND
@@ -63,17 +67,42 @@ void loop() {
             lt_bl  = e_back < e_left;
         d = (lt_br && lt_bl)
             ? 0.0 // 後ろの壁が一番近い => 前に進む
-            : lt_lr ? -HPI : HPI // 左の方が近い ? 右に進む : 左に進む
+            : lt_lr ? -HPI : HPI; // 左の方が近い ? 右に進む : 左に進む
         m_info = new info::Translate(d, max_speed);
+        goto MOTOR;
     }
     // bno
-    double bno_dir = bno055.read_geomag_direction();
+    {
+        double bno_dir = bno055.get_geomag_direction();
+        double adir = abs(bno_dir);
+        if (adir > bno_threshold) {
+            m_info = new info::Rotate(bno_dir > 0, int8_t(adir * 19 + 40));
+        // (adir - 0) / (PI - 0) * (100 - 40) + 40
+        // -> adir * 19 + 40
+        goto MOTOR;
+        }
+    }
 
     // openmv
-    Position *ball_pos = frame == NULL ? NULL : frame->ball_pos;
-    if (frame != NULL) {
-
+    if (ball_pos != NULL) {
+        double ball_dir = omv::pos2dir(*ball_pos);
+        m_info = new info::Translate(robo::V2_double::from_polar_coord(ball_dir * 3 / 2, max_speed));
     } else {
-
     }
+
+    MOTOR: {
+        m_info->apply(motor);
+    }
+
+    LOG: {
+        char buff[64] = "";
+        m_info->to_string(buff);
+        Serial.println(buff);
+        for (uint8_t pin = 1; pin <= 4; pin++) Serial.println(motor.get_power_str(pin));
+        lcd.clear();
+        lcd.print(buff + 10);
+    }
+
+    END:
+    if (m_info != NULL && m_info != m_stop) delete m_info;
 }
