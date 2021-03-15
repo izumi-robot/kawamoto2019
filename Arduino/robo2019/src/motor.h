@@ -9,6 +9,7 @@
 
 #ifdef ARDUINO
 
+#include <Print.h>
 #include "vec2d.h"
 
 /**
@@ -29,9 +30,10 @@ public: // static functions
      * @param[out] dst パワー設定用の文字列
      * @param[in] pin モーターのピン番号
      * @param[in] power モーターのパワー
+     * @return uint8_t 書き込んだ文字数
      * @note dstには少なくとも6文字を格納する容量が必要。容量チェックは行っていないため、注意すること。
      */
-    static void power_str(char *, uint8_t, int8_t);
+    static uint8_t power_str(char *dst, uint8_t pin, int8_t power);
 
     /**
      * @brief パワー設定用の文字列を取得する
@@ -53,7 +55,7 @@ private: // variables
     //! モーターのパワー
     int8_t _powers[4];
     //! MCBがつながっているシリアルポート
-    HardwareSerial& _serial;
+    Print &_port;
 
 private:
     /**
@@ -69,24 +71,15 @@ public:
      * @brief Construct a new Motor object
      * @note シリアルポートがSerialであるものとして初期化
      */
-    Motor() : _powers{0, 0, 0, 0}, _serial(Serial) {}
+    Motor() : _powers{0, 0, 0, 0}, _port(Serial) {}
     /**
      * @brief Construct a new Motor object
      * @param serial MCBがつながっているシリアルポート
      */
-    Motor(HardwareSerial& serial) : _powers{0, 0, 0, 0}, _serial(serial) {}
+    Motor(HardwareSerial& serial) : _powers{0, 0, 0, 0}, _port(serial) {}
 
     /** @brief 停止させる */
     void stop();
-
-    /**
-     * @brief モーターのセットアップを行う
-     * @param[in] baud MCBとの通信速度
-     * @param[in] config 通信設定
-     * @note 全体のsetup内で呼ばないと他の機能が使えない
-     *       引数は https://garretlab.web.fc2.com/arduino_reference/language/functions/communication/serial/begin.html を参照
-     */
-    void setup(const unsigned long &baud, int8_t config);
 
     /**
      * @brief モーターのパワーを取得する
@@ -100,7 +93,7 @@ public:
      * @param[out] dst 結果の文字列を保存するポインター
      * @param[in] pin モーターのピン番号
      */
-    inline void get_power_str(char *dst, uint8_t pin);
+    inline uint8_t get_power_str(char *dst, uint8_t pin);
 
     /**
      * @brief モーターのパワーの文字列表示を取得する
@@ -173,10 +166,10 @@ public:
 
 } // namespace robo
 
-void robo::Motor::power_str(char *dst, uint8_t pin, int8_t power)
+uint8_t robo::Motor::power_str(char *dst, uint8_t pin, int8_t power)
 {
-    if (dst == NULL) return;
-    sprintf(
+    if (dst == NULL) return 0;
+    return sprintf(
         dst,
         "%1d%c%03d",
         pin,
@@ -209,21 +202,15 @@ bool robo::Motor::_update(uint8_t pin, int8_t power)
 
 void robo::Motor::stop()
 {
-    _serial.print("1F000\n2F000\n3F000\n4F000\n");
+    _port.print("1F000\n2F000\n3F000\n4F000\n");
     memset(_powers, 0, 4);
-}
-
-void robo::Motor::setup(const unsigned long &baud = 19200, int8_t config = SERIAL_8N1)
-{
-    if (!_serial) _serial.begin(baud, config);
-    stop();
 }
 
 int8_t robo::Motor::get_power(uint8_t pin) const { return _powers[pin - 1]; }
 
-void robo::Motor::get_power_str(char *dst, uint8_t pin)
+uint8_t robo::Motor::get_power_str(char *dst, uint8_t pin)
 {
-    robo::Motor::power_str(dst, pin, get_power(pin));
+    return robo::Motor::power_str(dst, pin, get_power(pin));
 }
 
 void robo::Motor::get_power_str(String *dst, uint8_t pin)
@@ -241,7 +228,7 @@ void robo::Motor::set_one_motor(uint8_t pin, int8_t power)
     if (!_update(pin, power)) return;
     char buffer[8] = "";
     robo::Motor::power_str(buffer, pin, power);
-    _serial.println(buffer);
+    _port.println(buffer);
 }
 
 void robo::Motor::set_all_motors(int8_t m1, int8_t m2, int8_t m3, int8_t m4)
@@ -257,7 +244,7 @@ void robo::Motor::set_all_motors(int8_t m1, int8_t m2, int8_t m3, int8_t m4)
         buf_ptr += 6;
     }
     buf_ptr[0] = '\0';
-    _serial.print(buffer);
+    _port.print(buffer);
 }
 
 void robo::Motor::set_velocity(const double &vx, const double &vy)
