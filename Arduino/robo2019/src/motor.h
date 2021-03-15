@@ -219,7 +219,7 @@ void robo::Motor::setup(const unsigned long &baud = 19200, int8_t config = SERIA
     stop();
 }
 
-int8_t robo::Motor::get_power(uint8_t pin) const { return _powers[pin]; }
+int8_t robo::Motor::get_power(uint8_t pin) const { return _powers[pin - 1]; }
 
 void robo::Motor::get_power_str(char *dst, uint8_t pin)
 {

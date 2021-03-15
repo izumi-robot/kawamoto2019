@@ -190,7 +190,7 @@ TMP void T_VEC2D::from_polar_coord(T_VEC2D *dst, const double &angle, const T &m
 TMP T_VEC2D T_VEC2D::from_polar_coord(const double &angle, const T &magnitude)
 {
     T_VEC2D result;
-    from_poler_coord(&result, angle, magnitude);
+    from_polar_coord(&result, angle, magnitude);
     return result;
 }
 
