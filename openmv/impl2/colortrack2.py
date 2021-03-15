@@ -5,8 +5,8 @@ import sensor, image, time
 #   (L Min, L Max, A Min, A Max, B Min, B Max)
 thresholds = [
     (   40,    60,    40,    80,    30,    60), # orange ball
-    (   30,    75,     0,    30,    25,    50), # yellow goal
-    (    5,    40,   -15,    15,   -40,     5)  # blue goal
+    (   20,    75,     0,    30,    25,    50), # yellow goal
+    (   10,    25,   -15,    15,   -40,   -10)  # blue goal
 ]
 
 # https://docs.openmv.io/library/omv.sensor.html

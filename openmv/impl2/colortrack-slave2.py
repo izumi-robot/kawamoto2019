@@ -6,7 +6,7 @@ import sensor, image, time
 thresholds = [
     (   40,    60,    40,    80,    30,    60), # orange ball
     (   20,    75,     0,    30,    25,    50), # yellow goal
-    (    0,    40,   -15,    15,   -40,     5)  # blue goal
+    (   10,    25,   -15,    15,   -40,   -10)  # blue goal
 ]
 
 # https://docs.openmv.io/library/omv.sensor.html
@@ -36,28 +36,28 @@ def find_biggest_blob(blobs):
     return b_blob
 
 
+def get_blob_pos(blob):
+    if not blob:
+        return (default_value, default_value)
+    return (blob.cx(), blob.cy())
+
+
 def blob_code_filter(blobs, code):
     return filter(lambda b: b.code() == code, blobs)
 
-def send_blob(blob, i2c_bus=bus):
-    x, y = default_value, default_value
-    if blob:
-        x, y = blob.cx(), blob.cy()
+
+def send_nums(nums, i2c_bus=bus):
+    l = len(nums)
     # https://docs.python.org/ja/3/library/struct.html
     # https://docs.openmv.io/library/ustruct.html
-    data = ustruct.pack("<2H", x, y)
-    # https://docs.openmv.io/library/pyb.I2C.html
+    data = ustruct.pack("<%dH" % l, *nums)
     try:
-        bus.send(data, timeout=10000)
+        # https://docs.openmv.io/library/pyb.I2C.html
+        i2c_bus.send(data, timeout=10000)
     except OSError as err:
         return False
     return True
 
-
-def get_blob_pos(blob):
-    if not blob:
-        return (-1, -1)
-    return (blob.cx(), blob.cy())
 
 while True:
     clock.tick()
@@ -67,19 +67,21 @@ while True:
         thresholds,
         #x_stride=5,
         #y_stride=5,
-        pixels_threshold=10,
+        #pixels_threshold=10,
     )
 
     ball = find_biggest_blob(blob_code_filter(blobs, 1))
     y_goal = find_biggest_blob(blob_code_filter(blobs, 2))
     b_goal = find_biggest_blob(blob_code_filter(blobs, 4))
 
-    img.draw_cross(*get_blob_pos(ball))
-    img.draw_cross(*get_blob_pos(y_goal))
-    img.draw_cross(*get_blob_pos(b_goal))
+    ba_x, ba_y = get_blob_pos(ball)
+    yg_x, yg_y = get_blob_pos(y_goal)
+    bg_x, bg_y = get_blob_pos(b_goal)
 
-    send_blob(ball)
-    send_blob(y_goal)
-    send_blob(b_goal)
+    img.draw_cross(ba_x, ba_y)
+    img.draw_cross(yg_x, yg_y)
+    img.draw_cross(bg_x, bg_y)
+
+    send_nums((ba_x, ba_y, yg_x, yg_y, bg_x, bg_y))
     print(clock.fps())
 

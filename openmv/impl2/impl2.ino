@@ -82,7 +82,14 @@ public:
 class OpenMV {
 private:
     TwoWire &_wire;
-    static constexpr uint8_t data_size = 3;
+
+    uint16_t read_2byte() { return _wire.read() | ((uint16_t)_wire.read() << 8); }
+    CamPos* read_pos() {
+        constexpr uint16_t default_value = 0xffff;
+        uint16_t x = read_2byte();
+        uint16_t y = read_2byte();
+        return (x != default_value || y != default_value) ? new CamPos(x, y) : NULL;
+    }
 
 public:
     const uint8_t address;
@@ -93,16 +100,10 @@ public:
     OpenMV(uint8_t addr, TwoWire &wire) : _wire(wire), address(addr) {}
 
     void setup() { _wire.begin(); }
-    uint16_t read_2byte() { return _wire.read() | ((uint16_t)_wire.read() << 8); }
-    CamPos* read_pos() {
-        constexpr uint16_t default_value = 0xffff;
-        uint8_t size = _wire.requestFrom(address, (uint8_t)4);
-        if (size != 4) return NULL;
-        uint16_t x = read_2byte();
-        uint16_t y = read_2byte();
-        return (x != default_value || y != default_value) ? new CamPos(x, y) : NULL;
-    }
     Frame* read_frame() {
+        constexpr uint8_t req_size = 3 * 4;
+        uint8_t res_size = _wire.requestFrom(address, req_size);
+        if (res_size != req_size) return NULL;
         CamPos *ball = read_pos();
         CamPos *yellow = read_pos();
         CamPos *blue = read_pos();

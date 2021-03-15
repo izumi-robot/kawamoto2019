@@ -22,7 +22,7 @@ namespace openmv {
     /** @brief ボールのカメラ視点の座標を表すエイリアス */
     using Position = robo::Vector2D<uint16_t>;
 
-    const Position center{80, 60};
+    const Position center{90, 70};
 
     class Frame {
     public:
@@ -74,6 +74,14 @@ namespace openmv {
         uint16_t read_2byte() {
             return _wire.read() | (_wire.read() << 8);
         }
+
+        Position* read_pos() {
+            constexpr uint16_t default_value = 0xffff;
+            uint16_t x = read_2byte();
+            uint16_t y = read_2byte();
+            if (x == default_value && y == default_value) return NULL;
+            return new Position(x, y);
+        }
     public:
         uint8_t address;
 
@@ -82,16 +90,10 @@ namespace openmv {
 
         void setup() { _wire.begin(); }
 
-        Position* read_pos() {
-            constexpr uint16_t default_value = 0xffff;
-            uint8_t size = _wire.requestFrom(address, (uint8_t)4);
-            if (size != 4) return NULL;
-            uint16_t x = read_2byte();
-            uint16_t y = read_2byte();
-            return (x != default_value || y != default_value) ? new Position(x, y) : NULL;
-        }
-
         Frame* read_frame() {
+            constexpr uint8_t req_size = 3 * 4;
+            uint8_t res_size = _wire.requestFrom(address, req_size);
+            if (res_size != req_size) return NULL;
             Position *ball_pos = read_pos();
             Position *y_goal_pos = read_pos();
             Position *b_goal_pos = read_pos();
@@ -99,6 +101,13 @@ namespace openmv {
             return new Frame(ball_pos, y_goal_pos, b_goal_pos);
         }
     };
+
+    constexpr double pos2dir(const Position &pos) {
+        return atan2(
+            -float(pos.x) + 90, // = -(pos.x - 90)
+            float(pos.y) - 70
+        );
+    }
 } // namespace openmv
 
 } // namespace robo
