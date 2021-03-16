@@ -1,14 +1,16 @@
 #include <robo2019.h>
+#include <SoftwareSerial.h>
 
 // for mega
 
-robo::Motor motor(Serial2);
+SoftwareSerial motor_serial(12, 13);
+robo::Motor motor(&motor_serial);
 constexpr int power = 60;
 
 void setup()
 {
+    motor_serial.begin(19200);
     Serial.begin(9600);
-    motor.setup();
 }
 
 void loop()
@@ -23,10 +25,10 @@ void loop()
     motor.set_velocity(0, -power);
     LOG
     delay(500);
-    motor.set_direction_and_speed(PI / 4, power);
+    motor.set_dir_and_speed(PI / 4, power);
     LOG
     delay(500);
-    motor.set_stop();
+    motor.stop();
     LOG
     delay(5000);
 }

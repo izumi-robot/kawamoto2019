@@ -55,7 +55,7 @@ private: // variables
     //! モーターのパワー
     int8_t _powers[4];
     //! MCBがつながっているシリアルポート
-    Print &_port;
+    Print *_port;
 
 private:
     /**
@@ -71,12 +71,14 @@ public:
      * @brief Construct a new Motor object
      * @note シリアルポートがSerialであるものとして初期化
      */
-    Motor() : _powers{0, 0, 0, 0}, _port(Serial) {}
+    Motor() : _powers{0, 0, 0, 0}, _port(NULL) {
+        _port = &Serial;
+    }
     /**
      * @brief Construct a new Motor object
      * @param serial MCBがつながっているシリアルポート
      */
-    Motor(HardwareSerial& serial) : _powers{0, 0, 0, 0}, _port(serial) {}
+    Motor(Print *port) : _powers{0, 0, 0, 0}, _port(port) {}
 
     /** @brief 停止させる */
     void stop();
@@ -220,7 +222,7 @@ bool robo::Motor::_update(uint8_t pin, int8_t power)
 
 void robo::Motor::stop()
 {
-    _port.print("1F000\n2F000\n3F000\n4F000\n");
+    _port->print("1F000\n2F000\n3F000\n4F000\n");
     memset(_powers, 0, 4);
 }
 
@@ -246,7 +248,7 @@ void robo::Motor::set_one_motor(uint8_t pin, int8_t power)
     if (!_update(pin, power)) return;
     char buffer[8] = "";
     robo::Motor::power_str(buffer, pin, power);
-    _port.println(buffer);
+    _port->println(buffer);
 }
 
 void robo::Motor::set_all_motors(int8_t m1, int8_t m2, int8_t m3, int8_t m4)
@@ -262,7 +264,7 @@ void robo::Motor::set_all_motors(int8_t m1, int8_t m2, int8_t m3, int8_t m4)
         buf_ptr += 6;
     }
     buf_ptr[0] = '\0';
-    _port.print(buffer);
+    _port->print(buffer);
 }
 
 void robo::Motor::set_velocity(const double &vx, const double &vy)
