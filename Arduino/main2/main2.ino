@@ -1,41 +1,40 @@
 #include <Wire.h>
+#include <SoftwareSerial.h>
 #include <robo2019.h>
 
 namespace info {
     using namespace robo::move_info;
+    class Ptr {
+    private:
+        MoveInfo *_info;
+        inline void _del() {
+            if (_info != NULL) delete _info;
+        }
+
+    public:
+        Ptr() : _info(new robo::move_info::Stop()) {}
+        Ptr(MoveInfo *info) : _info(info) {}
+        Ptr(const Ptr &) = delete;
+        ~Ptr() { _del(); }
+        Ptr& operator = (const Ptr &ptr) = delete;
+        Ptr& operator = (MoveInfo *ptr) {
+            _del();
+            _info = ptr;
+            return *this;
+        }
+
+        operator bool () const { return _info != NULL; }
+
+        bool operator == (const Ptr &ptr) const { return ptr.ptr() == _info; }
+        bool operator != (const Ptr &ptr) const { return ptr.ptr() != _info; }
+
+        bool operator == (MoveInfo *pinfo) const { return pinfo == _info; }
+        bool operator != (MoveInfo *pinfo) const { return pinfo != _info; }
+
+        MoveInfo * operator -> () const { return _info; }
+        MoveInfo * ptr() const { return _info; }
+    };
 }
-
-class InfoPtr {
-private:
-    using robo::move_info::MoveInfo*;
-    MoveInfo *_info;
-    inline void _del() {
-        if (_info != NULL) delete _info;
-    }
-
-public:
-    InfoPtr() : _info(new robo::move_info::Stop()) {}
-    InfoPtr(MoveInfo *info) : _info(info) {}
-    InfoPtr(const InfoPtr &) = delete;
-    ~InfoPtr() { _del(); }
-    InfoPtr& operator = (const InfoPtr &ptr) = delete;
-    InfoPtr& operator = (MoveInfo *ptr) {
-        _del();
-        _info = ptr;
-        return *this;
-    }
-
-    operator bool () const { return _info != NULL; }
-
-    bool operator == (const InfoPtr &ptr) const { return ptr.ptr() == _info; }
-    bool operator != (const InfoPtr &ptr) const { return ptr.ptr() != _info; }
-
-    bool operator == (MoveInfo *pinfo) const { return pinfo == _info; }
-    bool operator != (MoveInfo *pinfo) const { return pinfo != _info; }
-
-    MoveInfo * operator -> () const { return _info; }
-    MoveInfo * ptr() const { return _info; }
-};
 
 namespace omv {
     using namespace robo::openmv;
@@ -45,15 +44,16 @@ constexpr double HPI = PI / 2;
 constexpr double QPI = PI / 4;
 constexpr double bno_threshold = PI / 18;
 constexpr int8_t max_speed = 100;
-InfoPtr m_info;
-robo::Motor motor(Serial2);
+SoftwareSerial motor_ser(12, 13);
+info::Ptr m_info;
+robo::Motor motor(&motor_ser);
 
 namespace lines {
-    robo::LineSensor left(1), right(3), back(5);
+    robo::LineSensor left(1), right(2), back(3);
 }
 
 namespace echos {
-    robo::EchoSensor left(7, 6), right(4, 5), back(8, 9);
+    robo::EchoSensor left(1, 2), right(3, 4), back(5, 6);
 }
 
 omv::Reader mv_reader(0x12);
@@ -74,7 +74,6 @@ void setup() {
     bno055.setup();
 
     Serial.begin(19200);
-    Serial2.begin(19200);
     m_info = new info::Stop();
     lcd.setup();
 }
@@ -116,7 +115,7 @@ void loop() {
         double ball_dir = omv::pos2dir(*ball_pos);
         m_info = new info::Translate(robo::V2_double::from_polar_coord(ball_dir * 3 / 2, max_speed));
     } else {
-        m_info = new Stop();
+        m_info = new info::Stop();
     }
 
     MOTOR: {
@@ -127,11 +126,11 @@ void loop() {
         char buff[64] = "";
         if (m_info) m_info->to_string(buff);
         Serial.println(buff);
-        for (uint8_t pin = 1; pin <= 4; pin++) Serial.println(motor.get_power_str(pin));
+        // Serial.println(motor.info());
         lcd.clear();
         lcd.print(buff + 10);
     }
 
-    END:
+    END:{}
     // if (m_info != NULL && m_info != m_stop) delete m_info;
 }
