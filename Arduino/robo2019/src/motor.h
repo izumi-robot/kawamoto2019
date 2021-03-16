@@ -162,6 +162,24 @@ public:
      * @param[in] speed 回転速度
      */
     void set_rotate(bool clockwise, int8_t speed);
+
+    uint8_t info(char *dst) {
+        if (dst == NULL) return 0;
+        char *ptr = dst;
+        for (uint8_t pin = 1; pin <= 4; pin++) {
+            ptr += get_power_str(ptr, pin);
+            if (pin == 4) continue;
+            strcat(ptr, ", ");
+            ptr += 2;
+        }
+        return ptr - dst;
+    }
+
+    String info() {
+        char buff[32] = "";
+        info(buff);
+        return String(buff);
+    }
 };
 
 } // namespace robo

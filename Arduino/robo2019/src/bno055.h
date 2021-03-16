@@ -69,11 +69,6 @@ public:
      * @return 検知されたらtrue
      */
     inline bool detected();
-
-    /**
-     * @fn double update_gyro_dir();
-     */
-    double update_gyro_dir();
 };
 
 void BNO055::setup()
@@ -112,25 +107,6 @@ void BNO055::get_geomag_direction(double *dst)
 bool BNO055::detected()
 {
     return _detected;
-}
-
-double BNO055::update_gyro_dir()
-{
-    static bool initialized = false;
-    static uint64_t last_ms;
-
-    uint64_t now_ms = millis();
-    if (!initialized) {
-        initialized = true;
-        last_ms = now_ms;
-        _last_gyro_dir = 0.0;
-        return _last_gyro_dir;
-    }
-    double gyro = Adafruit_BNO055::getVector(Adafruit_BNO055::VECTOR_GYROSCOPE).x();
-    uint64_t diff_ms = now_ms - last_ms;
-    last_ms = now_ms;
-    _last_gyro_dir += gyro * diff_ms / 1000.0;
-    return _last_gyro_dir;
 }
 
 } // namespace robo

@@ -1,6 +1,8 @@
 #include <robo2019.h>
 
-using robo::motor;
+// for mega
+
+robo::Motor motor(Serial2);
 constexpr int power = 60;
 
 void setup()
@@ -11,51 +13,20 @@ void setup()
 
 void loop()
 {
-    motor.set.all_motors(power, power, power, power);
+    #define LOG Serial.println(motor.info());
+    motor.set_all_motors(power, power, power, power);
+    LOG
     delay(500);
-    motor.set.rotate(true, power);
+    motor.set_rotate(true, power);
+    LOG
     delay(500);
-    motor.set.velocity(0, -power);
+    motor.set_velocity(0, -power);
+    LOG
     delay(500);
-    motor.set.direction_and_speed(PI / 4, power);
+    motor.set_direction_and_speed(PI / 4, power);
+    LOG
     delay(500);
-    motor.set.stop();
+    motor.set_stop();
+    LOG
     delay(5000);
 }
-
-// void loop()
-// {
-//     // 5秒周期で繰り返す
-//     int t = millis() % 5000;
-//     // 0~1: 前進
-//     if (0 <= t < 1000)
-//     {
-//         motor.set.all_motors(power, power, power, power);
-//     }
-//     // 1~2: 右回転
-//     else if (t < 2000)
-//     {
-//         motor.set.rotate(true, power);
-//     }
-//     // 2~3: 右に進む
-//     else if (t < 3000)
-//     {
-//         motor.set.velocity(0, -power);
-//     }
-//     // 3~4: 左前に進む
-//     else if (t < 4000)
-//     {
-//         motor.set.direction_and_speed(PI / 4, power);
-//     }
-//     // 4~5: 停止
-//     else if (t < 5000)
-//     {
-//         motor.set.stop();
-//     }
-//     if (t % 1000 < 10)
-//     {
-//         Serial.println(t);
-//         Serial.println(motor.get.info());
-//     }
-//     delay(10);
-// }

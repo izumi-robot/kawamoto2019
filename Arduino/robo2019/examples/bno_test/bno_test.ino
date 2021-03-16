@@ -1,11 +1,13 @@
 #include <robo2019.h>
 
+//  Adafruit_BNO055(id, addr)
+robo::BNO055 bno055( 0, 0x28);
+
 void setup()
 {
     Serial.begin(9600);
-    while (!Serial) delay(1);
     Serial.println("start");
-    robo::bno055.setup();
+    bno055.setup();
 }
 
 void loop()
