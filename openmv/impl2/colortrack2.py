@@ -1,4 +1,3 @@
-import pyb, ustruct
 import sensor, image, time
 
 # Color Tracking Thresholds
@@ -21,11 +20,6 @@ sensor.set_auto_exposure(False, 5000)
 sensor.set_auto_whitebal(False)
 clock = time.clock()
 
-BALL, YELLOW_GOAL, BLUE_GOAL = 0, 1, 2
-default_value = 0xffff
-
-bus = pyb.I2C(2, mode=pyb.I2C.SLAVE, addr=0x12)
-
 
 def find_biggest_blob(blobs):
     # https://docs.openmv.io/library/omv.image.html#class-blob-blob-object
@@ -40,25 +34,12 @@ def find_biggest_blob(blobs):
 def blob_code_filter(blobs, code):
     return filter(lambda b: b.code() == code, blobs)
 
-def send_blob(blob, i2c_bus=bus):
-    x, y = default_value, default_value
-    if blob:
-        x, y = blob.cx(), blob.cy()
-    # https://docs.python.org/ja/3/library/struct.html
-    # https://docs.openmv.io/library/ustruct.html
-    data = ustruct.pack("<2H", x, y)
-    # https://docs.openmv.io/library/pyb.I2C.html
-    try:
-        bus.send(data, timeout=10000)
-    except OSError as err:
-        return False
-    return True
-
 
 def get_blob_pos(blob):
     if not blob:
         return (-1, -1)
     return (blob.cx(), blob.cy())
+
 
 while True:
     clock.tick()

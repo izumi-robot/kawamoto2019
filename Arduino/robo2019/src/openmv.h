@@ -71,6 +71,10 @@ namespace openmv {
     private:
         TwoWire &_wire;
 
+        void pass_data(uint8_t size) {
+            for (uint8_t i = 0; i < size; i++) _wire.read();
+        }
+
         uint16_t read_2byte() {
             return _wire.read() | (_wire.read() << 8);
         }
@@ -93,7 +97,10 @@ namespace openmv {
         Frame* read_frame() {
             constexpr uint8_t req_size = 3 * 4;
             uint8_t res_size = _wire.requestFrom(address, req_size);
-            if (res_size != req_size) return NULL;
+            if (res_size != req_size) {
+                pass_data(res_size);
+                return NULL;
+            }
             Position *ball_pos = read_pos();
             Position *y_goal_pos = read_pos();
             Position *b_goal_pos = read_pos();

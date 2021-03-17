@@ -26,6 +26,10 @@ default_value = 0xffff
 bus = pyb.I2C(2, mode=pyb.I2C.SLAVE, addr=0x12)
 
 
+def blob_code_filter(blobs, code):
+    return filter(lambda b: b.code() == code, blobs)
+
+
 def find_biggest_blob(blobs):
     # https://docs.openmv.io/library/omv.image.html#class-blob-blob-object
     b_blob, b_area = None, 0
@@ -42,8 +46,8 @@ def get_blob_pos(blob):
     return (blob.cx(), blob.cy())
 
 
-def blob_code_filter(blobs, code):
-    return filter(lambda b: b.code() == code, blobs)
+def blob_of_code(blobs, code):
+    return get_blob_pos(find_biggest_blob(blob_code_filter(blobs, 1)))
 
 
 def send_nums(nums, i2c_bus=bus):
@@ -70,17 +74,18 @@ while True:
         #pixels_threshold=10,
     )
 
+    """
     ball = find_biggest_blob(blob_code_filter(blobs, 1))
     y_goal = find_biggest_blob(blob_code_filter(blobs, 2))
     b_goal = find_biggest_blob(blob_code_filter(blobs, 4))
-
     ba_x, ba_y = get_blob_pos(ball)
     yg_x, yg_y = get_blob_pos(y_goal)
     bg_x, bg_y = get_blob_pos(b_goal)
+    """
 
-    img.draw_cross(ba_x, ba_y)
-    img.draw_cross(yg_x, yg_y)
-    img.draw_cross(bg_x, bg_y)
+    ba_x, ba_y = blob_of_code(blobs, 1)
+    yg_x, yg_y = blob_of_code(blobs, 2)
+    bg_x, bg_y = blob_of_code(blobs, 3)
 
     send_nums((ba_x, ba_y, yg_x, yg_y, bg_x, bg_y))
     print(clock.fps())
