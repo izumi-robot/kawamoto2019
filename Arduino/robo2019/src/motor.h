@@ -189,9 +189,9 @@ public:
 uint8_t robo::Motor::power_str(char *dst, uint8_t pin, int8_t power)
 {
     if (dst == NULL) return 0;
-    return sprintf(
+    return sprintf_P(
         dst,
-        "%1d%c%03d",
+        PSTR("%1d%c%03d"),
         pin,
         power < 0 ? 'F' : 'R',
         abs(power)
@@ -222,7 +222,7 @@ bool robo::Motor::_update(uint8_t pin, int8_t power)
 
 void robo::Motor::stop()
 {
-    _port->print("1F000\n2F000\n3F000\n4F000\n");
+    _port->print(F("1F000\n2F000\n3F000\n4F000\n"));
     memset(_powers, 0, 4);
 }
 

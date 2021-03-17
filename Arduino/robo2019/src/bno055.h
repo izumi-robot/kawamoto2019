@@ -26,7 +26,6 @@ namespace robo {
 /**
  * @class BNO055
  * @brief Adafruit_BNO055の子クラス
- * @note シングルトン
  */
 class BNO055 final : public virtual Adafruit_BNO055
 {
@@ -44,7 +43,6 @@ private:
 public:
     using Adafruit_BNO055::Adafruit_BNO055;
 
-public:
     /**
      * @brief bno055のセットアップを行う
      * @note 全体のsetup内で呼ばないと他の機能が使えない

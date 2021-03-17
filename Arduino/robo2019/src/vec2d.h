@@ -226,9 +226,9 @@ TMP uint8_t T_VEC2D::to_string(char *dst) {
         *(ptr++) = ')'; ptr[0] = '\0';
         return ptr - dst;
     } else if (std::is_signed<T>::value) {
-        return sprintf(dst, "(%d, %d)", x, y);
+        return sprintf_P(dst, PSTR("(%d, %d)"), x, y);
     } else {
-        return sprintf(dst, "(%u, %u)", x, y);
+        return sprintf_P(dst, PSTR("(%u, %u)"), x, y);
     }
 }
 

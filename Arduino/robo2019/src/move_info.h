@@ -40,7 +40,8 @@ namespace move_info
         uint8_t to_string(char *dst) override
         {
             if (dst == NULL) return 0;
-            return sprintf(dst, "MoveInfo: Stop");
+            strcat_P(dst, PSTR("MoveInfo: Stop"));
+            return 14; // len("MoveInfo: Stop") == 14
         }
 
         String to_string() override
@@ -69,7 +70,8 @@ namespace move_info
         {
             if (dst == NULL) return 0;
             char *ptr = dst;
-            ptr += sprintf(ptr, "MoveInfo: Translate");
+            strcat_P(ptr, PSTR("MoveInfo: Translate"));
+            ptr += 19; // len("MoveInfo: Translate") == 19
             ptr += vec.to_string(ptr);
             return ptr - dst;
         }
@@ -99,10 +101,10 @@ namespace move_info
 
         uint8_t to_string(char *dst) {
             if (dst == NULL) return 0;
-            return sprintf(
+            return sprintf_P(
                 dst,
-                "MoveInfo: Rotate(clockwise=%s, %d)",
-                clockwise ? "true" : "false",
+                PSTR("MoveInfo: Rotate(clockwise=%s, %d)"),
+                clockwise ? PSTR("true") : PSTR("false"),
                 speed
             );
         }

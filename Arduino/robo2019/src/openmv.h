@@ -51,7 +51,7 @@ namespace openmv {
         uint8_t to_string(char *dst) {
             if (dst == NULL) return 0;
             char *ptr = dst;
-            #define WRITE_LABEL(_name_) ptr += sprintf(ptr, #_name_ "pos: ");
+            #define WRITE_LABEL(_name_) ptr += sprintf_P(ptr, PSTR(#_name_ " pos: "));
             #define WRITE_POS(_name_) if (_name_ ## _pos != NULL) ptr += _name_ ## _pos->to_string(ptr);
             #define WRITE(_name_) WRITE_LABEL(_name_) WRITE_POS(_name_) NEWLINE
             #define NEWLINE *(ptr++) = '\n';

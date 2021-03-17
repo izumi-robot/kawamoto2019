@@ -46,7 +46,7 @@ constexpr double bno_threshold = PI / 18;
 constexpr int8_t max_speed = 100;
 SoftwareSerial motor_ser(12, 13);
 info::Ptr m_info;
-robo::Motor motor(&motor_ser);//, _motor(&Serial);
+robo::Motor _motor(&motor_ser), motor(&Serial);
 
 namespace lines {
     robo::LineSensor left(1), right(2), back(3);
@@ -121,7 +121,7 @@ void loop() {
 
     MOTOR: {
         if (m_info) {
-            Serial.println("apply");
+            Serial.println(F("apply"));
             m_info->apply(motor);
         }
     }
