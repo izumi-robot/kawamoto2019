@@ -6,6 +6,14 @@
 SoftwareSerial motor_serial(12, 13);
 robo::Motor motor(&motor_serial);
 constexpr int power = 60;
+using namespace robo::move_info;
+MoveInfo * infos[] = {
+    new Translate(100, 0),
+    new Rotate(true, power),
+    new Translate(0, -power),
+    new Translate(robo::V2_double::from_polar_coord(PI / 4, power)),
+    new Stop()
+};
 
 void setup()
 {
@@ -16,19 +24,10 @@ void setup()
 void loop()
 {
     #define LOG Serial.println(motor.info());
-    motor.set_all_motors(power, power, power, power);
-    LOG
-    delay(500);
-    motor.set_rotate(true, power);
-    LOG
-    delay(500);
-    motor.set_velocity(0, -power);
-    LOG
-    delay(500);
-    motor.set_dir_and_speed(PI / 4, power);
-    LOG
-    delay(500);
-    motor.stop();
-    LOG
+    for (uint8_t i = 0; i < 5; i++) {
+        delay(500);
+        infos[i]->apply(motor);
+        LOG
+    }
     delay(5000);
 }

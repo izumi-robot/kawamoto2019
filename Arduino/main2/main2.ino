@@ -46,7 +46,7 @@ constexpr double bno_threshold = PI / 18;
 constexpr int8_t max_speed = 100;
 SoftwareSerial motor_ser(12, 13);
 info::Ptr m_info;
-robo::Motor motor(&motor_ser);
+robo::Motor motor(&motor_ser);//, _motor(&Serial);
 
 namespace lines {
     robo::LineSensor left(1), right(2), back(3);
@@ -73,6 +73,7 @@ void setup() {
 
     bno055.setup();
 
+    motor_ser.begin(19200);
     Serial.begin(19200);
     m_info = new info::Stop();
     lcd.setup();
@@ -85,6 +86,7 @@ void loop() {
     #undef BIND
     omv::Frame *frame = mv_reader.read_frame();
     Position *ball_pos = frame == NULL ? NULL : frame->ball_pos;
+    double bno_dir = bno055.get_geomag_direction();
 
     if (w_left || w_right || w_back) { // 線を踏んだ
         double d = 0.0;
@@ -100,7 +102,6 @@ void loop() {
 
     // bno
     {
-        double bno_dir = bno055.get_geomag_direction();
         double adir = abs(bno_dir);
         if (adir > bno_threshold) {
             m_info = new info::Rotate(bno_dir > 0, int8_t(adir * 19 + 40));
@@ -119,16 +120,20 @@ void loop() {
     }
 
     MOTOR: {
-        if (m_info) m_info->apply(motor);
+        if (m_info) {
+            Serial.println("apply");
+            m_info->apply(motor);
+        }
     }
 
     LOG: {
         char buff[64] = "";
         if (m_info) m_info->to_string(buff);
+        //dtostrf(bno_dir, 5, 3, buff);
         Serial.println(buff);
         // Serial.println(motor.info());
         lcd.clear();
-        lcd.print(buff + 10);
+        lcd.print(bno_dir);
     }
 
     END:{}
