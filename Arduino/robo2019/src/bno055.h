@@ -69,44 +69,6 @@ public:
     inline bool detected();
 };
 
-void BNO055::setup()
-{
-    _detected = Adafruit_BNO055::begin();
-    Adafruit_BNO055::setExtCrystalUse(true);
-}
-
-double BNO055::get_geomag_direction()
-{
-    if (!_detected) { return 0.; }
-    double dir_degree = Adafruit_BNO055::getVector(Adafruit_BNO055::VECTOR_EULER).x();
-    double dir_radian = (
-        (0 <= dir_degree && dir_degree <= 180)
-        ? dir_degree
-        : dir_degree - 360
-    ) * -PI / 180;
-    return dir_radian;
-}
-void BNO055::get_geomag_direction(double *dst)
-{
-    if (dst == NULL) return;
-    double &res = *dst;
-    if (!_detected) {
-        res = 0.;
-        return;
-    }
-    double dir_degree = Adafruit_BNO055::getVector(Adafruit_BNO055::VECTOR_EULER).x();
-    res = (
-        (0 <= dir_degree && dir_degree <= 180)
-        ? dir_degree
-        : dir_degree - 360
-    ) * -PI / 180;
-}
-
-bool BNO055::detected()
-{
-    return _detected;
-}
-
 } // namespace robo
 
 #else /* ARDUINO */

@@ -43,20 +43,6 @@ public: // functions
     int read() override;
 };
 
-void EchoSensor::setup()
-{
-    pinMode(input_pin, INPUT);
-    pinMode(order_pin, OUTPUT);
-}
-
-int EchoSensor::read() {
-    digitalWrite(order_pin, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(order_pin, LOW);
-    // pulseIn(pin, state, timeout)
-    return pulseIn(input_pin, HIGH) / 59;
-}
-
 } // namespace robo
 
 #else /* ARDUINO */

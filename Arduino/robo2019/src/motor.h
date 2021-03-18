@@ -1,8 +1,6 @@
 /**
  * @file motor2.h
  * @brief Daisen MCB操作用のクラス定義
- * @version 0.1
- * @date 2021-03-04
  */
 
 #pragma once
