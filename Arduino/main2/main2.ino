@@ -2,6 +2,8 @@
 #include <SoftwareSerial.h>
 #include <robo2019.h>
 
+using I2 = robo::Interrupt<2>;
+
 namespace info {
     using namespace robo::move_info;
     class Ptr {
