@@ -3,7 +3,7 @@ import sensor, image, time
 # Color Tracking Thresholds
 #   (L Min, L Max, A Min, A Max, B Min, B Max)
 thresholds = [
-    (   40,    60,    40,    80,    30,    60), # orange ball
+    (   20,    60,    40,    80,    30,    60), # orange ball
     (   20,    75,     0,    30,    25,    50), # yellow goal
     (   10,    25,   -15,    15,   -40,   -10)  # blue goal
 ]
@@ -48,9 +48,8 @@ while True:
     # https://docs.openmv.io/library/omv.image.html#class-image-image-object
     blobs = img.find_blobs(
         thresholds,
-        x_stride=5,
-        y_stride=5,
-        pixels_threshold=10,
+        pixels_threshold=5,
+        area_threshold=5
     )
     ball = find_biggest_blob(blob_code_filter(blobs, 1))
     y_goal = find_biggest_blob(blob_code_filter(blobs, 2))

@@ -104,6 +104,9 @@ namespace openmv {
             Position *ball_pos = read_pos();
             Position *y_goal_pos = read_pos();
             Position *b_goal_pos = read_pos();
+            _wire.beginTransmission(address);
+            _wire.write(1);
+            _wire.endTransmission();
             if (ball_pos == NULL && y_goal_pos == NULL && b_goal_pos == NULL) return NULL;
             return new Frame(ball_pos, y_goal_pos, b_goal_pos);
         }
