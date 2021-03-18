@@ -42,11 +42,14 @@ namespace omv {
 
 constexpr double HPI = PI / 2;
 constexpr double QPI = PI / 4;
-constexpr double bno_threshold = PI / 18;
+constexpr double bno_threshold = PI / 10;
+constexpr double front_threshold = PI / 18;
 constexpr int8_t max_speed = 100;
+
+constexpr uint8_t kicker_pin = 10;
 SoftwareSerial motor_ser(12, 13);
 info::Ptr m_info;
-robo::Motor _motor(&motor_ser), motor(&Serial);
+robo::Motor motor(&motor_ser), _motor(&Serial);
 
 namespace lines {
     robo::LineSensor left(1), right(2), back(3);
@@ -81,23 +84,45 @@ void setup() {
 
 void loop() {
     using omv::Position;
+
     #define BIND(_name_) w_ ## _name_ = robo::LineSensor::iswhite(lines::_name_.read())
-    bool BIND(left), BIND(right), BIND(back);
+    const bool BIND(left), BIND(right), BIND(back);
     #undef BIND
+    const bool on_line = w_left || w_right || w_back;
+
     omv::Frame *frame = mv_reader.read_frame();
     Position *ball_pos = frame == NULL ? NULL : frame->ball_pos;
+    Position *y_goal_pos = frame == NULL ? NULL : frame->y_goal_pos;
     double bno_dir = bno055.get_geomag_direction();
 
-    if (w_left || w_right || w_back) { // 線を踏んだ
+    if (on_line) { // 線を踏んだ
         double d = 0.0;
-        #define BIND(_name_) e_ ## _name_ = echos::_name_.read()
-        uint16_t BIND(left), BIND(right), BIND(back);
-        #undef BIND
-        d = (e_back < e_right && e_back < e_left)
-            ? 0.0 // 後ろの壁が一番近い => 前に進む
-            : e_left < e_right ? -HPI : HPI; // 左の方が近い ? 右に進む : 左に進む
+        if (y_goal_pos != NULL) {
+            double dir = omv::pos2dir(*y_goal_pos);
+            if (abs(dir) < front_threshold) {
+                d = PI;
+                goto SET;
+            }
+        }
+        {
+            //#define USE_ECHO
+            #ifdef USE_ECHO
+            #define BIND(_name_) e_ ## _name_ = echos::_name_.read()
+            uint16_t BIND(left), BIND(right), BIND(back);
+            #undef BIND
+            d = (e_back < e_right && e_back < e_left)
+                ? 0.0 // 後ろの壁が一番近い => 前に進む
+                : e_left < e_right ? -HPI : HPI; // 左の方が近い ? 右に進む : 左に進む
+            #else /* USE_ECHO */
+            d = w_left == w_right ? 0.0
+                : w_left
+                    ? (w_back ? -QPI : -HPI)
+                    : (w_back ? QPI : HPI);
+            #endif /* USE_ECHO */
+        }
+        SET:
         m_info = new info::Translate(d, max_speed);
-        goto MOTOR;
+        //goto MOTOR;
     }
 
     // bno
@@ -127,15 +152,20 @@ void loop() {
     }
 
     LOG: {
+        #define BIND(_name_) e_ ## _name_ = echos::_name_.read()
+        const uint16_t BIND(left), BIND(right), BIND(back);
+        #undef BIND
         char buff[64] = "";
-        if (m_info) m_info->to_string(buff);
-        //dtostrf(bno_dir, 5, 3, buff);
-        Serial.println(buff);
-        // Serial.println(motor.info());
         lcd.clear();
-        lcd.print(bno_dir);
+        sprintf_P(buff, PSTR("l: %u, r: %u"), e_left, e_right);
+        lcd.print(buff);
+        sprintf_P(buff, PSTR("b: %u"), e_back);
+        lcd.setCursor(0, 1);
+        lcd.print(buff);
     }
 
-    END:{}
+    END: {
+        if (frame != NULL) delete frame;
+    }
     // if (m_info != NULL && m_info != m_stop) delete m_info;
 }
