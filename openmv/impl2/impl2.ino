@@ -113,7 +113,12 @@ public:
         CamPos *ball = read_pos();
         CamPos *yellow = read_pos();
         CamPos *blue = read_pos();
-        if (ball == NULL && yellow == NULL && blue == NULL) return NULL;
+        _wire.beginTransmission(0x12);
+        _wire.write(1);
+        _wire.endTransmission();
+        if (ball == NULL && yellow == NULL && blue == NULL) {
+            return NULL;
+        }
         return new Frame(ball, yellow, blue);
     }
 };
