@@ -4,9 +4,9 @@ import sensor, image, time
 # Color Tracking Thresholds
 #   (L Min, L Max, A Min, A Max, B Min, B Max)
 thresholds = [
-    (   20,    60,    40,    80,    30,    60), # orange ball
+    (   30,    60,    40,    80,    50,    70), # orange ball
     (   20,    75,     0,    30,    25,    50), # yellow goal
-    (   10,    25,   -15,    15,   -40,   -10)  # blue goal
+    #(   10,    25,   -15,    15,   -40,   -10)  # blue goal
 ]
 
 # https://docs.openmv.io/library/omv.sensor.html
@@ -51,7 +51,7 @@ def blob_of_code(blobs, code):
     return get_blob_pos(find_biggest_blob(blob_code_filter(blobs, code)))
 
 
-def send_nums(nums, i2c_bus=bus):
+def send_nums(*nums, i2c_bus=bus):
     l = len(nums)
     # https://docs.python.org/ja/3/library/struct.html
     # https://docs.openmv.io/library/ustruct.html
@@ -71,21 +71,13 @@ while True:
     blobs = img.find_blobs(
         thresholds,
         pixels_threshold=5,
-        area_threshold=5,
+        #area_threshold=5,
     )
 
     ba_x, ba_y = blob_of_code(blobs, 1)
     yg_x, yg_y = blob_of_code(blobs, 2)
     bg_x, bg_y = blob_of_code(blobs, 3)
-
-    print(ba_x, ba_y)
-    print(yg_x, yg_y)
-    print(bg_x, bg_y)
-
-    send_nums((ba_x, ba_y, yg_x, yg_y, bg_x, bg_y))
+    send_nums(ba_x, ba_y, yg_x, yg_y, bg_x, bg_y)
     #print(clock.fps())
-
-    resp = bus.recv(1, timeout=10000)[0]
-    if not resp:
-        break
+    bus.recv(1, timeout=10000)
 
