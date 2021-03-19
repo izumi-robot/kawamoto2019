@@ -24,10 +24,7 @@ void setup()
 void loop()
 {
     #define LOG Serial.println(motor.info());
-    for (uint8_t i = 0; i < 5; i++) {
-        delay(500);
-        infos[i]->apply(motor);
-        LOG
-    }
+    infos[0]->apply(motor);
+    for (uint8_t i = 0; i < 5; i++) {delay(500);infos[i]->apply(motor);LOG}
     delay(5000);
 }

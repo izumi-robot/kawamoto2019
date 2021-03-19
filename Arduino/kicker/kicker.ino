@@ -1,4 +1,4 @@
-uint8_t pin = 11;
+uint8_t pin = 10;
 
 void setup() {
     // put your setup code here, to run once:
@@ -8,7 +8,7 @@ void setup() {
 void loop() {
     // put your main code here, to run repeatedly:
     digitalWrite(pin, HIGH);
-    delayMicroseconds(10);
+    delay(5);
     digitalWrite(pin, LOW);
     delay(5000);
 }
