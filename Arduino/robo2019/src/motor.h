@@ -131,14 +131,14 @@ public:
      * @param[in] vy ベクトルのy成分
      * @details 座標系の定義はREADMEを参照
      */
-    void set_velocity(const double &vx, const double &vy);
+    void set_velocity(const float &vx, const float &vy);
 
     /**
      * @brief 機体が平行移動移動するように速度ベクトルを設定する
      * @param[in] vel 設定するベクトル
      * @details 座標系の定義はREADMEを参照
      */
-    inline void set_velocity(const robo::V2_double &vel);
+    inline void set_velocity(const robo::V2_float &vel);
 
     /**
      * @brief 左輪と右輪でわけてパワーを設定する
@@ -154,7 +154,7 @@ public:
      * @param[in] speed 速さ
      * @details 方向についてはREADMEを参照
      */
-    inline void set_dir_and_speed(const double &dir, int8_t speed);
+    inline void set_dir_and_speed(const float &dir, int8_t speed);
 
     /**
      * @brief 機体が回転するようにパワーを設定する
@@ -265,15 +265,15 @@ void robo::Motor::set_all_motors(int8_t m1, int8_t m2, int8_t m3, int8_t m4)
     _port->print(buffer);
 }
 
-void robo::Motor::set_velocity(const double &vx, const double &vy)
+void robo::Motor::set_velocity(const float &vx, const float &vy)
 {
-    static const double root2 = sqrt(2.);
+    static const float root2 = sqrt(2.);
     int8_t e1 = int8_t((vx + vy) / root2);
     int8_t e2 = int8_t((vx - vy) / root2);
     set_all_motors(e2, e1, e1, e2);
 }
 
-void robo::Motor::set_velocity(const robo::V2_double &vel)
+void robo::Motor::set_velocity(const robo::V2_float &vel)
 {
     set_velocity(vel.x, vel.y);
 }
@@ -283,7 +283,7 @@ void robo::Motor::set_left_right(int8_t left, int8_t right)
     set_all_motors(left, right, left, right);
 }
 
-void robo::Motor::set_dir_and_speed(const double &dir, int8_t speed)
+void robo::Motor::set_dir_and_speed(const float &dir, int8_t speed)
 {
     set_velocity(speed * cos(dir), speed * sin(dir));
 }

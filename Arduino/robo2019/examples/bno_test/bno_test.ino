@@ -16,7 +16,7 @@ void loop()
     // 最初の方向からの差分を取得
     // 反時計回りが正
     // ラジアン(-PI以上PI以下)
-    double dir = bno055.get_geomag_direction();
+    float dir = bno055.get_geomag_direction();
     // 度数法(-180以上180以下)で表示
     Serial.println(dir * 180 / PI);
     delay(1000);

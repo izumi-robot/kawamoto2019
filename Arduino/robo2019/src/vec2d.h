@@ -44,7 +44,7 @@ public:
      *  返されるベクトルの式
      *  `(x, y)` = `(cos(angle) * magnitude, sin(angle) * magnitude)`
      */
-    static Vector2D from_polar_coord(const double &angle, const T &magnitude);
+    static Vector2D from_polar_coord(const float &angle, const T &magnitude);
     /**
      * @brief 極形式から座標形式のベクトルを作成する
      * @param[in] angle 偏角。ラジアンで指定する点に注意
@@ -54,7 +54,7 @@ public:
      *  返されるベクトルの式
      *  `(x, y)` = `(cos(angle) * magnitude, sin(angle) * magnitude)`
      */
-    static void from_polar_coord(Vector2D *, const double &angle, const T &magnitude);
+    static void from_polar_coord(Vector2D *, const float &angle, const T &magnitude);
 
 public: // instance properties
     //! ベクトルのx成分
@@ -152,26 +152,26 @@ public: // instance properties
      * @brief ベクトルの偏角を返す
      * @return 偏角(ラジアン)
      */
-    inline double angle() const;
+    inline float angle() const;
     /**
      * @brief ベクトルの偏角を返す
      * @param[out] dst 偏角(ラジアン)
      */
-    void angle(double *dst);
+    void angle(float *dst);
     /**
      * @brief ベクトルの大きさを返す
      * @return ベクトルの大きさ
      */
-    inline double mag() const;
+    inline float mag() const;
     /**
      * @brief ベクトルの大きさを返す
      * @param[out] dst ベクトルの大きさ
      */
-    void mag(double *dst);
+    void mag(float *dst);
 };
 
-//! Vector2D<double>のエイリアス
-using V2_double = Vector2D<double>;
+//! Vector2D<float>のエイリアス
+using V2_float = Vector2D<float>;
 //! Vector2D<int>のエイリアス
 using V2_int = Vector2D<int>;
 
@@ -181,13 +181,13 @@ using V2_int = Vector2D<int>;
 
 #define T_VEC2D robo::Vector2D<T>
 
-TMP void T_VEC2D::from_polar_coord(T_VEC2D *dst, const double &angle, const T &magnitude)
+TMP void T_VEC2D::from_polar_coord(T_VEC2D *dst, const float &angle, const T &magnitude)
 {
     if (dst == NULL) return;
     dst->x = magnitude * cos(angle);
     dst->y = magnitude * sin(angle);
 }
-TMP T_VEC2D T_VEC2D::from_polar_coord(const double &angle, const T &magnitude)
+TMP T_VEC2D T_VEC2D::from_polar_coord(const float &angle, const T &magnitude)
 {
     T_VEC2D result;
     from_polar_coord(&result, angle, magnitude);
@@ -266,21 +266,21 @@ TMP void T_VEC2D::dot(T *dst, const T &x, const T &y)
     *dst = this->x * x + this->y * y;
 }
 
-TMP double T_VEC2D::angle() const
+TMP float T_VEC2D::angle() const
 {
     return atan2(y, x);
 }
-TMP void T_VEC2D::angle(double *dst)
+TMP void T_VEC2D::angle(float *dst)
 {
     if (dst == NULL) return;
     *dst = angle();
 }
 
-TMP double T_VEC2D::mag() const
+TMP float T_VEC2D::mag() const
 {
     return sqrt(x * x + y * y);
 }
-TMP void T_VEC2D::mag(double *dst)
+TMP void T_VEC2D::mag(float *dst)
 {
     if (dst == NULL) return;
     *dst = mag();

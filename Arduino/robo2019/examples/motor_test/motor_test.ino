@@ -11,7 +11,7 @@ MoveInfo * infos[] = {
     new Translate(100, 0),
     new Rotate(true, power),
     new Translate(0, -power),
-    new Translate(robo::V2_double::from_polar_coord(PI / 4, power)),
+    new Translate(robo::V2_float::from_polar_coord(PI / 4, power)),
     new Stop()
 };
 

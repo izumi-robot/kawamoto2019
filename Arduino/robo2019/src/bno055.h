@@ -33,12 +33,12 @@ private:
     //! bnoを検知したかどうか
     bool _detected = false;
     //! 最新の、ジャイロセンサーで算出した方向
-    double _last_gyro_dir = 0;
+    float _last_gyro_dir = 0;
     /**
      * @brief 地磁気のズレ
      * @details `0`が指す向きの、最初の向きとのズレ
      */
-    double _geomag_diff = 0;
+    float _geomag_diff = 0;
 
 public:
     using Adafruit_BNO055::Adafruit_BNO055;
@@ -53,13 +53,13 @@ public:
      * @return 現在向いている方向
      * @note ラジアンの値は、0を最初の向きとして、そこから正回転が反時計回り
      */
-    double get_geomag_direction();
+    float get_geomag_direction();
     /**
      * @brief 現在向いている方向をラジアンで取得
      * @param{out} dst 現在向いている方向
      * @note ラジアンの値は、0を最初の向きとして、そこから正回転が反時計回り
      */
-    void get_geomag_direction(double *dst);
+    void get_geomag_direction(float *dst);
 
     /**
      * @fn bool detected()

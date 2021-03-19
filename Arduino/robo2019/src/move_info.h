@@ -55,11 +55,11 @@ namespace move_info
     class Translate : public MoveInfo
     {
     private:
-        robo::V2_double vec;
+        robo::V2_float vec;
 
     public:
-        Translate(const double &x, const double &y) : vec(x, y) {}
-        Translate(const robo::V2_double &vec) : vec(vec) {}
+        Translate(const float &x, const float &y) : vec(x, y) {}
+        Translate(const robo::V2_float &vec) : vec(vec) {}
 
         void apply(robo::Motor &motor) override
         {

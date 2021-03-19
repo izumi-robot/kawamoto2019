@@ -31,13 +31,13 @@ s = robo::string::rjust(s, 10, '+');
 
 * `Vector2D<T>`
 
-自作の2次元ベクトル型です。テンプレート引数の`T`は算術型(`int`, `double`など)である必要があります。モータ制御、pixyのボール情報などでこの型を使用しています。
+自作の2次元ベクトル型です。テンプレート引数の`T`は算術型(`int`, `float`など)である必要があります。モータ制御、pixyのボール情報などでこの型を使用しています。
 
 **型エイリアス**
 
 以下のエイリアスが定義されています。
 
-* `using V2_double = Vector2D<double>;`
+* `using V2_float = Vector2D<float>;`
 * `using V2_int = Vector2D<int>;`
 
 **プロパティ**
@@ -181,9 +181,9 @@ v2 *= 5;
 例: (小数の桁はテキトーです。)
 
 ```C++
-robo::V2_double v1{2.0, 4.0}, v2{3.0, 5.0};
+robo::V2_float v1{2.0, 4.0}, v2{3.0, 5.0};
 int ls[] = {6.0, 1.0};
-robo::V2_double v3 = v1 / ls;
+robo::V2_float v3 = v1 / ls;
 // v3.x == 0.3333333, v3.y == 4.0
 v2 /= 5;
 // v2.x == 0.6, v2.y == 1.0
@@ -216,37 +216,37 @@ int d1 = v.dot(ls), d2 = v.dot(3, 5);
 // d1 == 22, d2 == 26
 ```
 
-* `double Vector2D<T>::angle() const`
+* `float Vector2D<T>::angle() const`
 
 ベクトルの角度を計算します。原点`(0, 0)`から`(1, 0)`の向きが`0`、`(0, 1)`の向きが`PI / 2`、`(0, -1)`の向きが`-PI / 2`です。
 例:
 
 ```C++
 robo::V2_int v{1, 1};
-double ang = v.angle();
+float ang = v.angle();
 // ang == PI / 4
 ```
 
-* `double Vector2D<T>::mag() const`
+* `float Vector2D<T>::mag() const`
 
 ベクトルの大きさを計算します。
 例: `robo::V2_int{1, 1} == sqrt(2)`
 
 ```C++
 robo::V2_int v{1, 1};
-double mag = v.mag();
+float mag = v.mag();
 // mag == sqrt(2)
 ```
 
 **静的関数**
 
-* `static Vector2D<T> Vector2D<T>::from_polar_coord(const double &angle, const T &magnitude)`
+* `static Vector2D<T> Vector2D<T>::from_polar_coord(const float &angle, const T &magnitude)`
 
 極座標のパラメーターからベクトルを作成します。第一引数に角度(ラジアン)、第二引数に大きさを渡してください。
 例:
 
 ```C++
-robo::V2_double v = robo::V2_double::from_polar_coord(PI / 3, 10);
+robo::V2_float v = robo::V2_float::from_polar_coord(PI / 3, 10);
 // v.x == 5.0, v.y == 5.0 * sqrt(3.0)
 ```
 
@@ -280,8 +280,8 @@ robo::V2_double v = robo::V2_double::from_polar_coord(PI / 3, 10);
 
 モーター4つのパワーを設定します。
 
-* `void velocity(const double &vx, const double &vy)`
-* `void velocity(const robo::V2_double &vel)`
+* `void velocity(const float &vx, const float &vy)`
+* `void velocity(const robo::V2_float &vel)`
 
 機体が、与えられた速度ベクトルで平行移動するようにパワーを設定します。
 
@@ -289,7 +289,7 @@ robo::V2_double v = robo::V2_double::from_polar_coord(PI / 3, 10);
 
 左側についている車輪、右側についている車輪でパワーを設定します。`all_motors(left, right, left, right)`のショートカットです。
 
-* `void direction_and_speed(const double &direction, int8_t speed)`
+* `void direction_and_speed(const float &direction, int8_t speed)`
 
 与えられた方向`direction`と速さ`speed`で平行移動するようにパワーを設定します。
 
