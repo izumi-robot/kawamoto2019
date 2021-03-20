@@ -1,290 +1,182 @@
-#include <robo2019.h>
 #include <Wire.h>
+#include <SoftwareSerial.h>
+#include <robo2019.h>
 
+namespace info {
+    using namespace robo::move_info;
+    class Ptr {
+    private:
+        MoveInfo *_info;
+        inline void _del() {
+            if (_info != NULL) delete _info;
+        }
 
-class MoveInfo
-{
-public:
-    virtual void apply(robo::Motor &motor) = 0;
-    virtual uint8_t to_string(char *dst) = 0;
-    virtual String to_string() = 0;
-};
+    public:
+        Ptr() : _info(new robo::move_info::Stop()) {}
+        Ptr(MoveInfo *info) : _info(info) {}
+        Ptr(const Ptr &) = delete;
+        ~Ptr() { _del(); }
+        Ptr& operator = (const Ptr &ptr) = delete;
+        Ptr& operator = (MoveInfo *ptr) {
+            _del();
+            _info = ptr;
+            return *this;
+        }
 
-class Stop : public MoveInfo
-{
-public:
-    void apply(robo::Motor &motor) override
-    {
-        motor.stop();
-    }
+        operator bool () const { return _info != NULL; }
 
-    uint8_t to_string(char *dst) override
-    {
-        if (dst == NULL) return 0;
-        return sprintf(dst, "MoveInfo: Stop");
-    }
+        bool operator == (const Ptr &ptr) const { return ptr.ptr() == _info; }
+        bool operator != (const Ptr &ptr) const { return ptr.ptr() != _info; }
 
-    String to_string() override
-    {
-        char buffer[16] = "";
-        to_string(buffer);
-        return String(buffer);
-    }
-};
+        bool operator == (MoveInfo *pinfo) const { return pinfo == _info; }
+        bool operator != (MoveInfo *pinfo) const { return pinfo != _info; }
 
-class Translate : public MoveInfo
-{
-private:
-    robo::V2_double vec;
-
-public:
-    Translate(const double &x, const double &y) : vec(x, y) {}
-    Translate(const robo::V2_double &vec) : vec(vec) {}
-
-    void apply(robo::Motor &motor) override
-    {
-        motor.set_velocity(vec);
-    }
-
-    uint8_t to_string(char *dst) override
-    {
-        if (dst == NULL) return 0;
-        char *ptr = dst;
-        ptr += sprintf(ptr, "MoveInfo: Translate");
-        ptr += vec.to_string(ptr);
-        return ptr - dst;
-    }
-
-    String to_string() override
-    {
-        char buffer[64] = "";
-        to_string(buffer);
-        return String(buffer);
-    }
-};
-
-class Rotate : public MoveInfo
-{
-private:
-    const bool clockwise;
-    const int8_t speed;
-
-public:
-    Rotate(const bool clockwise, const int8_t speed)
-    : clockwise(clockwise), speed(speed) {}
-
-    void apply(robo::Motor &motor) override
-    {
-        motor.set_rotate(clockwise, speed);
-    }
-
-    uint8_t to_string(char *dst) {
-        if (dst == NULL) return 0;
-        return sprintf(
-            dst,
-            "MoveInfo: Rotate(clockwise=%s, %d)",
-            clockwise ? "true" : "false",
-            speed
-        );
-    }
-
-    String to_string() override
-    {
-        char buffer[64];
-        to_string(buffer);
-        return String(buffer);
-    }
-};
-
-inline constexpr uint16_t proc_echo(uint16_t before) {
-    return before ? before : 1024;
+        MoveInfo * operator -> () const { return _info; }
+        MoveInfo * ptr() const { return _info; }
+    };
 }
 
-#define USE_MOTOR
-#define USE_ECHO
-#define USE_LINE
-#define USE_OPENMV
-#define USE_BNO055
-#define USE_LCD
-#define DO_DEBUG
+namespace omv {
+    using namespace robo::openmv;
+}
 
-constexpr double HPI = PI / 2;
-constexpr double QPI = PI / 4;
+constexpr float HPI = PI / 2;
+constexpr float QPI = PI / 4;
+constexpr float bno_threshold = PI / 10;
+constexpr float front_range = PI / 10;
 constexpr int8_t max_speed = 100;
-MoveInfo *m_stop;
 
-#ifdef USE_MOTOR
-robo::Motor motor(Serial2);
-#endif /* USE_MOTOR */
+constexpr uint8_t kicker_pin = 10;
+SoftwareSerial motor_ser(12, 13);
+info::Ptr m_info;
+robo::Motor motor(&motor_ser), _motor(&Serial);
 
-#ifdef USE_LINE
 namespace lines {
-    robo::LineSensor left(1), right(3), back(5);
+    robo::LineSensor left(1), right(2), back(3);
+    constexpr bool iswhite(uint16_t val) {
+        return val >= 450;
+    }
 }
-#endif /* USE_LINE */
 
-#ifdef USE_ECHO
 namespace echos {
-    robo::EchoSensor left(7, 6), right(4, 5), back(8, 9);
+    robo::EchoSensor left(1, 2), right(3, 4), back(5, 6);
 }
-#endif /* USE_ECHO */
 
-#ifdef USE_OPENMV
-robo::openmv::Reader mv_reader(0x12);
-#endif /* USE_OPENMV */
-
-#ifdef USE_BNO055
-robo::BNO055 bno055(55);
-#endif /* USE_BNO055 */
-
-#ifdef USE_LCD
+omv::Reader mv_reader(0x12);
+robo::BNO055 bno055(0, 0x28);
 robo::LCD lcd(0x27, 16, 2);
-#endif /* USE_LCD */
 
-void setup()
-{
-    m_stop = new Stop();
+void update_frame() {
+    static uint8_t frame_count;
+    static uint16_t last_time;
 
-    #ifdef USE_MOTOR
-    motor.setup(19200);
-    #endif /* USE_MOTOR */
+    if (++frame_count == 100) {
+        uint16_t cur_time = millis();
+        float fps = 100000.0 / (cur_time - last_time);
+        last_time = cur_time;
+        char buff[32] = "";
+        strcat_P(buff, PSTR("fps: "));
+        dtostrf(fps, 5, 3, buff + 5);
+        lcd.setCursor(0, 1);
+        lcd.print(buff);
+        frame_count = 0;
+    }
+}
 
-    #ifdef USE_ECHO
+void setup() {
     echos::left.setup();
     echos::right.setup();
     echos::back.setup();
-    #endif /* USE_ECHO */
 
-    #ifdef USE_LINE
     lines::left.setup();
     lines::right.setup();
     lines::back.setup();
-    #endif /* USE_LINE */
 
-    #ifdef USE_OPENMV
     mv_reader.setup();
-    #endif /* USE_OPENMV */
 
-    #ifdef USE_BNO055
     bno055.setup();
-    #endif /* USE_BNO055 */
 
-    #ifdef USE_LCD
-    lcd.setup();
-    #endif /* USE_LCD */
-
-    #ifdef DO_DEBUG
+    motor_ser.begin(19200);
     Serial.begin(19200);
-    #endif /* DO_DEBUG */
+    m_info = new info::Stop();
+    lcd.setup();
 }
 
-void loop()
-{
-    MoveInfo *m_info = m_stop;
+void loop() {
+    using omv::Position;
 
-    #ifdef USE_LCD
-    lcd.clear();
-    #endif /* USE_LCD */
+    #define BIND(_name_) w_ ## _name_ = lines::iswhite(lines::_name_.read())
+    const bool w_left = lines::left.read() > 400, BIND(right), BIND(back);
+    #undef BIND
+    const bool on_line = w_left || w_right || w_back;
 
-    LINE:
-    #ifdef USE_LINE
-    {
+    omv::Frame *frame = mv_reader.read_frame();
+    Position *ball_pos = frame == NULL ? NULL : frame->ball_pos;
+    Position *y_goal_pos = frame == NULL ? NULL : frame->y_goal_pos;
+    float y_goal_dir = y_goal_pos == NULL ? 10 : omv::pos2dir(*y_goal_pos);
+    float bno_dir = bno055.get_geomag_direction();
 
-    #define IS_WHITE robo::LineSensor::iswhite
-    bool w_left = IS_WHITE(lines::left.read()),
-        w_right = IS_WHITE(lines::right.read()),
-        w_back  = IS_WHITE(lines::back.read());
-
-    #define LINE_DIR (w_left == w_right ? 0.0 : (w_left \
-        ? (w_back ? -QPI : QPI) \
-        : (w_back ? -HPI : HPI) ))
-
-    if (w_left || w_right || w_back) {
-        double d = 0.0;
-
-        #ifdef USE_ECHO
-        int e_left  = proc_echo(echos::left.read()),
-            e_right = proc_echo(echos::right.read()),
-            e_back  = proc_echo(echos::back.read());
-        d = (
-            (e_left != e_right || e_right != e_back)
-            ? (
-                (e_left < e_right)
-                ? (e_left < e_back ? -HPI : 0.0)
-                : (e_right < e_back ? HPI : 0.0)
-            ) : LINE_DIR
-        );
-        #else /* USE_ECHO */
-        d = LINE_DIR;
-        #endif /* USE_ECHO */
-
-        m_info = new Translate(
-            max_speed * cos(d),
-            max_speed * sin(d)
-        );
-
-        goto MOTOR;
-    } // if (w_left || w_right || w_back)
-
-    }
-    #endif /* USE_LINE */
-
-    BNO055:
-    #ifdef USE_BNO055
-    {
-
-    double fdir = bno055.get_geomag_direction();
-    double adir = abs(fdir);
-    if (adir > 1.0) { // 1.0: PI / 3
-        m_info = new Rotate(fdir > 0, int8_t(adir * 19 + 40));
-        // (adir - 0) / (PI - 0) * (100 - 40) + 40
-        // -> adir * 19 + 40
-        goto MOTOR;
-    }
-
-    }
-    #endif /* USE_BNO055 */
-
-    OPENMV:
-    #ifdef USE_OPENMV
-    {
-
-    robo::openmv::Frame* frame = mv_reader.read_frame();
-    if (frame != NULL) {
-        robo::openmv::Position ball;
-        if (frame->ball_pos != NULL) {
-            ball = *(frame->ball_pos) - robo::openmv::center;
+    if (on_line) { // 線を踏んだ
+        //m_info = new info::Stop();
+        //goto MOTOR;
+        float d = 0.0;
+        if (abs(y_goal_dir) < front_range) {
+            d = PI;
         } else {
-            ball = robo::openmv::center;
+            //#define USE_ECHO
+            #ifdef USE_ECHO
+            #define BIND(_name_) e_ ## _name_ = echos::_name_.read()
+            uint16_t BIND(left), BIND(right), BIND(back);
+            #undef BIND
+            d = (e_back < e_right && e_back < e_left)
+                ? 0.0 // 後ろの壁が一番近い => 前に進む
+                : e_left < e_right ? -HPI : HPI; // 左の方が近い ? 右に進む : 左に進む
+            #else /* USE_ECHO */
+            d = w_left == w_right ? 0.0 : w_left ? (w_back ? -QPI : -HPI) : (w_back ? QPI : HPI);
+            #endif /* USE_ECHO */
         }
-        // TODO: ball pos to real pos
-        m_info = new Translate(double(ball.x), double(ball.y));
-        delete frame;
+        SET:
+        m_info = new info::Translate(robo::V2_float::from_polar_coord(d, max_speed));
+        goto MOTOR;
     }
-    goto MOTOR;
 
+    // direction
+    BNO: {
+        float adir = abs(bno_dir);
+        if (adir > bno_threshold) {
+            m_info = new info::Rotate(bno_dir > 0, int8_t(adir * 25 + 40));
+            // (adir - 0) / (PI - 0) * (100 - 20) + 20
+            // -> adir * 25 + 40
+            goto MOTOR;
+        }
     }
-    #endif /* USE_OPENMV */
 
-    MOTOR:
-    #ifdef USE_MOTOR
-    {
-
-    m_info->apply(motor);
-
+    BALL:
+    if (ball_pos != NULL) {
+        float ball_dir = omv::pos2dir(*ball_pos);
+        m_info = new info::Translate(robo::V2_float::from_polar_coord(ball_dir * 3 / 2, max_speed));
+    } else {
+        m_info = new info::Stop();
     }
-    #endif /* USE_MOTOR */
 
-    #ifdef DO_DEBUG
-    {
-
-    char buffer[64] = "";
-    m_info->to_string(buffer);
-    Serial.println(buffer);
-
+    MOTOR: {
+        if (m_info) {
+            Serial.println(F("apply"));
+            m_info->apply(motor);
+        }
     }
-    #endif /* DO_DEBUG */
 
-    END:
-    if (m_info != NULL && m_info != m_stop) delete m_info;
+    LOG: {
+        char buff[64] = "";
+        sprintf_P(buff, PSTR("l:%u,r:%u,b:%u"), w_left, w_right, w_back);
+        //lcd.clear();
+        lcd.setCursor(0,0);
+        lcd.print(buff);
+        update_frame();
+    }
+
+    END: {
+        if (frame != NULL) delete frame;
+    }
+    // if (m_info != NULL && m_info != m_stop) delete m_info;
 }
