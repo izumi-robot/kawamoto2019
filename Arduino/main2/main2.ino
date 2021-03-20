@@ -4,40 +4,46 @@
 
 namespace info {
     using namespace robo::move_info;
-
-    class Ptr {
-    private:
-        MoveInfo *_info;
-        inline void _del() {
-            if (_info != NULL) delete _info;
-        }
-
-    public:
-        Ptr() : _info(new robo::move_info::Stop()) {}
-        Ptr(MoveInfo *info) : _info(info) {}
-        Ptr(const Ptr &) = delete;
-
-        ~Ptr() { _del(); }
-
-        Ptr& operator = (const Ptr &ptr) = delete;
-        Ptr& operator = (MoveInfo *ptr) {
-            _del();
-            _info = ptr;
-            return *this;
-        }
-
-        operator bool () const { return _info != NULL; }
-
-        bool operator == (const Ptr &ptr) const { return ptr.ptr() == _info; }
-        bool operator != (const Ptr &ptr) const { return ptr.ptr() != _info; }
-
-        bool operator == (MoveInfo * pinfo) const { return pinfo == _info; }
-        bool operator != (MoveInfo * pinfo) const { return pinfo != _info; }
-
-        MoveInfo * operator -> () const { return _info; }
-        MoveInfo * ptr() const { return _info; }
-    };
 }
+
+template <typename T>
+class auto_ptr {
+private:
+    T * _ptr;
+public:
+    auto_ptr() : _ptr(NULL) {}
+    auto_ptr(T * ptr) : _ptr(ptr) {}
+    auto_ptr(auto_ptr & aptr) {
+        _ptr = aptr.release();
+    }
+
+    ~auto_ptr() { del(); }
+
+    auto_ptr & operator = (const auto_ptr & rh) = delete;
+
+    inline bool operator == (const auto_ptr & rh) { return _ptr == rh._ptr; }
+    inline bool operator != (const auto_ptr & rh) { return _ptr != rh._ptr; }
+    inline bool operator == (const T * ptr) { return _ptr == ptr; }
+    inline bool operator != (const T * ptr) { return _ptr != ptr; }
+
+    inline T * operator -> () { return  _ptr; }
+    inline T & operator  * () { return *_ptr; }
+
+    inline operator bool () const { return _ptr != NULL; }
+
+    T * release() {
+        T * res = _ptr;
+        _ptr = NULL;
+        return res;
+    }
+
+    inline void del() { if (_ptr != NULL) delete _ptr; }
+
+    void reset(T * ptr) {
+        del();
+        _ptr = ptr;
+    }
+};
 
 namespace omv {
     using namespace robo::openmv;
@@ -59,15 +65,14 @@ float update_frame() {
 
 constexpr float HPI = PI / 2;
 constexpr float QPI = PI / 4;
-constexpr float bno_threshold = PI / 10;
 constexpr float front_range = PI / 10;
 constexpr int8_t max_speed = 100;
 
 constexpr uint8_t kicker_pin = 10;
+
 SoftwareSerial motor_ser(12, 13);
 robo::Motor motor(&motor_ser);
 auto_ptr<info::MoveInfo> m_info;
-//info::Ptr m_info;
 
 namespace lines {
     robo::LineSensor left(1), right(2), back(3);
@@ -82,6 +87,8 @@ namespace echos {
 }
 
 omv::Reader mv_reader(0x12);
+using FramePtr = auto_ptr<omv::Frame>;
+FramePtr frame;
 robo::BNO055 bno055(0, 0x28);
 robo::LCD lcd(0x27, 16, 2);
 
@@ -99,23 +106,25 @@ void setup() {
     bno055.setup();
 
     motor_ser.begin(19200);
+    motor.stop();
     Serial.begin(19200);
-    m_info = new info::Stop();
+    m_info.reset(new info::Stop());
 
     lcd.setup();
 }
 
 void loop() {
-
     #define L_BIND(_name_) w_ ## _name_ = lines::iswhite(lines::_name_.read())
-    const bool w_left = lines::left.read() > 400, L_BIND(right), L_BIND(back);
+    const bool L_BIND(left), L_BIND(right), L_BIND(back);
     #undef L_BIND
     const bool on_line = w_left || w_right || w_back;
 
-    omv::Frame *frame = mv_reader.read_frame();
-    omv::Position *ball_pos = frame == NULL ? NULL : frame->ball_pos;
-    omv::Position *y_goal_pos = frame == NULL ? NULL : frame->y_goal_pos;
-    float y_goal_dir = y_goal_pos == NULL ? 10 : omv::pos2dir(*y_goal_pos);
+    FramePtr nframe(mv_reader.read_frame());
+    if (nframe) frame.reset(nframe.release());
+    using PosPtr = omv::Position *;
+    PosPtr ball_pos = frame ? frame->ball_pos : NULL;
+    PosPtr y_goal_pos = frame ? frame->y_goal_pos : NULL;
+    float y_goal_dir = y_goal_pos ? omv::pos2dir(*y_goal_pos) : 10;
     float bno_dir = bno055.get_geomag_direction();
 
     if (on_line) { // 線を踏んだ
@@ -132,18 +141,20 @@ void loop() {
                 ? 0.0 // 後ろの壁が一番近い => 前に進む
                 : e_left < e_right ? -HPI : HPI; // 左の方が近い ? 右に進む : 左に進む
             #else /* USE_ECHO */
-            d = w_left == w_right ? 0.0 : w_left ? -HPI : HPI;
+            d = w_left == w_right ? (w_back ? 0.0 : PI) : w_left ? -HPI : HPI;
             #endif /* USE_ECHO */
         }
-        m_info = new info::Translate(robo::V2_float::from_polar_coord(d, max_speed));
+        m_info.reset(new info::Translate(
+            cos(d) * max_speed, sin(d) * max_speed
+        ));
         goto MOTOR;
     }
 
     // direction
     BNO: {
         float adir = abs(bno_dir);
-        if (adir > bno_threshold) {
-            m_info = new info::Rotate(bno_dir > 0, int8_t(adir * 25 + 40));
+        if (adir > front_range) {
+            m_info.reset(new info::Rotate(bno_dir > 0, int8_t(adir * 25 + 20)));
             // (adir - 0) / (PI - 0) * (100 - 20) + 20
             // -> adir * 25 + 40
             goto MOTOR;
@@ -153,28 +164,28 @@ void loop() {
     BALL:
     if (ball_pos != NULL) {
         float ball_dir = omv::pos2dir(*ball_pos);
-        m_info = new info::Translate(robo::V2_float::from_polar_coord(ball_dir * 3 / 2, max_speed));
+        m_info.reset(new info::Translate(
+            robo::V2_float::from_polar_coord(ball_dir * 3 /2 , max_speed)
+        ));
+        goto MOTOR;
     }
 
-    m_info = new info::Stop();
+    m_info.reset(new info::Stop());
 
     MOTOR: {
-        if (m_info) {
-            m_info->apply(motor);
-        }
+        if (m_info) m_info->apply(motor);
     }
 
     LOG: {
         lcd.clear();
-        char buff[64] = "";
+        char buff[128] = "";
         sprintf_P(buff, PSTR("l:%u,r:%u,b:%u"), w_left, w_right, w_back);
         lcd.setCursor(0,0);
         lcd.print(buff);
-        lcd.setCursor(0, 1);
-        lcd.print(update_frame());
-    }
-
-    END: {
-        if (frame != NULL) delete frame;
+        buff[0] = '\0';
+        if (m_info) {
+            m_info->to_string(buff);
+        }
+        Serial.println(buff);
     }
 }
