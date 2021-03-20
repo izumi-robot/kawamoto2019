@@ -33,7 +33,7 @@ void robo::Motor::scale_powers(int8_t (&powers)[4], int8_t max_val)
     for (const int8_t &p : powers) {
         if (abs(p) > abs(p_max)) p_max = p;
     }
-    float ratio = max_val / p_max;
+    float ratio = max_val / float(p_max);
     for (int8_t &p : powers) { p *= ratio; }
 }
 
@@ -77,7 +77,7 @@ void robo::Motor::set_one_motor(uint8_t pin, int8_t power)
     _port->println(buffer);
 }
 
-void robo::Motor::set_all_motors(int8_t m1, int8_t m2, int8_t m3, int8_t m4, bool maximize = false)
+void robo::Motor::set_all_motors(int8_t m1, int8_t m2, int8_t m3, int8_t m4, bool maximize)
 {
     char buffer[32] = "";
     char *buf_ptr = buffer;
@@ -96,25 +96,20 @@ void robo::Motor::set_all_motors(int8_t m1, int8_t m2, int8_t m3, int8_t m4, boo
     _port->print(buffer);
 }
 
-void robo::Motor::set_velocity(const float &vx, const float &vy, bool maximize = false)
+void robo::Motor::set_velocity(const float &vx, const float &vy, bool maximize)
 {
-    static const float root2 = sqrt(2.);
+    constexpr float root2 = sqrt(2.);
     int8_t e1 = int8_t((vx + vy) / root2);
     int8_t e2 = int8_t((vx - vy) / root2);
     set_all_motors(e2, e1, e1, e2, maximize);
 }
 
-void robo::Motor::set_velocity(const robo::V2_float &vel, bool maximize = false)
-{
-    set_velocity(vel.x, vel.y, maximize);
-}
-
-void robo::Motor::set_left_right(int8_t left, int8_t right, bool maximize = false)
+void robo::Motor::set_left_right(int8_t left, int8_t right, bool maximize)
 {
     set_all_motors(left, right, left, right, maximize);
 }
 
-void robo::Motor::set_dir_and_speed(const float &dir, int8_t speed, bool maximize = false)
+void robo::Motor::set_dir_and_speed(const float &dir, int8_t speed, bool maximize)
 {
     set_velocity(speed * cos(dir), speed * sin(dir), maximize);
 }
@@ -127,14 +122,11 @@ void robo::Motor::set_rotate(bool clockwise, int8_t speed)
 
 uint8_t robo::Motor::info(char *dst)
 {
-    if (dst == NULL)
-        return 0;
+    if (dst == NULL) return 0;
     char *ptr = dst;
-    for (uint8_t pin = 1; pin <= 4; pin++)
-    {
+    for (uint8_t pin = 1; pin <= 4; pin++) {
         ptr += get_power_str(ptr, pin);
-        if (pin == 4)
-            continue;
+        if (pin == 4) continue;
         strcat(ptr, ", ");
         ptr += 2;
     }

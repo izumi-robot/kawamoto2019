@@ -56,14 +56,15 @@ namespace move_info
     {
     private:
         robo::V2_float vec;
+        bool maximize;
 
     public:
-        Translate(const float &x, const float &y) : vec(x, y) {}
-        Translate(const robo::V2_float &vec) : vec(vec) {}
+        Translate(const float &x, const float &y, bool maximize = false) : vec(x, y), maximize(maximize) {}
+        Translate(const robo::V2_float &vec, bool maximize = false) : vec(vec), maximize(maximize) {}
 
         void apply(robo::Motor &motor) override
         {
-            motor.set_velocity(vec);
+            motor.set_velocity(vec, maximize);
         }
 
         uint8_t to_string(char *dst) override

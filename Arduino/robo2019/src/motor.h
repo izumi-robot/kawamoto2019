@@ -137,7 +137,7 @@ public:
      * @param[in] m4 ピン番号4のモーターに設定するパワー
      * @param[in] maximize パワーを最大化するかどうか(デフォルトはfalse)
      */
-    void set_all_motors(int8_t a, int8_t b, int8_t c, int8_t d, bool maximize);
+    void set_all_motors(int8_t a, int8_t b, int8_t c, int8_t d, bool maximize = false);
 
     /**
      * @brief 機体が平行移動移動するように速度ベクトルを設定する
@@ -146,7 +146,7 @@ public:
      * @param[in] maximize パワーを最大化するかどうか(デフォルトはfalse)
      * @details 座標系の定義はREADMEを参照
      */
-    void set_velocity(const float &vx, const float &vy, bool maximize);
+    void set_velocity(const float &vx, const float &vy, bool maximize = false);
 
     /**
      * @brief 機体が平行移動移動するように速度ベクトルを設定する
@@ -154,7 +154,7 @@ public:
      * @param[in] maximize パワーを最大化するかどうか(デフォルトはfalse)
      * @details 座標系の定義はREADMEを参照
      */
-    inline void set_velocity(const robo::V2_float &vel, bool maximize);
+    inline void set_velocity(const robo::V2_float &vel, bool maximize = false);
 
     /**
      * @brief 左輪と右輪でわけてパワーを設定する
@@ -163,7 +163,7 @@ public:
      * @param[in] maximize パワーを最大化するかどうか(デフォルトはfalse)
      * @details 左輪、右輪の定義はREADMEを参照
      */
-    inline void set_left_right(int8_t left, int8_t right, bool maximize);
+    inline void set_left_right(int8_t left, int8_t right, bool maximize = false);
 
     /**
      * @brief 方向と速さで機体の平行移動のベクトルを設定する
@@ -172,7 +172,7 @@ public:
      * @param[in] maximize パワーを最大化するかどうか(デフォルトはfalse)
      * @details 方向についてはREADMEを参照。maxmize=trueの場合、speedは無視される。
      */
-    inline void set_dir_and_speed(const float &dir, int8_t speed, bool maximize);
+    inline void set_dir_and_speed(const float &dir, int8_t speed, bool maximize = false);
 
     /**
      * @brief 機体が回転するようにパワーを設定する
@@ -197,6 +197,11 @@ public:
 };
 
 } // namespace robo
+
+inline void robo::Motor::set_velocity(const robo::V2_float &vel, bool maximize)
+{
+    set_velocity(vel.x, vel.y, maximize);
+}
 
 #else /* ARDUINO */
 
