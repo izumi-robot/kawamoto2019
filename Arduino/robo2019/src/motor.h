@@ -49,6 +49,19 @@ public: // static functions
      */
     static String power_str(uint8_t pin, int8_t power);
 
+    /**
+     * @brief モーターのパワーの配列を拡大/縮小する
+     * @param[in,out] powers 対象
+     * @param max_val パワーの最大値
+     * @example
+     *  ```C++
+     *  int8_t powers[] = { 67, 0, 50, -80 };
+     *  scale_powers(powers, 100);
+     *  // powers => { 83, 0, 62, -100 }
+     *  ```
+     */
+    static void scale_powers(int8_t (&powers)[4], int8_t max_val);
+
 private: // variables
     //! モーターのパワー
     int8_t _powers[4];
@@ -122,39 +135,44 @@ public:
      * @param[in] m2 ピン番号2のモーターに設定するパワー
      * @param[in] m3 ピン番号3のモーターに設定するパワー
      * @param[in] m4 ピン番号4のモーターに設定するパワー
+     * @param[in] maximize パワーを最大化するかどうか(デフォルトはfalse)
      */
-    void set_all_motors(int8_t a, int8_t b, int8_t c, int8_t d);
+    void set_all_motors(int8_t a, int8_t b, int8_t c, int8_t d, bool maximize);
 
     /**
      * @brief 機体が平行移動移動するように速度ベクトルを設定する
      * @param[in] vx ベクトルのx成分
      * @param[in] vy ベクトルのy成分
+     * @param[in] maximize パワーを最大化するかどうか(デフォルトはfalse)
      * @details 座標系の定義はREADMEを参照
      */
-    void set_velocity(const float &vx, const float &vy);
+    void set_velocity(const float &vx, const float &vy, bool maximize);
 
     /**
      * @brief 機体が平行移動移動するように速度ベクトルを設定する
      * @param[in] vel 設定するベクトル
+     * @param[in] maximize パワーを最大化するかどうか(デフォルトはfalse)
      * @details 座標系の定義はREADMEを参照
      */
-    inline void set_velocity(const robo::V2_float &vel);
+    inline void set_velocity(const robo::V2_float &vel, bool maximize);
 
     /**
      * @brief 左輪と右輪でわけてパワーを設定する
      * @param[in] left 左輪のパワー
      * @param[in] right 右輪のパワー
+     * @param[in] maximize パワーを最大化するかどうか(デフォルトはfalse)
      * @details 左輪、右輪の定義はREADMEを参照
      */
-    inline void set_left_right(int8_t left, int8_t right);
+    inline void set_left_right(int8_t left, int8_t right, bool maximize);
 
     /**
      * @brief 方向と速さで機体の平行移動のベクトルを設定する
      * @param[in] dir ベクトルの方向(ラジアン)
-     * @param[in] speed 速さ
-     * @details 方向についてはREADMEを参照
+     * @param[in] speed 速度
+     * @param[in] maximize パワーを最大化するかどうか(デフォルトはfalse)
+     * @details 方向についてはREADMEを参照。maxmize=trueの場合、speedは無視される。
      */
-    inline void set_dir_and_speed(const float &dir, int8_t speed);
+    inline void set_dir_and_speed(const float &dir, int8_t speed, bool maximize);
 
     /**
      * @brief 機体が回転するようにパワーを設定する
@@ -163,136 +181,22 @@ public:
      */
     void set_rotate(bool clockwise, int8_t speed);
 
-    uint8_t info(char *dst) {
-        if (dst == NULL) return 0;
-        char *ptr = dst;
-        for (uint8_t pin = 1; pin <= 4; pin++) {
-            ptr += get_power_str(ptr, pin);
-            if (pin == 4) continue;
-            strcat(ptr, ", ");
-            ptr += 2;
-        }
-        return ptr - dst;
-    }
+    /**
+     * @brief 現在のパワーを見やすい文字列で出力する
+     * @param[out] dst 文字列を書き込む先
+     * @return uint8_t 書き込んだ文字数
+     * @note バッファオーバーランの可能性あり。少なくとも27文字分の容量が必要
+     */
+    uint8_t info(char *dst);
 
-    String info() {
-        char buff[32] = "";
-        info(buff);
-        return String(buff);
-    }
+    /**
+     * @brief 現在のパワーを見やすい文字列で取得する
+     * @return String 結果の文字列
+     */
+    String info();
 };
 
 } // namespace robo
-
-uint8_t robo::Motor::power_str(char *dst, uint8_t pin, int8_t power)
-{
-    if (dst == NULL) return 0;
-    return sprintf_P(
-        dst,
-        PSTR("%1d%c%03d"),
-        pin,
-        power < 0 ? 'F' : 'R',
-        abs(power)
-    );
-}
-
-void robo::Motor::power_str(String *dst, uint8_t pin, int8_t power)
-{
-    char buffer[8] = "";
-    robo::Motor::power_str(buffer, pin, power);
-    *dst = String(buffer);
-}
-
-String robo::Motor::power_str(uint8_t pin, int8_t power)
-{
-    char buffer[8] = "";
-    robo::Motor::power_str(buffer, pin, power);
-    return String(buffer);
-}
-
-bool robo::Motor::_update(uint8_t pin, int8_t power)
-{
-    int8_t &dst_power = _powers[pin - 1];
-    if (dst_power == power) return false;
-    dst_power = power;
-    return true;
-}
-
-void robo::Motor::stop()
-{
-    _port->print(F("1F000\n2F000\n3F000\n4F000\n"));
-    memset(_powers, 0, 4);
-}
-
-int8_t robo::Motor::get_power(uint8_t pin) const { return _powers[pin - 1]; }
-
-uint8_t robo::Motor::get_power_str(char *dst, uint8_t pin)
-{
-    return robo::Motor::power_str(dst, pin, get_power(pin));
-}
-
-void robo::Motor::get_power_str(String *dst, uint8_t pin)
-{
-    robo::Motor::power_str(dst, pin, get_power(pin));
-}
-
-String robo::Motor::get_power_str(uint8_t pin) const
-{
-    return robo::Motor::power_str(pin, get_power(pin));
-}
-
-void robo::Motor::set_one_motor(uint8_t pin, int8_t power)
-{
-    if (!_update(pin, power)) return;
-    char buffer[8] = "";
-    robo::Motor::power_str(buffer, pin, power);
-    _port->println(buffer);
-}
-
-void robo::Motor::set_all_motors(int8_t m1, int8_t m2, int8_t m3, int8_t m4)
-{
-    char buffer[32] = "";
-    char *buf_ptr = buffer;
-    int8_t ps[] = { m1, m2, m3, m4 };
-    for (int pin = 1; pin <= 4; pin++) {
-        int8_t &p = ps[pin - 1];
-        if (!_update(pin, p)) continue;
-        robo::Motor::power_str(buf_ptr, pin, p);
-        buf_ptr[5] = '\n';
-        buf_ptr += 6;
-    }
-    buf_ptr[0] = '\0';
-    _port->print(buffer);
-}
-
-void robo::Motor::set_velocity(const float &vx, const float &vy)
-{
-    static const float root2 = sqrt(2.);
-    int8_t e1 = int8_t((vx + vy) / root2);
-    int8_t e2 = int8_t((vx - vy) / root2);
-    set_all_motors(e2, e1, e1, e2);
-}
-
-void robo::Motor::set_velocity(const robo::V2_float &vel)
-{
-    set_velocity(vel.x, vel.y);
-}
-
-void robo::Motor::set_left_right(int8_t left, int8_t right)
-{
-    set_all_motors(left, right, left, right);
-}
-
-void robo::Motor::set_dir_and_speed(const float &dir, int8_t speed)
-{
-    set_velocity(speed * cos(dir), speed * sin(dir));
-}
-
-void robo::Motor::set_rotate(bool clockwise, int8_t speed)
-{
-    int8_t d = clockwise ? 1 : -1;
-    set_left_right(speed * d, -speed * d);
-}
 
 #else /* ARDUINO */
 
