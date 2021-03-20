@@ -1,10 +1,11 @@
+
 import sensor, image, time
 
 # Color Tracking Thresholds
 #   (L Min, L Max, A Min, A Max, B Min, B Max)
 thresholds = [
-    (   30,    60,    40,    80,    50,    70), # orange ball
-    (   20,    75,     0,    30,    25,    50), # yellow goal
+    (   30,    60,    40,    80,    40,    60), # orange ball
+    (   10,    75,     0,    30,    25,    50), # yellow goal
     #(   10,    25,   -15,    15,   -40,   -10)  # blue goal
 ]
 
