@@ -1,24 +1,17 @@
-#include "lib.h"
+#include <robo2019.h>
+#include <SoftwareSerial.h>
 
-robo::Motor2 motor(Serial);
+SoftwareSerial motor_ser(12, 13);
+robo::Motor motor(&Serial);
+robo::move_info::Translate translate(100, 0, true);
 
-void setup()
-{
-    Serial.begin(9600);
-    motor.setup(9600);
+void setup() {
+    motor_ser.begin(19200);
+    Serial.begin(19200);
 }
 
-void loop()
-{
-    int ms = millis() / 2000 % 5;
-    if (0 < ms && ms < 1) {
-        motor.stop();
-    } else if (ms < 2) {
-        motor.set_all_motors(70, 70, 70, 70);
-    } else if (ms < 3) {
-        motor.set_left_right(50, -20);
-    } else if (ms < 4) {
-        motor.set_rotate(false, 50);
-    }
+void loop() {
+    translate.apply(motor);
+    Serial.println(motor.info());
     delay(100);
 }
