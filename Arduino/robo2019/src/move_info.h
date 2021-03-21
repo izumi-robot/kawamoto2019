@@ -29,95 +29,49 @@ namespace move_info
         virtual String to_string() = 0;
     };
 
-    class Stop : public MoveInfo
+    class Stop final : public MoveInfo
     {
     public:
-        void apply(robo::Motor &motor) override
-        {
-            motor.stop();
-        }
-
-        uint8_t to_string(char *dst) override
-        {
-            if (dst == NULL) return 0;
-            strcat_P(dst, PSTR("MoveInfo: Stop"));
-            return 14; // len("MoveInfo: Stop") == 14
-        }
-
-        String to_string() override
-        {
-            char buffer[16] = "";
-            to_string(buffer);
-            return String(buffer);
-        }
+        void apply(robo::Motor &motor) override;
+        uint8_t to_string(char *dst) override;
+        String to_string() override;
     };
 
-    class Translate : public MoveInfo
+    class Translate final : public MoveInfo
     {
     private:
         robo::V2_float vec;
         bool maximize;
 
     public:
-        Translate(const float &x, const float &y, bool maximize = false) : vec(x, y), maximize(maximize) {}
-        Translate(const robo::V2_float &vec, bool maximize = false) : vec(vec), maximize(maximize) {}
+        Translate(const float & vx, const float & vy, bool maximize = false);
+        Translate(const robo::V2_float &vec, bool maximize = false);
 
-        void apply(robo::Motor &motor) override
-        {
-            motor.set_velocity(vec, maximize);
-        }
-
-        uint8_t to_string(char *dst) override
-        {
-            if (dst == NULL) return 0;
-            char *ptr = dst;
-            strcat_P(ptr, PSTR("MoveInfo: Translate"));
-            ptr += 19; // len("MoveInfo: Translate") == 19
-            ptr += vec.to_string(ptr);
-            return ptr - dst;
-        }
-
-        String to_string() override
-        {
-            char buffer[64] = "";
-            to_string(buffer);
-            return String(buffer);
-        }
+        void apply(robo::Motor &motor) override;
+        uint8_t to_string(char *dst) override;
+        String to_string() override;
     };
 
-    class Rotate : public MoveInfo
+    class Rotate final : public MoveInfo
     {
     private:
         const bool clockwise;
         const int8_t speed;
 
     public:
-        Rotate(const bool clockwise, const int8_t speed)
-        : clockwise(clockwise), speed(speed) {}
+        Rotate(const bool clockwise, const int8_t speed);
 
-        void apply(robo::Motor &motor) override
-        {
-            motor.set_rotate(clockwise, speed);
-        }
-
-        uint8_t to_string(char *dst) {
-            if (dst == NULL) return 0;
-            return sprintf_P(
-                dst,
-                PSTR("MoveInfo: Rotate(clockwise=%s, %d)"),
-                clockwise ? PSTR("true") : PSTR("false"),
-                speed
-            );
-        }
-
-        String to_string() override
-        {
-            char buffer[64];
-            to_string(buffer);
-            return String(buffer);
-        }
+        void apply(robo::Motor &motor) override;
+        uint8_t to_string(char *dst) override;
+        String to_string() override;
     };
 
 } // namespace move_info
 
 } // namespace robo
+
+#ifndef ARDUINO
+
+#error This liblary is for Arduino.
+
+#endif /* ARDUINO */

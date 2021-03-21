@@ -16,15 +16,8 @@ namespace robo
 struct LCD : public LiquidCrystal_I2C
 {
 public:
-    LCD(uint8_t addr = 0x27, uint8_t cols = 16, uint8_t rows = 2)
-    : LiquidCrystal_I2C(addr, cols, rows) {}
-
-    void setup()
-    {
-        LiquidCrystal_I2C::init();
-        LiquidCrystal_I2C::backlight();
-        LiquidCrystal_I2C::setCursor(0, 0);
-    }
+    LCD(uint8_t addr = 0x27, uint8_t cols = 16, uint8_t rows = 2);
+    void setup();
 };
 
 } // namespace robo

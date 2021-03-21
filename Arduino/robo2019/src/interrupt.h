@@ -20,16 +20,13 @@
  */
 namespace robo {
 
-#define TMP template<int in_pin, int mode>
-#define INTERRUPT Interrupt<in_pin, mode>
-
 /**
  * @brief 割り込み用のテンプレートクラス(シングルトン)
  * @tparam in_pin 割り込みで監視するピン番号
  * @tparam mode 割り込みの監視モード。デフォルトはRISING
  */
 template<int in_pin, int mode=RISING>
-class Interrupt : public robo::SingletonBase<INTERRUPT>
+class Interrupt : public robo::SingletonBase<Interrupt<in_pin, mode>>
 {
 private:
     /**
@@ -67,35 +64,6 @@ public:
      */
     bool changed();
 };
-
-TMP volatile bool INTERRUPT::_state;
-
-TMP void INTERRUPT::callback()
-{
-    INTERRUPT::_state = !INTERRUPT::_state;
-}
-
-TMP void INTERRUPT::setup()
-{
-    pinMode(in_pin, INPUT);
-    attachInterrupt(digitalPinToInterrupt(in_pin), callback, mode);
-}
-
-TMP bool INTERRUPT::state()
-{
-    return _state;
-}
-
-TMP bool INTERRUPT::changed()
-{
-    static bool pre_state;
-    bool ans = pre_state != _state;
-    pre_state = _state;
-    return ans;
-}
-
-#undef INTERRUPT
-#undef TMP
 
 } // namespace robo
 
