@@ -59,8 +59,8 @@ uint16_t robo::openmv::Reader::read_2byte()
 robo::openmv::Position * robo::openmv::Reader::read_pos()
 {
     constexpr uint16_t default_value = 0xffff;
-    uint8_t x = read_2byte();
-    uint8_t y = read_2byte();
+    uint16_t x = read_2byte();
+    uint16_t y = read_2byte();
     if (x == default_value && y == default_value) return NULL;
     return new robo::openmv::Position(x, y);
 }
