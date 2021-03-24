@@ -179,7 +179,11 @@ void loop() {
     LOG: {
         lcd.clear();
         char buff[128] = "";
-        sprintf_P(buff, PSTR("l:%u,r:%u,b:%u"), w_left, w_right, w_back);
+        if (ball_pos != NULL) {
+            ball_pos->to_string(buff);
+        } else {
+            strcat_P(buff, PSTR("no ball"));
+        }
         lcd.setCursor(0,0);
         lcd.print(buff);
         buff[0] = '\0';
