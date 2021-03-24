@@ -92,6 +92,8 @@ FramePtr frame;
 robo::BNO055 bno055(0, 0x28);
 robo::LCD lcd(0x27, 16, 2);
 
+uint8_t frame_count = 0;
+
 void setup() {
     echos::left.setup();
     echos::right.setup();
@@ -176,8 +178,9 @@ void loop() {
         if (m_info) m_info->apply(motor);
     }
 
-    LOG: {
-        lcd.clear();
+    LOG:
+    if (++frame_count == 10) {
+        //lcd.clear();
         char buff[128] = "";
         if (ball_pos != NULL) {
             ball_pos->to_string(buff);
@@ -186,10 +189,14 @@ void loop() {
         }
         lcd.setCursor(0,0);
         lcd.print(buff);
+        sprintf_P(buff, PSTR("l:%u,r:%u,b:%u"), w_left, w_right, w_back);
+        lcd.setCursor(0, 1);
+        lcd.print(buff);
         buff[0] = '\0';
         if (m_info) {
             m_info->to_string(buff);
         }
         Serial.println(buff);
+        frame_count = 0;
     }
 }

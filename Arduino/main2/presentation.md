@@ -1,12 +1,13 @@
 ---
 marp: true
+theme: presen
 ---
 
 <!--
 paginate: true
 -->
 
-<h1 style="text-align: center">twelve</h1>
+# twelve
 
 石川ブロック
 
@@ -38,7 +39,7 @@ footer: twelve
 _header: 機体紹介
 -->
 
-![bg width:100% height:80%](./machine-constitution.svg)
+![bg width:100% height:80%](./imgs/machine-constitution.svg)
 
 ---
 
@@ -53,6 +54,24 @@ _header: 機体紹介
 
 * カメラの明るさ、彩度などを手動で設定<br>→オブジェクトの検知に最適化
 * 送信するデータ上では数値1つを2バイトで表現<br>→データ量を最小限に抑える
+
+---
+
+# 自作ラインセンサー
+
+TODO
+
+---
+
+# オムニホイール
+
+TODO
+
+---
+
+# LCD
+
+TODO
 
 ---
 
