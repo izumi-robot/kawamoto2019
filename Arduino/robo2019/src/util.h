@@ -68,6 +68,12 @@ public:
 
 } // namespace robo
 
+template<typename Derived> Derived& robo::SingletonBase<Derived>::instance()
+{
+    static Derived ins;
+    return ins;
+}
+
 #else /* ARDUINO */
 
 #error This liblary is for Arduino.
