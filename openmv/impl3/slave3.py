@@ -25,7 +25,8 @@ default_value = 0xffff
 clock = time.clock()
 # https://docs.openmv.io/library/pyb.I2C.html
 bus = pyb.I2C(2, mode=pyb.I2C.SLAVE, addr=0x12)
-p0 = pyb.Pin(pyb.Pin.board.P0, pyb.Pin.OUT_PP)
+pin = pyb.Pin(pyb.Pin.board.P0, pyb.Pin.OUT_OD)
+pin.value(False)
 
 def blob_code_filter(blobs, code):
     return filter(lambda b: b.code() == code, blobs)
@@ -77,8 +78,8 @@ while True:
     ba_x, ba_y = blob_of_code(blobs, 1)
     yg_x, yg_y = blob_of_code(blobs, 2)
     bg_x, bg_y = blob_of_code(blobs, 3)
-    p0.value(True)
+    pin.value(True)
     print("send")
     send_nums(ba_x, ba_y, yg_x, yg_y, bg_x, bg_y)
-    p0.value(False)
+    pin.value(False)
 
