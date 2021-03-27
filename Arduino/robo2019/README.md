@@ -4,7 +4,7 @@
 
 ロボカップ用に作ったArduinoライブラリです。前提条件として、機体のモーターの位置、番号、向き、そしてロボットの中心を原点とした相対座標系について、極形式の角度は次の写真のようになっているものとします。
 
-![machine-info.svg](./img/machine-info.svg)
+![machine-constitution.svg](./img/machine-constitution.svg)
 
 `#include <robo2019.h>`でインクルードしてください。以下で紹介するものはすべて`robo`ネームスペースに格納されます。
 
