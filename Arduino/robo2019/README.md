@@ -43,13 +43,17 @@ kicker | Digital Pin (10)
 
 MCBとモーターの接続ですが、上の写真につけた番号がそのままMCBにつなげたピン番号に対応しています。
 
-**相対的座標系**
+**相対座標系**
 
 ロボットの中心を原点とした相対座標系について、極形式の角度は次のようになっているものとします。
 
 ![relative-coord-define.svg](./img/relative-coord-define.svg)
 
 この定義は機体の速度ベクトルを設定したり、ボールの方向を取得したりといった場合に使用します。
+
+**OpenMV**
+
+OpenMV内部では`./src/openmv-slave.py`にあるプログラムが動いているものとします。
 
 ## Usage
 
