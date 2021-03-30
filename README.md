@@ -20,13 +20,12 @@
 - プログラミングをする上で避けれない前提知識の一部
 - 私が入れた各ツールの紹介(公式サイト、インストール時に参考になったサイト)
 
-## Table of Contents
+## Table of Contents {ignore=true}
 
 <!-- @import "[TOC]" {cmd="toc" depthFrom=2 depthTo=6 orderedList=false} -->
 
 <!-- code_chunk_output -->
 
-- [Table of Contents](#table-of-contents)
 - [ターミナル](#ターミナル)
 - [VS Code](#vs-code)
 - [Python](#python)
@@ -39,6 +38,7 @@
 - [Windows Terminal](#windows-terminal)
 - [OpenMV](#openmv)
 - [Raspberry Pi](#raspberry-pi)
+- [さいごに](#さいごに)
 
 <!-- /code_chunk_output -->
 
@@ -124,7 +124,9 @@ Windows Subsystem for Linux (WSL)はWindows内で動かせるLinuxです。
 - ドキュメント<br>https://docs.openmv.io/
 - 入門記事<br>https://qiita.com/qmore/items/60d2c776d4a00db5863c
 
-TODO: openmv/READMEに詳しく書く
+OpenMVは知名度が低すぎて日本語記事がほとんどありません。そのため、最初から公式のドキュメント(上記URL)で探した方が早いです。
+
+`openmv/README.md`により詳しい説明があります。
 
 ## Raspberry Pi
 
@@ -132,7 +134,7 @@ TODO: openmv/READMEに詳しく書く
 
 - VS Codeの入れ方<br>https://qiita.com/optimisuke/items/1cd7440442f7420e6b99
 - Arduinoの入れ方<br>https://make.kosakalab.com/make/electronic-work/inst_arduino-ide_raspi/
-- OpenMVの入れ方<br>https://docs.openmv.io/openmvcam/tutorial/software_setup.html#linux-raspberrypi
+- OpenMVの入れ方(入れられるって後で知りました)<br>https://docs.openmv.io/openmvcam/tutorial/software_setup.html#linux-raspberrypi
 
 ## さいごに
 
