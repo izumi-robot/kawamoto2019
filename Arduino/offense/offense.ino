@@ -59,6 +59,41 @@ namespace info {
 // robo::openmvのエイリアス
 namespace omv {
     using namespace robo::openmv;
+
+    class DReader : public Reader {
+    private:
+        Frame * _frame = NULL;
+    public:
+        using Reader::Reader;
+
+        void del() {
+            if (_frame != NULL) delete _frame;
+            _frame = NULL;
+        }
+
+        ~DReader() {
+            del();
+        }
+
+        void update() {
+            static uint8_t null_count;
+            Frame * nframe = read_frame();
+            if (nframe == NULL) {
+                null_count++;
+            } else {
+                null_count = 0;
+            }
+            if (null_count <= 0 || null_count > 5) {
+                del();
+                _frame = nframe;
+                null_count = 0;
+            }
+        }
+
+        Frame * get_frame() {
+            return _frame;
+        }
+    };
 }
 
 // half-pi
@@ -95,9 +130,7 @@ namespace uss {
     robo::USSensor left(1, 2), right(3, 4), back(5, 6);
 }
 
-omv::Reader mv_reader(0x12);
-using FramePtr = auto_ptr<omv::Frame>;
-FramePtr frame;
+omv::DReader mv_reader(0x12);
 robo::BNO055 bno055(0, 0x28);
 robo::LCD lcd(0x27, 16, 2);
 
@@ -132,8 +165,8 @@ void loop() {
     const bool on_line = w_left || w_right || w_back;
 
     // OpenMV
-    FramePtr nframe(mv_reader.read_frame());
-    if (nframe) frame.reset(nframe.release());
+    mv_reader.update();
+    omv::Frame * frame = mv_reader.get_frame();
     // エイリアス
     using PosPtr = omv::Position *;
     // ボールの座標(OpenMVが見つけていなかったらNULL)
@@ -192,7 +225,7 @@ void loop() {
         float ball_dir = omv::pos2dir(*ball_pos);
         m_info.reset(new info::Translate(
             // ボールの角度から3/2倍した方向に動いて回り込みを実現
-            robo::V2_float::from_polar_coord(ball_dir * 3 /2 , max_speed)
+            robo::V2_float::from_polar_coord(ball_dir * 1.5 , max_speed)
         ));
         goto MOTOR;
     }
