@@ -8,21 +8,30 @@
 * https://qiita.com/mmt/items/7dd1a2f312334a6cd600
 * https://qiita.com/nori-dev-akg/items/e0811eb26274910cdd0e
 * https://another.maple4ever.net/archives/2328/
-
+* https://garretlab.web.fc2.com/arduino/introduction/vscode/
 * https://marketplace.visualstudio.com/items?itemName=vsciot-vscode.vscode-arduino
 * https://github.com/bfxdev/Arduino/blob/master/VSCode/README.md
+* https://github.com/microsoft/vscode-arduino
 
 詳しいことはこちらを見てください。下の2つは公式によるドキュメントです。英語なのでオススメはしません。
 
 前提として、ArduinoIDEとVS Codeが入っている必要があります。パス名やキーボードショートカットなど、OSによって異なる部分はWindowsのものを記述します。他のOSの方は適宜読み替えるか、調べるかしてください。VS Codeの操作で分からないことは`~\kawamoto\README.md`を見てください。
 
-## 目次
+## 目次 {ignore=true}
 
-* 拡張機能のインストール
-* VS Codeの設定変更
-* プロジェクトの準備
-* 基本的な使い方
-* 終わりに
+<!-- @import "[TOC]" {cmd="toc" depthFrom=2 depthTo=6 orderedList=false} -->
+
+<!-- code_chunk_output -->
+
+- [拡張機能のインストール](#拡張機能のインストール)
+- [VS Codeの設定変更](#vs-codeの設定変更)
+- [スケッチの準備](#スケッチの準備)
+- [基本的な使い方](#基本的な使い方)
+- [終わりに](#終わりに)
+- [追記](#追記)
+
+<!-- /code_chunk_output -->
+
 
 最初の2つは初期設定についてです。自分のパソコンに入れるのでなければ読み飛ばしてください。
 
@@ -35,7 +44,7 @@ Arduinoという名前の拡張機能です。アイコンにもArduinoとあり
 まずはVS CodeにArduinoのパスを通します。VS Codeの設定にある、「Arduino: Path」を編集します。
 ArduinoIDEのプログラムがあるフォルダーのパスを設定します。Windowsだと(多分)`C:\Program Files (x86)\Arduino`です。
 
-次に、文字化けを予防します。この内容は、Windowsを使っている方のみになります。`C:\Users\<username>\.vscode\extensions\vsciot-vscode.vscode-arduino-<version>\out\src\common\util.js`(`<>`で囲まれた部分は自身の環境に合わせて読み替えてください)を編集します。慣れるためにも、VS Codeで開いて編集することをオススメします。
+次に、文字化けを予防します。この内容は、Windowsを使っている方のみになります。`C:\Users\<username>\.vscode\extensions\vsciot-vscode.vscode-arduino-<version>\out\src\common\util.js`(`<>`内の部分は自身の環境に合わせて読み替えてください)を編集します。
 
 215行目あたりにある次の部分をコメントアウトします:
 
@@ -71,89 +80,79 @@ ArduinoIDEのプログラムがあるフォルダーのパスを設定します�
 */
 ```
 
-コメントアウトができたら保存して、VS Codeを再起動してください。
+コメントアウトができたらCtrl + Sで保存して、VS Codeを再起動してください。
 
-## プロジェクトの準備
+## スケッチの準備
 
-それでは、実際のプロジェクトを開いて設定します。以降はVS Codeでプロジェクトのフォルダー(以降はメインフォルダーと呼びます)を開いて作業します。
+それでは、実際のスケッチを開いて設定します。以降はVS Codeでスケッチのフォルダーを開いて作業します。このフォルダーをメインフォルダーと呼ぶことにします。
 
-まずはVS Codeの設定にある「C_Cpp: Intelli Sense Engine」を編集します。
-※「C_Cpp: Intelli Sense Engine Fallback」ではないです。
-**ワークスペースの設定を**「Default」から「Tag Parser」に変換します。ユーザーの設定を変更すると、**ほかのプログラムに影響が出る**からです。「Default」だと本来は存在しないエラーが出ます。「Tag Parser」にすることでそれを回避しています。
+Ctrl + Shift + Pでコマンドパレットを開き、`Arduino: Initialize`を選択します。`.ino`のプログラムがメインフォルダー内にない場合、新しく`.ino`ファイルを作成します。ファイル名が聞かれるので、好きな名前に変更します。ArduinoIDEに合わせるために、フォルダー名と同じ名前にしておくことをオススメします。また、使用する`.ino`ファイルの候補がいくつかあった場合、どれを使用するか聞かるので、適するものを選んでください。その次に、ボードタイプ(Arduino Uno, Arduino Megaなど)を聞かれます。使うものを選んでください。
 
-次に機体のボードタイプを選択します。コマンドパレットでArduinoと検索し、結果の中から「Arduino: Board Config」を選択し、ボードタイプを選択します。
+ここまででメインフォルダー内は以下のようになっているはずです。
 
-ここまでの作業でメインフォルダー内に`.vscode`というフォルダーが追加され、その中に`settings.json`、`arduino.json`、`c_cpp_properties.json`の3つのJSONファイル(JSONについては`kawamoto\README.md`を読んでください)が追加されたと思います。各ファイルの役割は、次のようになっています。
+```
+main-folder
+ |- .vscode
+ |   |- arduino.json
+ |   |- c_cpp_properties.json
+ |- main.ino
+```
 
-* `settings.json` - そのフォルダー内限定の設定情報
-* `arduino.json` - Arduinoの設定情報
-* `c_cpp_properties.json` - C/C++パーサーの設定情報
+次に、コンパイルを高速化するためにアウトプット用のパスを設定します。`.vscode/arduino.json`を開き、末尾に`"output": "./build"`、その1行前の最後に`,`を追加します。例えば、ボードタイプにArduino Megaを選択した場合、このようになります。
 
-となっています。Arduinoの`#include`関係のパスを通すために、`c_cpp_properties.json`を次のように変更します:
-
-```JSON
+```diff
 {
-    "env": {
-        "PACKAGES_PATH": "C:\\Program Files (x86)\\Arduino",
-        "USER_PATH": "C:\\Users\\robo\\Documents\\Arduino"
-    },
-    "configurations": [
-        {
-            "name": "Win32",
-            "includePath": [
-                "${workspaceFolder}",
-                "${env:PACKAGES_PATH}\\hardware\\tools\\avr\\avr\\include",
-                "${env:PACKAGES_PATH}\\hardware\\arduino\\avr",
-                "${env:PACKAGES_PATH}\\tools"
-            ],
-            "browse": {
-                "path": [
-                    "${workspaceFolder}",
-                    "${env:PACKAGES_PATH}\\tools",
-                    "${env:PACKAGES_PATH}\\hardware",
-                    "${env:PACKAGES_PATH}\\libraries",
-                    "${env:USER_PATH}\\libraries"
-                ]
-            },
-            "forcedInclude": [
-                "${env:PACKAGES_PATH}\\hardware\\arduino\\avr\\cores\\arduino\\Arduino.h"
-            ],
-            "intelliSenseMode": "msvc-x64",
-            "cStandard": "c11",
-            "cppStandard": "c++17"
-        }
-    ],
-    "version": 4
+    "sketch": "main.ino",
+    "configuration": "cpu=atmega2560",
+-    "board": "arduino:avr:mega"
++    "board": "arduino:avr:mega",
++    "output": "./build"
 }
 ```
 
+編集したらCtrl+Sで保存してください。
+
+次に、IntelliSenseを少し改造します。`.vscode/c_cpp_properties.json`を開いてください。次のように編集します。
+
+* 5行目にある`"name": "Arduino"`の部分を`"name": "Arduino Specified"`に変更
+* 29行目にある`"defines"`のリストの先頭に`"USBCON",`を追加<br>※ `,`で区切ることを忘れないこと
+
+これで準備完了です。VS Codeでバリバリ開発しちゃってください。
+
 ## 基本的な使い方
 
-コマンドパレットというVS Codeの機能を使って何らかのアクションを行う方法を紹介します。
+コマンドパレットからアクションを行う方法を紹介します。(基本的には https://github.com/microsoft/vscode-arduino の和訳です)
 
-* `Arduino: Board Manager` - ボード用のパッケージを管理します。サードパーティ製のパッケージを追加できるらしいです。
-* `Arduino: Change Baud Rate` - シリアル通信速度を変更します。初期値は9600です。
-* `Arduino: Change Board Type` - ボードタイプ、プラットフォームを変更します。
-* `Arduino: Close Serial Monitor` - シリアルモニターを閉じます。
-* `Arduino: Examples` - スケッチの例を表示します。
-* `Arduino: Initialize` - スケッチの雛形を作ります。
-* `Arduino: Library Manager` - ライブラリを探索、管理します。
-* `Arduino: Open Serial Monitor` - シリアルモニターを開きます。
-* `Arduino: Select Serial Port` - シリアルポートを変更します。
-* `Arduino: Send Text to Serial Port` - 現在のシリアルポートを介して1行のテキストを送信します。
-* `Arduino: Upload` - スケッチをコンパイルおよびアップロードします。
-* `Arduino: Upload Using Programmer` - 外部プログラマを使用してアップロードします。
-* `Arduino: Verify` - スケッチをコンパイルします。文法エラーなどがないか確認できます。
+* `Arduino: Board Manager`<br>ボード用のパッケージを管理します。サードパーティ製のパッケージを追加できるらしいです。
+* `Arduino: Change Baud Rate`<br>シリアル通信の速度を変更します。初期値は9600です。
+* `Arduino: Change Board Type`<br>ボードタイプ、プラットフォームを変更します。
+* `Arduino: Close Serial Monitor`<br>シリアルモニターを閉じます。
+* `Arduino: Examples`<br>スケッチの例を表示します。
+* `Arduino: Initialize`<br>スケッチの雛形を作ります。
+* `Arduino: Library Manager`<br>ライブラリを探索、管理します。
+* `Arduino: Open Serial Monitor`<br>シリアルモニターを開きます。
+* `Arduino: Select Serial Port`<br>接続するシリアルポートを変更します。
+* `Arduino: Send Text to Serial Port`<br>現在のシリアルポートから1行のテキストを送信します。
+* `Arduino: Upload`<br>スケッチをコンパイルし、Arduinoにアップロードします。
+* `Arduino: Upload Using Programmer`<br>外部のプログラマを使用してアップロードします。
+* `Arduino: Verify`<br>スケッチをコンパイルします。文法エラーなどがないか確認できます。
+* `Arduino: Rebuild IntelliSense Configuration`<br>強制的/定型的にIntelliSenseを再設定します。Arduinoのビルドアウトプットを見て、それに従ってIntelliSenseの`#include`パス、`#define`、コンパイラの引数を設定します。
+* `Arduino: CLI Upload`<br>Arduino-CLI限定です。現在のスケッチをコンパイルせずに、コンパイル済みのコードをアップロードします。
+* `Arduino: CLI Upload Using Programmer`<br>Arduino-CLI限定です。現在のスケッチをコンパイルせずに、コンパイル済みのコードを外部プログラマを使用してアップロードします。
 
 よく使うものは`Arduino: Board Config`、`Arduino: Select Serial Port`、`Arduino: Upload`です。
-`Arduino: Upload`にはAlt+Ctrl+U、`Arduino: Verify`にはAlt+Ctrl+Rのキーボードショートカットが割り当てられています。
+キーボードショートカットは次のものがあります。
 
-紹介しといてなんですが、わざわざコマンドパレットを開くことなく上述のアクションを行うことができます。
-画面下部の青いバーには次のショートカットが割り当てられています。
+* `Arduino: Upload` - Ctrl + Alt + U
+* `Arduino: Verify` - Ctrl + Alt + R
+* `Arduino: Rebuild IntelliSense Configuration` - Ctrl + Alt + I
 
-* `<Select Board Type>`、またはArduinoのボード名が書いてあるボタンでArduino: Board Configを実行できます。
-* `<Select Serial Port>`というボタンでArduino: Select Serial Portが実行できます。
-* これら2つのボタンの間にある電源プラグのボタンを押すとシリアルモニターが開きます。シリアル通信でのログが出力されます。
+画面下部のステータスバーには次のショートカットが割り当てられています。
+
+* `Arduino: Board Config`<br>Arduinoのボード名が書いてあるボタン(ボードタイプが選択されていない場合は`<Select Board Type>`)
+* `Arduino: Select Serial Port`<br>シリアルポートの名前が書いてあるボタン(シリアルポートが選択されていない場合は`<Select Serial Port>`)
+* `Arduino: Open Serial Monitor`<br>電源プラグのボタン(シリアルポートが閉じている場合のみ)
+* `Arduino: Close Serial Monitor`<br>×印のボタン(シリアルポートが開いている場合のみ)
 
 `.ino`ファイルを編集中、`Arduino: Verify`と`Arduino: Upload`のボタンが画面右上に表示されます。
 
@@ -165,14 +164,6 @@ Arduinoの入門で参考になったサイトのリンクを載せておきま�
 https://deviceplus.jp/hobby/arduino-listicle-01/
 
 ## 追記
-
-**VS Codeで編集、ArduinoIDEで実行** (2020/11/12追記)
-
-ここまで長々と書きましたが、正直こっちの方法のほうが簡単です。
-
-まずはArduinoIDEの設定を編集します。Arduinoを開き、ファイル > 環境設定と進みます。「外部エディターを使用する」にチェックを入れます。設定ウィンドウ右下のOKボタンを押すと、コード編集画面が暗くなって編集ができなくなります。
-
-次に、メインフォルダー(プロジェクトのフォルダー)をVS Codeで開きます。ArduinoIDEは閉じないでください。「プロジェクトの準備」節と同様の操作を行います。プログラムを編集し、上書き保存(Ctrl+S)するとプログラムの変更がArduinoIDEにも反映されます。タイトルにもつけましたが、VS Codeでプログラムを編集し、ArduinoIDEを開いて実行という方法が取れます。
 
 **ArduinoIDEの設定をいい感じにする** (2020/11/12追記)
 
@@ -186,8 +177,7 @@ IDEの「環境設定」でもある程度はいじれるのですが、もっ�
 このファイルは壊すとArduinoIDEが動かなくなるので、コピーを作り、原本を編集してIDEが動かなくなったら元に戻すという形を取りましょう。
 このファイルの記述形式は`<key>=<value>`です。例として、`editor.advanced`を`true`に設定してください(すでに設定されている項目がないか探して、なければ適当な所に新しい行を追加して書いてください)。IDEのエディターが少し便利になります。他にも便利な設定がいくつかあります。気になったら下のリンクを参考にしてください。
 
-参考:
-https://jumbleat.comk/2018/08/25/customize_ide_preferences_file/
-https://garretlab.web.fc2.com/arduino/introduction/preferences/index.html
-https://www.arduino.cc/en/hacking/preferences
-https://github.com/arduino/Arduino/blob/master/build/shared/lib/preferences.txt
+* https://jumbleat.comk/2018/08/25/customize_ide_preferences_file/
+* https://garretlab.web.fc2.com/arduino/introduction/preferences/index.html
+* https://www.arduino.cc/en/hacking/preferences
+* https://github.com/arduino/Arduino/blob/master/build/shared/lib/preferences.txt
