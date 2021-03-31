@@ -1,6 +1,6 @@
 # Raspbian Usage
 
-ユーザー名は「pi」、パスワードは「izumissh」。
+ユーザー名は「pi」、パスワードは「raspberry」。
 
 ## 左上のメニュー
 

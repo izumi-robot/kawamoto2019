@@ -76,8 +76,12 @@ anacondaも入っているらしいですが、そこの使い方は入れた人
 - 公式サイト<br>http://mingw-w64.org/doku.php
 - ドキュメント<br>https://ja.cppreference.com/w/%E3%83%A1%E3%82%A4%E3%83%B3%E3%83%9A%E3%83%BC%E3%82%B8<br>https://cpprefjp.github.io/
 - インストールからVS Codeで使えるようにするまで<br>https://qiita.com/N_Matsukiyo/items/464594d1fd3e6ef576a4
+- 入門サイト
+    - 江添亮のC++入門<br>https://ezoeryou.github.io/cpp-intro/
+    - 苦しんで覚えるC言語<br>https://9cguide.appspot.com/
+    - AtCoder Programming Guide<br>https://atcoder.jp/contests/APG4b
 
-MinGWが提供しているコンパイラを入れました。コマンドは`gcc`、`g++`です。
+ロボット部のSurfaceにはMinGWが提供しているコンパイラを入れました。コマンドは`gcc`、`g++`です。あと、江添亮のC++入門は聖書です。
 
 ## Java
 
@@ -91,7 +95,9 @@ Javaは権利関係が複雑なので、正直オススメできないです。
 
 - 公式サイト<br>https://nodejs.org/ja/
 - ドキュメント<br>https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference<br>https://nodejs.org/ja/docs/
-- インストールからVS Codeで使えるようにするまで<br>https://qiita.com/GRGSIBERIA/items/b8cd4a2b3635d1bb0391 (途中にgitの紹介がありますが飛ばしてください。)
+- インストールからVS Codeで使えるようにするまで<br>https://qiita.com/GRGSIBERIA/items/b8cd4a2b3635d1bb0391<br>途中にgitの紹介がありますが飛ばしてください。
+
+JavaScriptを使えると給料が上がるらしいです。
 
 ## .NET
 
@@ -105,6 +111,8 @@ C#が有名ですが、興味があったらF#を触ってみてください。
 - 公式サイト<br>https://git-scm.com/
 - ドキュメント<br>https://git-scm.com/doc
 - インストールからVS Codeで使えるようにするまで<br>https://qiita.com/y-tsutsu/items/2ba96b16b220fb5913be
+
+Surfaceには`git`コマンドをいれてあります。モダンプログラマになるためには必須のツールです。
 
 ## Windows Subsystem for Linux
 
@@ -124,17 +132,18 @@ Windows Subsystem for Linux (WSL)はWindows内で動かせるLinuxです。
 - ドキュメント<br>https://docs.openmv.io/
 - 入門記事<br>https://qiita.com/qmore/items/60d2c776d4a00db5863c
 
-OpenMVは知名度が低すぎて日本語記事がほとんどありません。そのため、最初から公式のドキュメント(上記URL)で探した方が早いです。
-
-`openmv/README.md`により詳しい説明があります。
+OpenMVは知名度が低すぎて日本語記事がほとんどありません。そのため、最初から公式のドキュメント(上記URL)で探した方が早いです。`openmv/README.md`により詳しい説明があります。
 
 ## Raspberry Pi
 
 ラズパイにはC/C++(`gcc`, `g++`), Python3(`python3`, `python`), VS Code, arduinoを入れてあります。
 
+- 入門<br>https://deviceplus.jp/hobby/entry_001/
 - VS Codeの入れ方<br>https://qiita.com/optimisuke/items/1cd7440442f7420e6b99
 - Arduinoの入れ方<br>https://make.kosakalab.com/make/electronic-work/inst_arduino-ide_raspi/
 - OpenMVの入れ方(入れられるって後で知りました)<br>https://docs.openmv.io/openmvcam/tutorial/software_setup.html#linux-raspberrypi
+
+`rasp-readme.md`に色々とまとめました。
 
 ## さいごに
 
