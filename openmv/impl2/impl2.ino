@@ -83,6 +83,9 @@ class OpenMV {
 private:
     TwoWire &_wire;
 
+    void pass_data(uint8_t size) {
+        for (uint8_t i = 0; i < size; i++) { _wire.read(); }
+    }
     uint16_t read_2byte() { return _wire.read() | ((uint16_t)_wire.read() << 8); }
     CamPos* read_pos() {
         constexpr uint16_t default_value = 0xffff;
@@ -103,11 +106,19 @@ public:
     Frame* read_frame() {
         constexpr uint8_t req_size = 3 * 4;
         uint8_t res_size = _wire.requestFrom(address, req_size);
-        if (res_size != req_size) return NULL;
+        if (res_size != req_size) {
+            pass_data(res_size);
+            return NULL;
+        }
         CamPos *ball = read_pos();
         CamPos *yellow = read_pos();
         CamPos *blue = read_pos();
-        if (ball == NULL && yellow == NULL && blue == NULL) return NULL;
+        _wire.beginTransmission(0x12);
+        _wire.write(1);
+        _wire.endTransmission();
+        if (ball == NULL && yellow == NULL && blue == NULL) {
+            return NULL;
+        }
         return new Frame(ball, yellow, blue);
     }
 };

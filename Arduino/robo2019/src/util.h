@@ -66,13 +66,13 @@ public:
     static Derived& instance();
 };
 
-template<class Derived> Derived& SingletonBase<Derived>::instance()
+} // namespace robo
+
+template<typename Derived> Derived& robo::SingletonBase<Derived>::instance()
 {
     static Derived ins;
     return ins;
 }
-
-} // namespace robo
 
 #else /* ARDUINO */
 

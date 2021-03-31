@@ -43,24 +43,9 @@ void draw() {
     //     ang += 2 * PI;
     // }
     float ang = atan2(diff.x, diff.y);
-    if (-border2 < ang && ang < border1) {
-        dest.x = diff.x * 2;
-        dest.y = diff.y;
-    } else if (
-        (-PI + border2 < ang && ang <= -border1)
-        || (border1 <= ang && ang < PI - border2)
-    ) {
-        dest.x = diff.x;
-        dest.y = diff.y - (ball.rad() + 2 * machine.rad()) * ((abs(ang) - border1) / PI + 1);
-    } else if (-PI <= ang && ang <= -PI + border2) {
-        dest.x = diff.x + machine.rad();
-        dest.y = diff.y + (2 * ball.rad() + machine.rad());
-    } else { // PI - border2 <= ang && ang <= PI
-        dest.x = diff.x - machine.rad();
-        dest.y = diff.y + (2 * ball.rad() + machine.rad());
-    }
-
-    dest.mag(10);
+    float dir = ang * 3 / 2;
+    dest.x = 10 * cos(dir);
+    dest.y = 10 * sin(dir);
     machine.vel.set(dest);
     machine.pos.iadd(machine.vel);
 

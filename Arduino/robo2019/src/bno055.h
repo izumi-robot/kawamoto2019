@@ -26,7 +26,6 @@ namespace robo {
 /**
  * @class BNO055
  * @brief Adafruit_BNO055の子クラス
- * @note シングルトン
  */
 class BNO055 final : public virtual Adafruit_BNO055
 {
@@ -34,17 +33,16 @@ private:
     //! bnoを検知したかどうか
     bool _detected = false;
     //! 最新の、ジャイロセンサーで算出した方向
-    double _last_gyro_dir = 0;
+    float _last_gyro_dir = 0;
     /**
      * @brief 地磁気のズレ
      * @details `0`が指す向きの、最初の向きとのズレ
      */
-    double _geomag_diff = 0;
+    float _geomag_diff = 0;
 
 public:
     using Adafruit_BNO055::Adafruit_BNO055;
 
-public:
     /**
      * @brief bno055のセットアップを行う
      * @note 全体のsetup内で呼ばないと他の機能が使えない
@@ -55,59 +53,21 @@ public:
      * @return 現在向いている方向
      * @note ラジアンの値は、0を最初の向きとして、そこから正回転が反時計回り
      */
-    double get_geomag_direction();
+    float get_geomag_direction();
     /**
      * @brief 現在向いている方向をラジアンで取得
      * @param{out} dst 現在向いている方向
      * @note ラジアンの値は、0を最初の向きとして、そこから正回転が反時計回り
      */
-    void get_geomag_direction(double *dst);
+    void get_geomag_direction(float *dst);
 
     /**
      * @fn bool detected()
      * @brief bnoが検知されたかどうか
      * @return 検知されたらtrue
      */
-    inline bool detected();
+    bool detected();
 };
-
-void BNO055::setup()
-{
-    _detected = Adafruit_BNO055::begin();
-    Adafruit_BNO055::setExtCrystalUse(true);
-}
-
-double BNO055::get_geomag_direction()
-{
-    if (!_detected) { return 0.; }
-    double dir_degree = Adafruit_BNO055::getVector(Adafruit_BNO055::VECTOR_EULER).x();
-    double dir_radian = (
-        (0 <= dir_degree && dir_degree <= 180)
-        ? dir_degree
-        : dir_degree - 360
-    ) * -PI / 180;
-    return dir_radian;
-}
-void BNO055::get_geomag_direction(double *dst)
-{
-    if (dst == NULL) return;
-    double &res = *dst;
-    if (!_detected) {
-        res = 0.;
-        return;
-    }
-    double dir_degree = Adafruit_BNO055::getVector(Adafruit_BNO055::VECTOR_EULER).x();
-    res = (
-        (0 <= dir_degree && dir_degree <= 180)
-        ? dir_degree
-        : dir_degree - 360
-    ) * -PI / 180;
-}
-
-bool BNO055::detected()
-{
-    return _detected;
-}
 
 } // namespace robo
 

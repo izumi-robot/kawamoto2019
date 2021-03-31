@@ -9,14 +9,11 @@
 * https://marketplace.visualstudio.com/items?itemName=Tobiah.language-pde
 * https://github.com/TobiahZ/processing-vscode
 
-前提として、ProcessingのIDEとVS Codeが入っている必要があります。パス名やキーボードショートカットなど、OSによって異なる部分はWindowsのものを記述します。他のOSの方は適宜読み替えるか、調べるかしてください。VS Codeの操作で分からないことは`~\kawamoto\README.md`を見てください。下の2つのURLは公式のドキュメントです。英語なのでオススメはしません。
+前提として、ProcessingのIDEとVS Codeが入っている必要があります。パス名やキーボードショートカットなど、OSによって異なる部分はWindowsのものを記述します。書いてないことはググってください。
 
 ## 目次
 
-* 拡張機能のインストール
-* VS Codeの設定変更
-* プロジェクトの準備
-* 終わりに
+<!-- @import "[TOC]" {cmd="toc" depthFrom=1 depthTo=6 orderedList=false} -->
 
 最初の2つは初期設定についてです。自分のパソコンに入れるのでなければ読み飛ばしてください。
 
@@ -27,7 +24,7 @@ Processing Languageという名前の拡張機能です。これをインスト�
 ## VS Codeの設定変更
 
 VS Codeを開いて「Processing: Path」を編集します。
-Processingの実行プログラムのパスを設定します。筆者のパソコンでは`C:\Users\<username>\Documents\processing-3.5.4\processing-java`でした。ロボット部のSurfaceだと`C:\Users\robo\Desktop\processing-3.5.4\processing-java`です。`processing-<version>`という名前のフォルダーを探して、その中の`processing-java.exe`というファイルのパスを指定してください(拡張子はいらないです)。
+Processingの実行プログラムのパスを設定します。筆者のパソコンでは`C:\Users\<username>\Documents\processing-3.5.4\processing-java`でした。ロボット部のSurfaceだと`C:\Users\robo\Desktop\processing-3.5.4\processing-java`です。`processing-<version>`という名前のフォルダーを探して、その中の`processing-java.exe`というファイルのパスを指定してください(拡張子は不要)。
 
 ## プロジェクトの準備
 
@@ -141,8 +138,14 @@ C:\Users\robo\Desktop\2019\kawamoto\Processing
 
 これで設定は完了です。VS CodeでのProcessingを楽しんでください。
 
-## 終わりに
+## さいごに
 
-この記事ではVS CodeでProcessing使用する方法についてまとめました。このフォルダー内にある`sample`で始まる名前のプロジェクトには、筆者が1年下の後輩にProcessingを教える際に使ったサンプルコードがあります。各フォルダー内の`README.md`にコードの解説を書く予定です。よかったら活用してください。
+ここまで、VS CodeでProcessingを使用する方法についてまとめました。
 
 ちなみに、ファイル構造を表す書式は[こちら](https://qiita.com/paty-fakename/items/c82ed27b4070feeceff6)を参考にしました。
+
+あと、URLを色々と載せておきます。
+
+- 公式サイト<br>https://processing.org
+- リファレンス<br>https://processing.org/reference
+- Processing学習ノート(Processing入門で参考になったサイトです)<br>https://www.d-improvement.jp/learning/processing/

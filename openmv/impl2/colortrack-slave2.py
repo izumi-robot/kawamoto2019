@@ -4,9 +4,9 @@ import sensor, image, time
 # Color Tracking Thresholds
 #   (L Min, L Max, A Min, A Max, B Min, B Max)
 thresholds = [
-    (   40,    60,    40,    80,    30,    60), # orange ball
-    (   20,    75,     0,    30,    25,    50), # yellow goal
-    (   10,    25,   -15,    15,   -40,   -10)  # blue goal
+    (   30,    60,    40,    80,    40,    60), # orange ball
+    (   10,    60,     0,    30,    20,    50), # yellow goal
+    #(   10,    25,   -15,    15,   -40,   -10)  # blue goal
 ]
 
 # https://docs.openmv.io/library/omv.sensor.html
@@ -23,7 +23,12 @@ clock = time.clock()
 
 default_value = 0xffff
 
+# https://docs.openmv.io/library/pyb.I2C.html
 bus = pyb.I2C(2, mode=pyb.I2C.SLAVE, addr=0x12)
+
+
+def blob_code_filter(blobs, code):
+    return filter(lambda b: b.code() == code, blobs)
 
 
 def find_biggest_blob(blobs):
@@ -42,11 +47,11 @@ def get_blob_pos(blob):
     return (blob.cx(), blob.cy())
 
 
-def blob_code_filter(blobs, code):
-    return filter(lambda b: b.code() == code, blobs)
+def blob_of_code(blobs, code):
+    return get_blob_pos(find_biggest_blob(blob_code_filter(blobs, code)))
 
 
-def send_nums(nums, i2c_bus=bus):
+def send_nums(*nums, i2c_bus=bus):
     l = len(nums)
     # https://docs.python.org/ja/3/library/struct.html
     # https://docs.openmv.io/library/ustruct.html
@@ -65,23 +70,14 @@ while True:
     # https://docs.openmv.io/library/omv.image.html#class-image-image-object
     blobs = img.find_blobs(
         thresholds,
-        #x_stride=5,
-        #y_stride=5,
-        #pixels_threshold=10,
+        pixels_threshold=5,
+        #area_threshold=5,
     )
 
-    ball = find_biggest_blob(blob_code_filter(blobs, 1))
-    y_goal = find_biggest_blob(blob_code_filter(blobs, 2))
-    b_goal = find_biggest_blob(blob_code_filter(blobs, 4))
-
-    ba_x, ba_y = get_blob_pos(ball)
-    yg_x, yg_y = get_blob_pos(y_goal)
-    bg_x, bg_y = get_blob_pos(b_goal)
-
-    img.draw_cross(ba_x, ba_y)
-    img.draw_cross(yg_x, yg_y)
-    img.draw_cross(bg_x, bg_y)
-
-    send_nums((ba_x, ba_y, yg_x, yg_y, bg_x, bg_y))
-    print(clock.fps())
+    ba_x, ba_y = blob_of_code(blobs, 1)
+    yg_x, yg_y = blob_of_code(blobs, 2)
+    bg_x, bg_y = blob_of_code(blobs, 3)
+    send_nums(ba_x, ba_y, yg_x, yg_y, bg_x, bg_y)
+    #print(clock.fps())
+    bus.recv(1, timeout=10000)
 

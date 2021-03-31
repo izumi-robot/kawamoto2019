@@ -1,17 +1,15 @@
 #include <robo2019.h>
 
-using robo::motor;
 using robo::LineSensor;
-LineSensor left(1), right(3), back(5);
+LineSensor left(1), right(2), back(3);
 
-bool changed = false;
+void print_color(const uint16_t val) {
+    Serial.println(robo::LineSensor::iswhite(val) ? "white" : "black");
+}
 
 void setup()
 {
     Serial.begin(9600);
-
-    motor.setup();
-
     left.setup();
     right.setup();
     back.setup();
@@ -19,14 +17,11 @@ void setup()
 
 void loop()
 {
-    static double dir = PI / 2;
-    const bool
-        lw = LineSensor::iswhite(left.read()),
-        rw = LineSensor::iswhite(right.read()),
-        bw = LineSensor::iswhite(back.read());
-    if (rw && !changed) {
-        dir *= -1;
-        changed = true;
-    }
-    motor.set.direction_and_speed(dir, 100);
+    #define BIND(_name_) v_ ## _name_ = _name_.read()
+    const uint16_t BIND(left), BIND(right), BIND(back);
+    #undef BIND
+    char buff[64] = "";
+    sprintf_P(buff, PSTR("left: %u\nright: %u\nback: %u\n"), v_left, v_right, v_back);
+    Serial.print(buff);
+    delay(1000);
 }

@@ -1,39 +1,52 @@
-# Kawamoto(2019)
+# Kawamoto
 
-<!-- Ctrl+Shift+Vでプレビューを見ることができます。 -->
+2019年入学の川本博詔です。ロボ部のSurfaceに次のものを入れた人です。
 
-## 目次
+- Visual Studio Code
+- Python 3.8.5
+- C/C++(MinGW)
+- OpenJDK
+- Node.js
+- .NET
+- Git
+- Windows Subsystem for Linux
+- Windows Terminal
+- OpenMV
 
-* 自己紹介
-* 前置き
-* コマンドライン
-* VS Codeの使い方
-  * ファイル、フォルダーを開く
-  * 拡張機能
-  * コマンドパレット
-  * ターミナル
-* マークダウンとは
-  * 見出し
-  * 強調
-  * 箇条書き
-  * リンク
-  * インラインコード
-  * ブロックコード
-* JSONについて
-* 終わりに
+あと、Raspberry Piのデスクトップ化もやりました。
 
-## 自己紹介
+このREADMEには次のものをまとめておきます。
 
-2019年入学の川本博詔です。ロボ部のSurfaceに[VS Code](https://ja.wikipedia.org/wiki/Visual_Studio_Code)を入れた人です。
+- プログラミングをする上で避けれない前提知識の一部
+- 私が入れた各ツールの紹介(公式サイト、インストール時に参考になったサイト)
 
-## 前置き
+## Table of Contents {ignore=true}
 
-ここに書いたことは基本的にググった内容をまとめたものです。参考にしたサイトのリンクを所々に貼っておきます。ここに書いてないことはググれば多分出てきます。
-このREADMEではVS Codeを使ってプログラミングをしていく上で避けては通れないところを紹介します。是非参考にしてください。
+<!-- @import "[TOC]" {cmd="toc" depthFrom=2 depthTo=6 orderedList=false} -->
 
-## コマンドライン
+<!-- code_chunk_output -->
 
-コマンドラインはシェルとも呼ばれ、文字列を入力してコンピューターと対話(命令を与える)ができます。この対話方式はCUIと呼ばれています。
+- [ターミナル](#ターミナル)
+- [VS Code](#vs-code)
+- [Python](#python)
+- [C/C++](#cc)
+- [Java](#java)
+- [Node.js](#nodejs)
+- [.NET](#net)
+- [Git](#git)
+- [Windows Subsystem for Linux](#windows-subsystem-for-linux)
+- [Windows Terminal](#windows-terminal)
+- [OpenMV](#openmv)
+- [Raspberry Pi](#raspberry-pi)
+- [さいごに](#さいごに)
+
+<!-- /code_chunk_output -->
+
+## ターミナル
+
+PowerShellとは: https://www.dospara.co.jp/5info/cts_str_pcuse_powershell
+
+シェルとも呼ばれ、文字列を入力してコンピューターと対話(命令を与える)ができます。この対話方式はCUIと呼ばれています。
 
 Windowsでのシェルの開き方は、画面左下の検索ボックスで「pwsh」または「cmd」と入力、returnです。pwshと入力するとPowerShell、cmdと入力するとコマンドプロンプトが開きます。どちらもシェルの一種です。ときどき「管理者としてPowerShellを開く」という場面があるので、普段からPowerShellを使うことをオススメします。
 
@@ -41,179 +54,88 @@ Macでのシェルは「ターミナル」というアプリです。
 
 Linuxでは`>_`みたいなアイコンの「端末」というアプリケーションです。
 
-## VS Codeの使い方
+「コマンドを実行する」といった文脈があれば、ターミナルに指定された文字列を入力して実行することを意味します。
 
-参考:
-https://www.atmarkit.co.jp/ait/articles/1507/10/news028.html
+## VS Code
 
-今ロボ部で使っている機能だけを紹介します。
-VS Codeは無料で使えるコードエディターです。「拡張機能」というものを使ってさまざまな機能(シンタックスハイライト等)を追加できます。
+- 公式サイト<br>https://code.visualstudio.com/
+- VS Code入門で参考になったサイト<br>https://zenn.dev/karaage0703/books/80b6999d429abc8051bb
 
-### ファイル、フォルダーを開く
+Surfaceでは`code`コマンドが使えます。あと、エクスプローラー上で「Codeで開く」というオプションからファイル/フォルダーをVS Codeで開くことができます。
 
-VS Codeでプログラムを編集するには必ずファイルまたはフォルダーを開く必要があります。ここではその方法を紹介します。
+## Python
 
-* 「ファイル」アプリで編集したいファイルまたはフォルダーを右クリックし、「Codeで開く」というオプションを選択する
-* VS Codeを開く > 画面左上の「ファイル」メニュー >「ファイルを開く」または「フォルダーを開く」
-* キーボードショートカットも割り当てられています。「ファイルを開く」はCtrl+O、「フォルダーを開く」はCtrl+Kを押してからCtrl+Oです。
+- 公式サイト<br>https://www.python.org/
+- ドキュメント<br>https://docs.python.org/ja/3.8/
+- インストールからVS Codeで使えるようにするまで<br>https://qiita.com/ayuchiy/items/82d6d2dfcf1acc3bec00
 
-ちなみに、ファイルとはソースコードを記述するもの、フォルダーはファイルまたはフォルダーを集めたものです。
+anacondaも入っているらしいですが、そこの使い方は入れた人に投げます。
 
-### 設定を変更する
+## C/C++
 
-画面左下にある歯車マークのボタン > 設定
-Arduino、Processingどちらのセットアップを行う場合もVS Codeの設定をいじります。設定の変更方法は覚えておいてください。
+- 公式サイト<br>http://mingw-w64.org/doku.php
+- ドキュメント<br>https://ja.cppreference.com/w/%E3%83%A1%E3%82%A4%E3%83%B3%E3%83%9A%E3%83%BC%E3%82%B8<br>https://cpprefjp.github.io/
+- インストールからVS Codeで使えるようにするまで<br>https://qiita.com/N_Matsukiyo/items/464594d1fd3e6ef576a4
 
-### 検索、置換
+MinGWが提供しているコンパイラを入れました。コマンドは`gcc`、`g++`です。
 
-開いているファイルに対して検索、置換を行う場合、*画面上部の「編集メニュー」 > 検索/置換*と進むか、Ctrl+Fで検索、Ctrl+Hで置換ができます。
+## Java
 
-開いているフォルダーが含むファイルすべてに対して検索、置換を行う場合、*画面左側の検索マーク > 検索/置換*と進むか、Ctrl+Shift+Fで検索、Ctrl+Shift+Hで置換です。
+- 公式サイト<br>https://www.oracle.com/jp/java/
+- ドキュメント<br>https://docs.oracle.com/javase/jp/8/docs/api/overview-summary.html
+- インストールからVS Codeで使えるようにするまで<br>https://qiita.com/msakamoto_sf/items/d65947ddf509acbc98cb
 
-検索にはさまざまなオプションがあり、正規表現というものを使うことができます。興味があったら調べてみてください。
+Javaは権利関係が複雑なので、正直オススメできないです。
 
-### ターミナル
+## Node.js
 
-Ctrl+@ またはCtrl+Shift+@ でターミナル(シェル)が開きます。シェルを通して、CUIでさまざまな操作ができます。使う機能がProcessing、Arduinoのみであれば、ログの出力はここにされますが、何かを入力して操作を行うといったことは多分ないです。ここでは存在の紹介のみとします。
+- 公式サイト<br>https://nodejs.org/ja/
+- ドキュメント<br>https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference<br>https://nodejs.org/ja/docs/
+- インストールからVS Codeで使えるようにするまで<br>https://qiita.com/GRGSIBERIA/items/b8cd4a2b3635d1bb0391 (途中にgitの紹介がありますが飛ばしてください。)
 
-### 拡張機能
+## .NET
 
-VS Codeはインストールした初期段階ではさまざまなプログラミング言語(C言語、Python等)はサポートしていません。日本語もサポートされていません。それらのサポートを追加するのに使うのが拡張機能です。
+- 公式サイトとドキュメント<br>https://docs.microsoft.com/ja-jp/dotnet/
+- インストールからVS Codeで使えるようにするまで<br>https://qiita.com/ronkabu/items/e591214c1477a8d8f434
 
-例として日本語の拡張機能のインストール方法を紹介します。
-※ここではオンラインでのインストールのみ紹介します。オフラインでのインストール方法が知りたい方はググってください。
+C#が有名ですが、興味があったらF#を触ってみてください。
 
-画面左側にある「田」のようなボタンを押して、拡張機能の管理メニューを表示します。
-メニューの上にある検索バーで「japanese」と打ってください。検索にヒットした拡張機能のリストが表示されます。その中から「Japanese Language Pack for VS Code」という名前のものをクリックしてください。地球儀のマークのものが表示されたと思います。「インストール」とある緑のボタンを押してインストールします。インストールが終わると、右下に再起動を促すメッセージが表示されます。クリックして再起動します。再起動後、表示が日本語になっていれば成功です。
+## Git
 
-プログラミング言語を導入する場合は、VS Codeでの拡張機能のインストールに加えて、その言語専用のコンパイラ等を別にインストールする必要があります。言語ごとに別途ググってください。
+- 公式サイト<br>https://git-scm.com/
+- ドキュメント<br>https://git-scm.com/doc
+- インストールからVS Codeで使えるようにするまで<br>https://qiita.com/y-tsutsu/items/2ba96b16b220fb5913be
 
-現在Surface(2020/09/14)に入っている拡張機能のリストです。
+## Windows Subsystem for Linux
 
-* Arduino
-* C/C++
-* Debugger for Java
-* Japanese Language Pack for VS Code
-* Java Extension Pack
-* Java Test Runner
-* Language Support for Java
-* Maven for Java
-* Processing Language
-* Project Manager for Java
-* Python
-* Visual Studio IntelliCode
+Windows Subsystem for Linux (WSL)はWindows内で動かせるLinuxです。
 
-また、SurfaceにはJava(`java`コマンド)、C/C++(`gcc`/`g++`コマンド)のコンパイラがインストールされているため、これらの言語の開発も可能です。Pythonは少し事情が違いますが、実行プログラムはインストールされている(`python`コマンド等)ため、問題なく動かせます。
+- ドキュメント<br>https://docs.microsoft.com/ja-jp/windows/wsl/
+- インストール方法<br>https://docs.microsoft.com/ja-jp/windows/wsl/install-win10
 
-### コマンドパレット
+## Windows Terminal
 
-コマンドパレットとは、拡張機能が提供するアクションを使う方法です。Ctrl+Shift+P、または *画面上部の「表示」メニュー > 「コマンドパレット」* でコマンドパレットを開くことができます。Arduino, Processingどちらを使用する場合にも登場するので覚えておいてください。
+- 公式サイト<br>https://docs.microsoft.com/ja-jp/windows/terminal/
+- tips<br>https://qiita.com/whim0321/items/6a6b11dea54642bd6724
 
-## マークダウンとは
+## OpenMV
 
-参考:
-https://qiita.com/Qiita/items/c686397e4a0f4f11683d
+- 公式サイト<br>https://openmv.io/
+- ドキュメント<br>https://docs.openmv.io/
+- 入門記事<br>https://qiita.com/qmore/items/60d2c776d4a00db5863c
 
-この文書はマークダウンで書かれています。マークダウンとは、HTMLを簡易的に書く目的で作られた書式です。ファイル拡張子は`.md`です。プログラムの内容を説明する際などによく使われます。ここでは見出し、強調、箇条書き、リンク、インラインコード、ブロックコードの文法を紹介します。上のサイトを見た方が分かりやすいかもしれません。
+OpenMVは知名度が低すぎて日本語記事がほとんどありません。そのため、最初から公式のドキュメント(上記URL)で探した方が早いです。
 
-### 見出し
+`openmv/README.md`により詳しい説明があります。
 
-`#`はHTMLの`<h1>`タグ、`##`はHTMLの`<h2>`タグ、...といった対応関係があります。`<h6>`までです。
-ざっくり言うと、`#`はタイトル、`##`は見出し、`###`は小見出し、...といった感じです。
+## Raspberry Pi
 
-### 強調
+ラズパイにはC/C++(`gcc`, `g++`), Python3(`python3`, `python`), VS Code, arduinoを入れてあります。
 
-`*`または`_`で囲むと強調、斜体(イタリック)にできます。1つで囲むと *斜体* 、2つで囲むと **強調** 、3つで囲むと ***強調と斜体*** となります。
+- VS Codeの入れ方<br>https://qiita.com/optimisuke/items/1cd7440442f7420e6b99
+- Arduinoの入れ方<br>https://make.kosakalab.com/make/electronic-work/inst_arduino-ide_raspi/
+- OpenMVの入れ方(入れられるって後で知りました)<br>https://docs.openmv.io/openmvcam/tutorial/software_setup.html#linux-raspberrypi
 
-### 箇条書き
+## さいごに
 
-行頭に`*`、`-`、`+`のいずれかがある場合は箇条書きとなります。これらの記号の代わりに`数字.`を使うこともでき、その場合は1. 2. 3. ...といった番号が振られます。
-
-### リンク
-
-`[リンクテキスト](URL)`
-
-### インラインコード
-
-バッククオート(`` ` ``)1つで囲むとコードとなります。
-
-### ブロックコード
-
-バッククオート3つ(```` ``` ````)で囲むと複数行に渡ってコードを記述できます。
-
-### 引用
-
-文頭に`> `を置くことで引用になります。改行のたびにこの記号を置く必要があります。
-
-## JSONについて
-
-[wikipedia](https://ja.wikipedia.org/wiki/JavaScript_Object_Notation)より引用
-
->
-> JavaScript Object Notation（JSON、ジェイソン）はデータ記述言語の1つである。軽量なテキストベースのデータ交換用フォーマットでありプログラミング言語を問わず利用できる。名称と構文はJavaScriptにおけるオブジェクトの表記法に由来する。
->
-
-参考:
-https://www.json.org/json-ja.html
-
-VS Codeの各種設定はこのJSONというファイル形式に保存されます。ファイル拡張子は`.json`です。Processing, Arduinoの導入にはどちらもこのJSONをいじる必要があります。(具体的な導入方法は`~/kawamoto/Arduino/README.md`、`~/kawamoto/Processing/README.md`にまとめました。)
-何をどういじって導入するかはコピペでもできるようにしてあるはずですが、読めて損はないので書式をまとめておきます。
-
-JSONは1つのファイルに1つのオブジェクトとして表現されます。
-オブジェクト(連想配列、辞書)はキー(key)と値(value)のセットで表されます。このセットを`{波括弧}`で囲み、`,`で区切って表現します。
-リスト(配列)はvalueのリストで表されます。`[角括弧]`で囲み、`,`で区切って表現します。
-keyは`"文字列"`、valueは`"文字列"`、数値(`2, 3.14, -256`など)、真偽値(`true`、`false`)、値がないことを示す`null`、オブジェクト、リストのいずれかである必要があります。
-オブジェクトがリストを含み、そのリストの中にオブジェクトがあり、そのオブジェクトが... といったように、同じ構造の繰り返しで複雑なものを表現します。
-これはJSONの記述例です:
-
-```JSON
-{
-    "key1": "value1",
-    "key2": 256,
-    "key3": true,
-    "key4": null,
-    "root-folder": {
-        "name": "kawamoto",
-        "files": [
-            "README.md",
-            "README.pdf"
-        ],
-        "folders": [
-            {
-                "name": "Arduino",
-                "files": [
-                    "README.md"
-                ],
-                "folders": [
-                    ".vscode",
-                    "sketch"
-                ]
-            },
-            {
-                "name": "Processing",
-                "files": [
-                    "README.md"
-                ],
-                "folders": [
-                    "sample",
-                    "sample1",
-                    "sample2",
-                    "sample3",
-                    "sample4"
-                ]
-            }
-        ]
-    }
-}
-```
-
-例としてこのフォルダー以下の構造を(一部ですが)示しました。この程度が読めれば、VS Codeで作業する分には差し支えないと思います。
-
-## 終わりに
-
-VS Codeはとても便利なコードエディターです。世界標準と言っても過言ではない程度の人気があります。積極的に活用しましょう。
-
-何か分からないことがあったら、まずはググってください。プログラミング関連のことは意外と何でもネットにあります。
-VS CodeでArduino、Processing等を動かす方法については別のところに書きます。各言語名のフォルダーにある`README.md`をそれぞれ読んでください。
-
-この記事は自由に編集しても構いませんが、誰もが理解できるような内容を心掛けてください。
+Arduino、ProcessingとVS Codeの連携方法については`Arduino/README.md`, `Processing/README.md`を読んでください。
