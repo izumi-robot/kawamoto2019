@@ -17,12 +17,10 @@ void setup() {
 }
 
 void loop() {
-    noInterrupts();
     if (interrupt.changed()) {
         Serial.println("read");
         if (frame != NULL) delete frame;
         omv::frame = omv::reader.read_frame();
     }
-    interrupts();
     delay(100);
 }

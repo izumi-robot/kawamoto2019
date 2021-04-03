@@ -1,154 +1,92 @@
 #include <Wire.h>
 
-namespace robo
-{
-
-class I2CReader
-{
+struct CameraPos {
 public:
-    static void begin();
+    uint16_t x, y;
 
-    static uint16_t pass_data();
+    CameraPos() : x(0), y(0) {}
+    CameraPos(uint16_t x, uint16_t y) : x(x), y(y) {}
 
-    uint16_t read_data_size(uint8_t addr);
-
-    bool read_data(char * buff, uint8_t addr, uint16_t data_size);
-
-    bool read_data(uint8_t * buff, uint8_t addr, uint16_t data_size);
+    String to_string() {
+        char buff[16] = "";
+        sprintf(buff, "(%u, %u)", x, y);
+        return String(buff);
+    }
 };
 
-class I2CReaderWithAddr : public I2CReader
-{
+bool operator==(const CameraPos &lh, const CameraPos &rh) {
+    return lh.x == rh.x && lh.y == rh.y;
+}
+
+bool operator!=(const CameraPos &lh, const CameraPos &rh) {
+    return lh.x != rh.x || lh.y != rh.y;
+}
+
+#define IM4(_macro_) _macro_(+) _macro_(-) _macro_(*) _macro_(/)
+
+#define CMPOS_IOP(_operator_) CameraPos& operator _operator_ ## = (CameraPos &lh, const CameraPos &rh) {\
+    lh.x _operator_ ## = rh.x; lh.y _operator_ ## = rh.y; return lh; }
+
+IM4(CMPOS_IOP)
+
+#undef CMPOS_IOP
+
+#define CMPOS_OP(_operator_) CameraPos operator _operator_ (const CameraPos &lh, const CameraPos &rh) {\
+    CameraPos res = lh; res _operator_ ## = rh; return res; }
+
+IM4(CMPOS_OP)
+
+#undef CMPOS_OP
+
+#undef IM4
+
+class OpenMV {
+private:
+    TwoWire &_wire;
 public:
     const uint8_t address;
-    I2CReaderWithAddr(uint8_t addr) : I2CReader(), address(addr) {}
 
-    inline uint16_t read_data_size();
+    OpenMV() : _wire(Wire), address(0x12) {}
+    OpenMV(uint8_t addr) : _wire(Wire), address(addr) {}
+    OpenMV(TwoWire wire, uint8_t addr) : _wire(wire), address(adddr) {}
 
-    inline bool read_data(char *, uint16_t);
+    void begin() { _wire.begin(); }
 
-    inline bool read_data(uint8_t *, uint16_t);
+    uint16_t read_2byte() {
+        return _wire.read() | (uint16_t(_wire.read()) << 8);
+    }
+
+    uint16_t read_data_size() {
+        _wire.requestFrom(address, 2);
+        if (_wire.available() == 2) {
+            return read_2byte();
+        }
+        return 0;
+    }
+
+    CameraPos read_pos(
+        const CameraPos &pos_on_fail = CameraPos{0, 0},
+        uint16_t default_value = 0xffff
+    ) {
+        uint16_t data_size = read_data_size();
+        _wire.requestFrom(address, data_size);
+        if (_wire.available() != 4) return pos_on_fail;
+        uint16_t x = read_2byte();
+        uint16_t y = read_2byte();
+        return (
+            (x != default_value || y != default_value)
+            ? CameraPos{x, y}
+            : pos_on_fail
+        );
+    }
 };
 
-}
+OpenMV openmv_i2c(0x12);
+const CameraPos pos_on_fail{0, 0};
 
-void robo::I2CReader::begin() { Wire.begin(); }
-
-uint16_t robo::I2CReader::pass_data()
-{
-    uint16_t data_size = Wire.available();
-    for (int i = 0; i < data_size; ++i) {
-        Wire.read();
-    }
-    return data_size;
-}
-
-uint16_t robo::I2CReader::read_data_size(uint8_t addr)
-{
-    Wire.requestFrom(addr, (uint8_t)2);
-    if (Wire.available() == 2) {
-        return Wire.read() | (Wire.read() << 8);
-    }
-    return 0;
-}
-
-bool robo::I2CReader::read_data(char *buff, uint8_t addr, uint16_t data_size)
-{
-    if (buff == NULL) return false;
-
-    Wire.requestFrom(addr, data_size);
-    if (Wire.available() < data_size) return false;
-
-    for (uint16_t i = 0; i < data_size; ++i) {
-        buff[i] = Wire.read();
-    }
-    return true;
-}
-
-bool robo::I2CReader::read_data(uint8_t *buff, uint8_t addr, uint16_t data_size)
-{
-    if (buff == NULL) return false;
-
-    Wire.requestFrom(addr, data_size);
-    if (Wire.available() < data_size) return false;
-
-    for (uint16_t i = 0; i < data_size; ++i) {
-        buff[i] = Wire.read();
-    }
-    return true;
-}
-
-uint16_t robo::I2CReaderWithAddr::read_data_size()
-{
-    return I2CReader::read_data_size(address);
-}
-
-bool robo::I2CReaderWithAddr::read_data(char *buff, uint16_t data_size)
-{
-    return I2CReader::read_data(buff, address, data_size);
-}
-
-bool robo::I2CReaderWithAddr::read_data(uint8_t *buff, uint16_t data_size)
-{
-    return I2CReader::read_data(buff, address, data_size);
-}
-
-namespace robo
-{
-    struct CameraPos {
-    public:
-        uint16_t x, y;
-
-        String to_string() {
-            char buff[32] = "";
-            sprintf(buff, "(%u, %u)", x, y);
-            return String(buff);
-        }
-
-        bool operator != (const CameraPos &rh) {
-            return x != rh.x || y != rh.y;
-        }
-    };
-
-using robo::I2CReaderWithAddr;
-
-class OpenMVReader : public I2CReaderWithAddr
-{
-public:
-    using I2CReaderWithAddr::I2CReaderWithAddr;
-
-    CameraPos read_pos(const CameraPos & pos_on_fail);
-};
-
-CameraPos OpenMVReader::read_pos(const CameraPos &pos_on_fail = CameraPos{0, 0})
-{
-    static constexpr uint16_t default_value = 0xffff;
-    uint16_t data_size = I2CReaderWithAddr::read_data_size();
-    if (data_size < 4) { return pos_on_fail; }
-    delayMicroseconds(10);
-    uint8_t buff[data_size];
-    if (!I2CReaderWithAddr::read_data(buff, data_size)) {
-        pass_data();
-        return pos_on_fail;
-    }
-    uint16_t x = buff[0] | (buff[1] << 8);
-    uint16_t y = buff[2] | (buff[3] << 8);
-    return (
-        (x == default_value && y == default_value)
-        ? pos_on_fail
-        : CameraPos{x, y}
-    );
-}
-
-}
-
-robo::OpenMVReader openmv_i2c(0x12);
-const robo::CameraPos pos_on_fail{0, 0};
-
-void setup()
-{
-    robo::I2CReader::begin();
-    Serial.begin(19200);
+void setup() {
+    openmv_i2c.begin();
+    Serial.begin(9600);
 }
 
 void loop()
@@ -156,7 +94,7 @@ void loop()
     static uint8_t frame_count;
     static uint64_t last_time;
 
-    robo::CameraPos pos = openmv_i2c.read_pos(pos_on_fail);
+    CameraPos pos = openmv_i2c.read_pos(pos_on_fail);
     if (pos != pos_on_fail) {
         Serial.print("read\n");
         //Serial.println(pos.to_string());
