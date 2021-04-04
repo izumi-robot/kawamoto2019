@@ -93,3 +93,10 @@ robo::openmv::Frame * robo::openmv::Reader::read_frame()
     return frame;
 }
 
+float robo::openmv::pos2dir(const robo::openmv::Position & pos)
+{
+    return atan2(
+        -float(pos.x) + 90, // = -(pos.x - 90)
+        float(pos.y) - 70
+    );
+}

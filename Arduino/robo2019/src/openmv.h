@@ -142,13 +142,13 @@ namespace openmv {
         Frame* read_frame();
     };
 
-    constexpr float pos2dir(const Position & pos)
-    {
-        return atan2(
-            -float(pos.x) + 90, // = -(pos.x - 90)
-            float(pos.y) - 70
-        );
-    }
+    /**
+     * @brief カメラ上の座標からオブジェクトがある方向を取得する
+     * @param pos カメラ上の座標
+     * @return float 方向(ラジアン)
+     * @details 方向の定義はREADMEを参照
+     */
+    float pos2dir(const Position & pos);
 } // namespace openmv
 
 } // namespace robo
