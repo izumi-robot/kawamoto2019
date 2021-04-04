@@ -19,7 +19,7 @@ void setup() {
 void loop() {
     if (interrupt.changed()) {
         Serial.println("read");
-        if (frame != NULL) delete frame;
+        if (omv::frame != NULL) delete omv::frame;
         omv::frame = omv::reader.read_frame();
     }
     delay(100);
