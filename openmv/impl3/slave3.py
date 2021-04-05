@@ -1,5 +1,5 @@
 import pyb, ustruct
-import sensor, image, time
+import sensor, image, utime
 
 # Color Tracking Thresholds
 #   (L Min, L Max, A Min, A Max, B Min, B Max)
@@ -22,7 +22,7 @@ sensor.set_auto_whitebal(False)
 
 default_value = 0xffff
 
-clock = time.clock()
+clock = utime.clock()
 # https://docs.openmv.io/library/pyb.I2C.html
 bus = pyb.I2C(2, mode=pyb.I2C.SLAVE, addr=0x12)
 pin = pyb.Pin(pyb.Pin.board.P0, pyb.Pin.OUT_OD)
@@ -57,6 +57,9 @@ def send_nums(*nums, i2c_bus=bus):
     # https://docs.python.org/ja/3/library/struct.html
     # https://docs.openmv.io/library/ustruct.html
     data = ustruct.pack("<%dH" % l, *nums)
+    pin.value(True)
+    utime.sleep_ms(100)
+    pin.value(False)
     try:
         # https://docs.openmv.io/library/pyb.I2C.html
         i2c_bus.send(data, timeout=10000)
@@ -78,8 +81,5 @@ while True:
     ba_x, ba_y = blob_of_code(blobs, 1)
     yg_x, yg_y = blob_of_code(blobs, 2)
     bg_x, bg_y = blob_of_code(blobs, 3)
-    pin.value(True)
     print("send")
     send_nums(ba_x, ba_y, yg_x, yg_y, bg_x, bg_y)
-    pin.value(False)
-
