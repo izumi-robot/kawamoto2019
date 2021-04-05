@@ -50,7 +50,7 @@ PowerShellとは: https://www.dospara.co.jp/5info/cts_str_pcuse_powershell
 
 Windowsでのシェルの開き方は、画面左下の検索ボックスで「pwsh」または「cmd」と入力、returnです。pwshと入力するとPowerShell、cmdと入力するとコマンドプロンプトが開きます。どちらもシェルの一種です。ときどき「管理者としてPowerShellを開く」という場面があるので、普段からPowerShellを使うことをオススメします。
 
-Macでのシェルは「ターミナル」というアプリです。
+Macでのシェルは「ターミナル」というアプリケーションです。
 
 Linuxでは`>_`みたいなアイコンの「端末」というアプリケーションです。
 
@@ -138,10 +138,8 @@ OpenMVは知名度が低すぎて日本語記事がほとんどありません�
 
 ラズパイにはC/C++(`gcc`, `g++`), Python3(`python3`, `python`), VS Code, arduinoを入れてあります。
 
+- 公式サイト<br>https://www.raspberrypi.org/
 - 入門<br>https://deviceplus.jp/hobby/entry_001/
-- VS Codeの入れ方<br>https://qiita.com/optimisuke/items/1cd7440442f7420e6b99
-- Arduinoの入れ方<br>https://make.kosakalab.com/make/electronic-work/inst_arduino-ide_raspi/
-- OpenMVの入れ方(入れられるって後で知りました)<br>https://docs.openmv.io/openmvcam/tutorial/software_setup.html#linux-raspberrypi
 
 `rasp-readme.md`に色々とまとめました。
 

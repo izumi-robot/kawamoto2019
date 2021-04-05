@@ -1,52 +1,17 @@
 # Raspbian Usage
 
-ユーザー名は「pi」、パスワードは「raspberry」。
-
-## 左上のメニュー
-
-左端から順に紹介。
-
-1. ユーティリティ。Windowsで「Win」キーを押すと出るメニューのような感じ。
-2. Chrome
-3. ファイルマネージャ
-4. ターミナル
-
-## 右上のメニュー
-
-左端から順に紹介。
-
-1. 現在の入力モード。
-    - 「JA」または「A」: 半角英語
-    - 「_A」: おそらく半角英語だが、Enterキーで確定しなければならない。
-    - 「あ」: 日本語。
-2. Bluetoothの管理。
-3. Wi-Fiの管理。
-4. 音の大きさの管理。
-5. 時刻。クリックするとカレンダーが表示される。
+ユーザー名は「pi」、パスワードは「izumissh1」。
 
 ## 日本語入力のやり方
 
-参考: https://www.ratocsystems.com/products/triple_r/blog/?x=entry:entry200521-092107
-
-1. 画面右上の「JA」ボタンを押す。
-2. 「日本語 - Mozc」を押す。
-3. Caps Lockキーで切り替える。「JA」が「あ」に切り替わったら日本語入力可能。
-
-## 英語入力に戻す方法
-
-1. Caps Lockキーで入力モードを「_A」に切り替える。
-2. 半角/全角キーを押す。
+- https://www.ratocsystems.com/products/triple_r/blog/?x=entry:entry200521-092107
+- https://www.indoorcorgielec.com/resources/raspberry-pi/raspberry-pi-input-japanese/
 
 ## VSCode
 
-### 開き方
+- https://code.visualstudio.com/docs/setup/raspberry-pi
 
-1. ターミナルを開く。
-2. `code-oss`と入力。エイリアスを設定してあるので、`code`でも可。
-
-### インストール方法
-
-https://qiita.com/optimisuke/items/1cd7440442f7420e6b99
+インストール方法は`sudo apt install code`。`sudo apt upgrade code`で更新がないか確認。
 
 ## ログインできない
 
@@ -61,13 +26,25 @@ https://qiita.com/optimisuke/items/1cd7440442f7420e6b99
 
 ## Arduino
 
-### 開き方
+- https://make.kosakalab.com/make/electronic-work/inst_arduino-ide_raspi/
+- https://qiita.com/tamamori/items/7d40bfb73b3a5766ce29
 
-1. ターミナルを開く。
-2. `arduino`
+インストール方法は上記URL。`./install.sh`を`sudo ./install.sh`に変更するとエラーが出なくなる。`arduino`コマンドで開く。
 
-### IDEのインストール方法
+## OpenMV
 
-参考: https://make.kosakalab.com/make/electronic-work/inst_arduino-ide_raspi/
+https://docs.openmv.io/openmvcam/tutorial/software_setup.html#linux-raspberrypi
 
-基本的には上記URLに従う。`./install.sh`を`sudo ./install.sh`に変更するとエラーが出なくなる。
+## ピン接続
+
+- https://gpiozero.readthedocs.io/en/stable/
+
+接続方式|Pythonライブラリ
+:-|-:
+GPIO|gpiozero
+I2C|smbus
+UART(Serial)|PySerial
+
+## SSH接続
+
+https://qiita.com/NagaokaKenichi/items/edab135b4118a47c821c
