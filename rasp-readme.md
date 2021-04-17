@@ -1,6 +1,6 @@
 # Raspbian Usage
 
-ユーザー名は「pi」、パスワードは「izumissh1」。
+ユーザー名は「pi」、パスワードは「izumissh1」です。
 
 ## 日本語入力のやり方
 
@@ -11,15 +11,15 @@
 
 - https://code.visualstudio.com/docs/setup/raspberry-pi
 
-インストール方法は`sudo apt install code`。`sudo apt upgrade code`で更新がないか確認。
+インストール方法は`sudo apt install code`です。`sudo apt upgrade code`で更新がないか確認してください。
 
 ## ログインできない
 
-電源を入れた時にパスワードを求められるが、正しいものを入力してもログインできないときの対処法。
+電源を入れた時にパスワードを求められるが、正しいものを入力してもログインできないときに見てください。
 
 参考: https://www.raspberrypi.org/forums/viewtopic.php?t=180859
 
-1. 「Ctrl + Alt + F1」で仮想ターミナルを開く。以下、書かれているコマンドを入力していく。
+1. 「Ctrl + Alt + F1」で仮想ターミナルを開き、以下のコマンドを入力していきます。
 2. `sudo chown pi.pi ~pi/.Xauthority`
 3. `sudo dpkg-configure lightdm`
 4. `reboot`
@@ -29,7 +29,9 @@
 - https://make.kosakalab.com/make/electronic-work/inst_arduino-ide_raspi/
 - https://qiita.com/tamamori/items/7d40bfb73b3a5766ce29
 
-インストール方法は上記URL。`./install.sh`を`sudo ./install.sh`に変更するとエラーが出なくなる。`arduino`コマンドで開く。
+インストール方法は上記URLを見てください。`./install.sh`を`sudo ./install.sh`に変更するとエラーが出なくなります。
+
+開き方は`arduino`コマンドです。
 
 ## OpenMV
 
