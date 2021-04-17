@@ -1,3 +1,4 @@
+<!-- omit in toc -->
 # Kawamoto
 
 2019年入学の川本博詔です。ロボ部のSurfaceに次のものを入れた人です。
@@ -20,11 +21,8 @@
 - プログラミングをする上で避けれない前提知識の一部
 - 私が入れた各ツールの紹介(公式サイト、インストール時に参考になったサイト)
 
-## Table of Contents {ignore=true}
-
-<!-- @import "[TOC]" {cmd="toc" depthFrom=2 depthTo=6 orderedList=false} -->
-
-<!-- code_chunk_output -->
+<!-- omit in toc -->
+## Table of Contents
 
 - [ターミナル](#ターミナル)
 - [VS Code](#vs-code)
@@ -39,8 +37,6 @@
 - [OpenMV](#openmv)
 - [Raspberry Pi](#raspberry-pi)
 - [さいごに](#さいごに)
-
-<!-- /code_chunk_output -->
 
 ## ターミナル
 
@@ -109,7 +105,7 @@ C#が有名ですが、興味があったらF#を触ってみてください。
 ## Git
 
 - 公式サイト<br>https://git-scm.com/
-- ドキュメント<br>https://git-scm.com/doc
+- ドキュメント<br>https://git-scm.com/book/ja/v2
 - インストールからVS Codeで使えるようにするまで<br>https://qiita.com/y-tsutsu/items/2ba96b16b220fb5913be
 
 Surfaceには`git`コマンドをいれてあります。モダンプログラマになるためには必須のツールです。
