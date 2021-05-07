@@ -3,8 +3,6 @@
 
 <!-- Press Ctrl + K, V -->
 
-より詳しい情報は[Git Book](https://git-scm.com/book/ja/v2)を読んでください。[今さらだけどGitを基本から分かりやすくまとめてみた - Qiita](https://qiita.com/gold-kou/items/7f6a3b46e2781b0dd4a0)も分かりやすいです。
-
 <!-- omit in toc -->
 ## Table of Contents
 
@@ -20,7 +18,7 @@
   - [コミット](#コミット)
   - [プッシュ](#プッシュ)
   - [プル](#プル)
-- [Gitの基本概念](#gitの基本概念)
+- [終わりに](#終わりに)
 
 ## 最初にやること
 
@@ -220,26 +218,19 @@ Already up to date.
 
 ```
 $ git pull
+remote: Enumerating objects: 5, done.
+remote: Counting objects: 100% (5/5), done.
+remote: Compressing objects: 100% (1/1), done.
+remote: Total 3 (delta 2), reused 3 (delta 2), pack-reused 0
+Unpacking objects: 100% (3/3), 611 bytes | 50.00 KiB/s, done.
+From ssh://github.com/<ユーザーid>/sample
+   00a8813..4219b84  main       -> origin/main
+Updating 00a8813..4219b84
+Fast-forward
+ helloworld.py | 47 +++++++++++++++++++++++++++++++----------------
+ 1 file changed, 31 insertions(+), 16 deletions(-)
 ```
 
-## Gitの基本概念
+## 終わりに
 
-参考
-
-- https://git-scm.com/book/ja/v2/%E4%BD%BF%E3%81%84%E5%A7%8B%E3%82%81%E3%82%8B-Git%E3%81%AE%E5%9F%BA%E6%9C%AC
-
-Gitはプログラムなどのバージョンと変更点を管理、追跡するためのツールです。
-
-まずはGitの基本概念を説明するキーワードを紹介します。
-
-キーワード|意味
-:-|-:
-リポジトリ|Gitで管理するプロジェクト
-クローン|インターネット上にあるリポジトリをローカルにコピーすること
-ステージングエリア|リポジトリの変更点を一時的に記録する場所
-コミット|リポジトリの編集が一区切りついたところで新バージョンとして記録すること
-プッシュ|ローカルリポジトリのコミットをリモートリポジトリに反映させること
-
-リポジトリの大元はサーバー上に置き、そのプロジェクトに参加している人は誰でも参照できるようにします。作業を行う時はローカルのパソコンにリポジトリを「クローン」し、クローンしたものを編集します。ローカルでファイルを編集したらそれを「ステージングエリア」に上げていきます。これを積み重ね、ある程度の区切りがついたところで「コミット」を行い、新しいバージョンとして記録します。ローカルで行ったコミットをサーバー上のリポジトリに「プッシュ」して反映させます。ここまでがGitを用いたプロジェクトの管理形態です。
-
-GitHubはGitをサポートしたWebサービスです。上記の説明中ではリポジトリを置いておくサーバーに該当します。
+ここまで、gitの使い方を紹介しました。より詳しい情報は[Git Book](https://git-scm.com/book/ja/v2)を読んでください。[今さらだけどGitを基本から分かりやすくまとめてみた - Qiita](https://qiita.com/gold-kou/items/7f6a3b46e2781b0dd4a0)も分かりやすいです。
