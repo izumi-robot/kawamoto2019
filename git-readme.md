@@ -40,7 +40,7 @@ https://git-scm.com/book/ja/v2/%E4%BD%BF%E3%81%84%E5%A7%8B%E3%82%81%E3%82%8B-Git
 
 まずはユーザー名とメールアドレスです。以下のコマンドを実行します。行の最初にある`$`は入力プロンプトです。
 
-```bash
+```
 $ git config --global user.name <ユーザー名>
 $ git config --global user.email <メールアドレス>
 ```
@@ -49,14 +49,14 @@ $ git config --global user.email <メールアドレス>
 
 [ロボット部のアカウント](https://github.com/izumi-robot/)の場合はこのようになります。
 
-```bash
+```
 $ git config --global "izumi robot"
 $ git config --global izumi.robot@gmail.com
 ```
 
 次に、gitで使用するエディターを設定します。これはしなくても問題ありません。
 
-```bash
+```
 $ git config --global core.editor <エディター起動コマンド>
 ```
 
@@ -68,14 +68,14 @@ SSHとは、ざっくり言うとインターネット通信方式の一種で�
 
 まずはSSHを使うためのツールをインストールします。といっても、Windows、Macには標準でインストールされています。Linuxの場合は`sudo apt-get install ssh`です。`ssh -V`でバージョンが表示されたらインストールされていることになります。
 
-```bash
+```
 $ ssh -V
 OpenSSH_for_Windows_7.7p1, LibreSSL 2.6.5
 ```
 
 SSHで通信するのためには「鍵」が必要となります。`ssh-keygen -t rsa`を実行して鍵を作成します。以下、鍵の作成例です。
 
-```bash
+```
 $ ssh-keygen -t rsa
 Generating public/private rsa key pair.
 Enter file in which to save the key (C:\Users\your-username/.ssh/id_rsa):
@@ -101,7 +101,7 @@ The key's randomart image is:
 
 ファイル名とパスワードを求められますが、何も入力しなくても大丈夫です。鍵ができたか確認します。
 
-```bash
+```
 $ cat ~/.ssh/id_rsa.pub
 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCkuXDeUKiBdkhZENYEuZAxRfXQEWasZATPuybSSqjf5B1ZPTkZ/taddTqIRbUmXqSixqpiVpRxAo3ehJ9KwplVkndhgL3DoM0CpDVybSW5c+pm8kqMqWWXmICOGQGYtl9UonTBWi4rn9/1FOmbQLxxX84+M1QbrAoS385d9hTzyvYSSKkYAv0P46/LeeWfjbmC4SBbIO60057m214OeUM2zX4ImtF8b9xc+D+pn6BVoVkLm0hM27qiYlsx5/tqsgrUaaT3APyWL4ubFKf0RAFOTHrNY4SGn+z8/fhEZXWXcPQRDI6YXQM8cQNWUox8bbLeTiveQhQ50hlTJcpjNVQN your-username@pc-information
 ```
@@ -112,9 +112,9 @@ ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCkuXDeUKiBdkhZENYEuZAxRfXQEWasZATPuybSSqjf
 
 それでは、鍵が登録できたか確認してみましょう。`ssh -T git@github.com`を実行します。よく分からんwarningが出ますが気にしないでください。何かしらの許可を求められた場合は通してください。`Hi <ユーザー名>! ...`と出てきたら登録成功です。
 
-```bash
+```
 $ ssh -T git@github.com
-Hi izumi-robot! You've successfully authenticated, but GitHub does not provide shell access.
+Hi <ユーザー名>! You've successfully authenticated, but GitHub does not provide shell access.
 ```
 
 ## 初めてのリポジトリ
@@ -127,9 +127,9 @@ Hi izumi-robot! You've successfully authenticated, but GitHub does not provide s
 
 `cd`でリポジトリを置くフォルダーに移動してから`git clone ssh://git@github.com/<ユーザーid>/<リポジトリ名>.git`です。`<リポジトリ名>`のフォルダーが作られ、その中にクローンしたリポジトリの内容が格納されます。
 
-```bash
-$ git clone ssh://git@github.com/izumi-robot/rcj2021.git
-Cloning into 'rcj2021'...
+```
+$ git clone ssh://git@github.com/<ユーザーid>/<リポジトリ名>.git
+Cloning into '<リポジトリ名>'...
 remote: Enumerating objects: 125, done.
 remote: Counting objects: 100% (125/125), done.
 remote: Compressing objects: 100% (94/94), done.
@@ -144,7 +144,7 @@ Resolving deltas: 100% (39/39), done.
 
 編集前に、gitが正しく機能しているか確認します。リポジトリ内にターミナルで移動し、`git status`を実行します。次のようになれば正しく機能していることになります。
 
-```bash
+```
 $ git status
 On branch main
 Your branch is up to date with 'origin/main'.
@@ -161,7 +161,7 @@ print("Hello, world!")
 
 もう一度`git status`を実行すると、次のように表示されます。
 
-```bash
+```
 $ git status
 On branch main
 Your branch is up to date with 'origin/main'.
@@ -177,7 +177,7 @@ nothing added to commit but untracked files present (use "git add" to track)
 
 それでは、`helloworld.py`を変更として記録していきます。
 
-```bash
+```
 $ git add helloworld.py
 $ git commit -m "Add helloworld.py"
 [main 0af4b69] Add helloworld.py
@@ -191,7 +191,7 @@ $ git commit -m "Add helloworld.py"
 
 「プッシュ」とは、パソコン内にあるローカルリポジトリでの変更点をサーバー上にあるリモートリポジトリに反映させることです。サーバーには、今回の場合はGitHubが該当します。コマンドは`git push`です。
 
-```bash
+```
 $ git push
 Enumerating objects: 4, done.
 Counting objects: 100% (4/4), done.
@@ -199,13 +199,28 @@ Delta compression using up to 4 threads
 Compressing objects: 100% (2/2), done.
 Writing objects: 100% (3/3), 305 bytes | 152.00 KiB/s, done.
 Total 3 (delta 0), reused 0 (delta 0), pack-reused 0
-To ssh://github.com/username/sample.git
+To ssh://github.com/<ユーザーid>/sample.git
    6496bc0..0af4b69  main -> main
 ```
 
 これでローカルリポジトリをリモートリポジトリに反映させることができました。
 
 ### プル
+
+リモートリポジトリに他の人がプッシュした場合、ローカルリポジトリをリモートリポジトリと同期させる必要があります。この同期方法が「プル」です。コマンドは`git pull`です。
+
+リポジトリが最新の場合はこのようになります。
+
+```
+$ git pull
+Already up to date.
+```
+
+リポジトリが最新でない場合はこのようになります。
+
+```
+$ git pull
+```
 
 ## Gitの基本概念
 
