@@ -36,6 +36,7 @@
 - [Windows Terminal](#windows-terminal)
 - [OpenMV](#openmv)
 - [Raspberry Pi](#raspberry-pi)
+- [Raspberry Pi Pico](#raspberry-pi-pico)
 - [さいごに](#さいごに)
 
 ## ターミナル
@@ -137,7 +138,19 @@ OpenMVは知名度が低すぎて日本語記事がほとんどありません�
 - 公式サイト<br>https://www.raspberrypi.org/
 - 入門<br>https://deviceplus.jp/hobby/entry_001/
 
-`rasp-readme.md`に色々とまとめました。
+`raspberrypi/README.md`に色々とまとめました。
+
+## Raspberry Pi Pico
+
+Arduino Nanoの完全上位互換です。
+
+- 公式サイト<br>https://www.raspberrypi.org/documentation/rp2040/getting-started/
+- 環境構築
+  - C/C++<br>https://qiita.com/iwatake2222/items/33b4cd3a39da5a44dc02
+  - MicroPython<br>https://rikoubou.hatenablog.com/entry/2021/02/05/150631
+- ドキュメント(MicroPython)<br>http://docs.micropython.org/en/latest/
+
+詳しい情報は`rasp-pico`を参照してください。
 
 ## さいごに
 
