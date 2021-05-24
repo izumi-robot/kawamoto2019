@@ -1,8 +1,8 @@
 package expressions;
 
-import runner.Runer;
+import runner.Enviroment;
 
 public interface Expression {
     public String toString();
-    public void execute(Runner) throws Exception;
+    public void execute(Enviroment env) throws Exception;
 }

@@ -1,37 +1,46 @@
 package runner;
 
+import java.io.InputStream;
+import java.io.PrintStream;
 
-import java.io.Reader;
-import java.io.Writer;
-
-import expressions.Increment;
-import expressions.Decrement;
-import expressions.Forward;
-import expressions.Backward;
-import expressions.Input;
-import expressions.Output;
-import expressions.Loop;
 import expressions.Expression;
-
 import memory.Memory;
 import memory.MemoryIterator;
 
-public class Runner {
-    public Reader charReader;
-    public Writer charWriter;
+public class Runner implements Enviroment {
+    private InputStream input;
+    private PrintStream output;
     private Memory memory;
-    public MemoryIterator memoryIterator;
+    private MemoryIterator memIter;
 
-    public Runner(Reader reader, Writer writer) {
-        charReader = reader;
-        charWriter = writer;
+    public Runner(InputStream _input, PrintStream _output) {
+        input = _input;
+        output = _output;
         memory = new Memory();
-        memoryIterator = memory.memoryIterator();
+        memIter = memory.memoryIterator();
     }
 
-    public Runner() { this(System.in, System.out); }
+    public Runner() {
+        this(System.in, System.out);
+    }
 
-    void accept(Expression expr) {
+    @Override
+    public InputStream inputStream() {
+        return input;
+    }
+
+    @Override
+    public PrintStream printStream() {
+        return output;
+    }
+
+    @Override
+    public MemoryIterator memoryIterator() {
+        return memIter;
+    }
+
+    @Override
+    public void accept(Expression expr) throws Exception {
         expr.execute(this);
     }
 }

@@ -15,6 +15,10 @@ public abstract class PrimitiveExpression implements Expression {
         this(expr_str, 1);
     }
 
+    public String exprString() {
+        return expr_str;
+    }
+
     @Override
     public String toString() {
         String res = "";
@@ -24,13 +28,13 @@ public abstract class PrimitiveExpression implements Expression {
         return res;
     }
 
-    public boolean set_count(int count) {
+    public boolean setCount(int count) {
         if (count <= 0) { return false; }
         this.count = count;
         return true;
     }
 
-    public boolean change_count_by(int offset) {
-        return set_count(count + offset);
+    public boolean changeCountBy(int offset) {
+        return setCount(count + offset);
     }
 }

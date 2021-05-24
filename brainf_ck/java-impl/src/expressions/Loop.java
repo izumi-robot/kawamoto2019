@@ -1,43 +1,23 @@
 package expressions;
 
-import java.util.List;
-import java.util.ArrayList;
+import java.util.ListIterator;
 
-import runner.Runner;
+import runner.Enviroment;
 
-public class Loop implements Expression {
-    protected List<Expression> exprs;
-
-    public Loop(List<Expression> exprs) {
-        assert exprs != null;
-        this.exprs = exprs;
-    }
-
-    public Loop() {
-        this.exprs = new ArrayList<>();
-    }
-
-    public void addExpression(Expression expr) {
-        exprs.add(expr);
-    }
-
+public class Loop extends ExprSequence {
     @Override
     public String toString() {
-        String res = "[";
-        for (Expression expr : exprs) {
-            res += expr.toString();
-        }
-        return res + "]";
+        return "[" + super.toString() + "]";
     }
 
     @Override
-    public void execute(Runner runner) throws Exception {
-        while (runner.memoryIterator.getNext() != 0) {
-            ListIterator<Expression> expr_iter = exprs.listIterator();
+    public void execute(Enviroment env) throws Exception {
+        while (env.memoryIterator().getNext() != 0) {
+            ListIterator<Expression> expr_iter = sequence.listIterator();
             while (expr_iter.hasNext()) {
                 Expression expr = expr_iter.next();
                 try {
-                    expr.execute(runner);
+                    expr.execute(env);
                 }
                 catch (Exception e) {
                     throw e;

@@ -1,16 +1,15 @@
 package expressions;
 
-import memory.MemoryIterator;
-import runner.Runner;
+import runner.Enviroment;
 
 public class Forward extends PrimitiveExpression {
     public Forward(int count) { super(">", count); }
     public Forward() { super(">"); }
 
     @Override
-    public void execute(Runner runner) {
+    public void execute(Enviroment env) {
         for (int i = 0; i < count; i++) {
-            runner.memoryIterator.next();
+            env.memoryIterator().next();
         }
     }
 }

@@ -2,22 +2,17 @@ package expressions;
 
 import java.io.IOException;
 
-import runner.Runner;
+import runner.Enviroment;
 
 public class Output extends PrimitiveExpression {
     public Output(int count) { super(".", count); }
     public Output() { super("."); }
 
     @Override
-    public void execute(Runner runner) throws Exception {
-        int value = runner.memoryIterator.getNext();
+    public void execute(Enviroment env) throws IOException {
+        int value = env.memoryIterator().getNext();
         for (int i = 0; i < count; i++) {
-            try {
-                runner.charWriter.write(value);
-            }
-            catch (IOException e) {
-                throw e;
-            }
+            env.printStream().print((char)value);
         }
     }
 }

@@ -3,8 +3,6 @@ package memory;
 import java.util.ArrayList;
 import java.util.ListIterator;
 
-//import memory.MemoryIterator;
-
 public class Memory extends ArrayList<Integer> {
     private static final long serialVersionUID = 1L;
 

@@ -1,14 +1,14 @@
 package expressions;
 
-import runner.Runner;
+import runner.Enviroment;
 
 public class Decrement extends PrimitiveExpression {
     public Decrement(int count) { super("-", count); }
     public Decrement() { super("-"); }
 
     @Override
-    public void execute(Runner runner) {
-        int value = runner.memoryIterator.getNext();
-        runner.memoryIterator.set(value - count);
+    public void execute(Enviroment env) {
+        int value = env.memoryIterator().getNext();
+        env.memoryIterator().set(value - count);
     }
 }
