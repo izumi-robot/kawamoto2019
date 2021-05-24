@@ -70,7 +70,6 @@ anacondaも入っているらしいですが、そこの使い方は入れた人
 
 ## C/C++
 
-- 公式サイト<br>http://mingw-w64.org/doku.php
 - ドキュメント<br>https://ja.cppreference.com/w/%E3%83%A1%E3%82%A4%E3%83%B3%E3%83%9A%E3%83%BC%E3%82%B8<br>https://cpprefjp.github.io/
 - インストールからVS Codeで使えるようにするまで<br>https://qiita.com/N_Matsukiyo/items/464594d1fd3e6ef576a4
 - 入門サイト
@@ -78,7 +77,7 @@ anacondaも入っているらしいですが、そこの使い方は入れた人
     - 苦しんで覚えるC言語<br>https://9cguide.appspot.com/
     - AtCoder Programming Guide<br>https://atcoder.jp/contests/APG4b
 
-ロボット部のSurfaceにはMinGWが提供しているコンパイラを入れました。コマンドは`gcc`、`g++`です。あと、江添亮のC++入門は聖書です。
+ロボット部のSurfaceにはMSYS2経由でGNUコンパイラを入れました。コマンドは`gcc`、`g++`です。あと、江添亮のC++入門は聖書です。
 
 ## Java
 
