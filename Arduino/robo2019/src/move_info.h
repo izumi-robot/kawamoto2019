@@ -1,6 +1,5 @@
 /**
  * @file move_info.h
- * @author Kawamoto Hironori
  * @brief モーターの移動情報を表現するクラス定義
  */
 

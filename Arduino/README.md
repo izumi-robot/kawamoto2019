@@ -1,52 +1,60 @@
+<!-- Ctrl + Shift + V -->
+
+<!-- omit in toc -->
 # Arduino
 
-この文書では主に、VS CodeでのArduinoの連携方法について紹介します。セットアップ的な部分は、Surfaceではすでに行ってあります。自分のパソコンに入れようと思っているのでなければ、飛ばしてください。セットアップの紹介後、VS Codeでコードを機体に読み込ませる方法などを紹介します。
+このREADMEに書いてあるのは以下の2つです。
 
-参考:
+- VSCodeとの連携方法
+- Arduinoでライブラリを自作する方法
 
-* https://qiita.com/narikei/items/847613a8f01a9e1527d7
-* https://qiita.com/mmt/items/7dd1a2f312334a6cd600
-* https://qiita.com/nori-dev-akg/items/e0811eb26274910cdd0e
-* https://another.maple4ever.net/archives/2328/
-* https://garretlab.web.fc2.com/arduino/introduction/vscode/
-* https://marketplace.visualstudio.com/items?itemName=vsciot-vscode.vscode-arduino
-* https://github.com/bfxdev/Arduino/blob/master/VSCode/README.md
-* https://github.com/microsoft/vscode-arduino
+<!-- omit in toc -->
+## 目次
 
-詳しいことはこちらを見てください。下の2つは公式によるドキュメントです。英語なのでオススメはしません。
-
-前提として、ArduinoIDEとVS Codeが入っている必要があります。パス名やキーボードショートカットなど、OSによって異なる部分はWindowsのものを記述します。他のOSの方は適宜読み替えるか、調べるかしてください。VS Codeの操作で分からないことは`~\kawamoto\README.md`を見てください。
-
-## 目次 {ignore=true}
-
-<!-- @import "[TOC]" {cmd="toc" depthFrom=2 depthTo=6 orderedList=false} -->
-
-<!-- code_chunk_output -->
-
-- [拡張機能のインストール](#拡張機能のインストール)
-- [VS Codeの設定変更](#vs-codeの設定変更)
-- [スケッチの準備](#スケッチの準備)
-- [基本的な使い方](#基本的な使い方)
+- [VSCodeとの連携](#vscodeとの連携)
+  - [拡張機能のインストール](#拡張機能のインストール)
+  - [VSCodeの設定変更](#vscodeの設定変更)
+  - [スケッチの準備](#スケッチの準備)
+  - [基本的な使い方](#基本的な使い方)
+  - [追記](#追記)
+- [ライブラリを自作する](#ライブラリを自作する)
+  - [基本構造](#基本構造)
 - [終わりに](#終わりに)
-- [追記](#追記)
-
-<!-- /code_chunk_output -->
-
 
 最初の2つは初期設定についてです。自分のパソコンに入れるのでなければ読み飛ばしてください。
 
-## 拡張機能のインストール
+## VSCodeとの連携
 
-Arduinoという名前の拡張機能です。アイコンにもArduinoとあります。インストールすると、C/C++という拡張機能も自動でインストールされます。これをインストールすることで、VS CodeからArduino関連の操作を手軽に行えるようになります。
+この節では主に、VSCodeでのArduinoの連携方法について紹介します。セットアップ的な部分は、Surfaceではすでに行ってあります。自分のパソコンに入れようと思っているのでなければ、飛ばしてください。セットアップの紹介後、VSCodeでコードを機体に読み込ませる方法などを紹介します。
 
-## VS Codeの設定変更
+参考:
 
-まずはVS CodeにArduinoのパスを通します。VS Codeの設定にある、「Arduino: Path」を編集します。
+1. https://garretlab.web.fc2.com/arduino/introduction/vscode/
+2. https://marketplace.visualstudio.com/items?itemName=vsciot-vscode.vscode-arduino
+3. https://github.com/bfxdev/Arduino/blob/master/VSCode/README.md
+4. https://github.com/microsoft/vscode-arduino
+5. https://github.com/microsoft/vscode-arduino/issues/808
+
+1番上に全部書いてあります。それ以外は公式によるドキュメントです。英語なのでオススメはしません。
+
+前提として、ArduinoIDEとVSCodeが入っている必要があります。パス名やキーボードショートカットなど、OSによって異なる部分はWindowsのものを記述します。他のOSの方は適宜読み替えるか、調べるかしてください。VSCodeの操作で分からないことは`~\kawamoto\README.md`を見てください。
+
+### 拡張機能のインストール
+
+https://marketplace.visualstudio.com/items?itemName=vsciot-vscode.vscode-arduino
+
+Arduinoという名前の拡張機能です。アイコンにもArduinoとあります。インストールすると、C/C++という拡張機能も自動でインストールされます。これをインストールすることで、VSCodeからArduino関連の操作を手軽に行えるようになります。この拡張機能はArduinoを使わない場面では邪魔になります。そのため、グローバルでは無効にして、ワークスペースで有効にすることをオススメします。
+
+※[ワークスペースとは](https://www.javadrive.jp/vscode/file/index4.html)
+
+### VSCodeの設定変更
+
+まずはVSCodeにArduinoのパスを通します。VSCodeの設定にある、「Arduino: Path」を編集します。
 ArduinoIDEのプログラムがあるフォルダーのパスを設定します。Windowsだと(多分)`C:\Program Files (x86)\Arduino`です。
 
 次に、文字化けを予防します。この内容は、Windowsを使っている方のみになります。`C:\Users\<username>\.vscode\extensions\vsciot-vscode.vscode-arduino-<version>\out\src\common\util.js`(`<>`内の部分は自身の環境に合わせて読み替えてください)を編集します。
 
-215行目あたりにある次の部分をコメントアウトします:
+215行目あたりにある次の部分をコメントアウトします。
 
 ```javascript
         if (os.platform() === "win32") {
@@ -65,7 +73,7 @@ ArduinoIDEのプログラムがあるフォルダーのパスを設定します�
 この部分を以下のように、`/*`と`*/`で囲んでください。ちなみに、今編集しているのはJavaScriptという言語ですが、このコメントアウト方法はC/C++(Arduino)、Java(Processing)でも使えます。
 
 ```javascript
-/*
+        /*
         if (os.platform() === "win32") {
             try {
                 const chcp = childProcess.execSync("chcp.com");
@@ -77,25 +85,30 @@ ArduinoIDEのプログラムがあるフォルダーのパスを設定します�
                 codepage = "850";
             }
         }
-*/
+        */
 ```
 
-コメントアウトができたらCtrl + Sで保存して、VS Codeを再起動してください。
+コメントアウトができたら`Ctrl + S`で保存して、VSCodeを再起動してください。
 
-## スケッチの準備
+### スケッチの準備
 
-それでは、実際のスケッチを開いて設定します。以降はVS Codeでスケッチのフォルダーを開いて作業します。このフォルダーをメインフォルダーと呼ぶことにします。
+それでは、実際のスケッチを開いて設定します。以降はVSCodeでスケッチのフォルダーを開いて作業します。このフォルダーをメインフォルダーと呼ぶことにします。
 
-Ctrl + Shift + Pでコマンドパレットを開き、`Arduino: Initialize`を選択します。`.ino`のプログラムがメインフォルダー内にない場合、新しく`.ino`ファイルを作成します。ファイル名が聞かれるので、好きな名前に変更します。ArduinoIDEに合わせるために、フォルダー名と同じ名前にしておくことをオススメします。また、使用する`.ino`ファイルの候補がいくつかあった場合、どれを使用するか聞かるので、適するものを選んでください。その次に、ボードタイプ(Arduino Uno, Arduino Megaなど)を聞かれます。使うものを選んでください。
+1. `Ctrl + Shift + P`でコマンドパレットを開く
+2. `Arduino: Initialize`を選択
+3. `.ino`のプログラムがメインフォルダー内にない場合は新しく`.ino`ファイルを作成
+   1. ファイル名が聞かれるので、適当な名前を設定(ArduinoIDEに合わせるために、フォルダー名と同じ名前にしておくことがオススメ)
+4. 使用する`.ino`ファイルの候補がいくつかあった場合、どれを使用するか選択
+5. ボードタイプ(Arduino Uno, Arduino Megaなど)を選択
 
 ここまででメインフォルダー内は以下のようになっているはずです。
 
 ```
-main-folder
+sketch_mmdd
  |- .vscode
  |   |- arduino.json
  |   |- c_cpp_properties.json
- |- main.ino
+ |- sketch_mmdd.ino
 ```
 
 次に、コンパイルを高速化するためにアウトプット用のパスを設定します。`.vscode/arduino.json`を開き、末尾に`"output": "./build"`、その1行前の最後に`,`を追加します。例えば、ボードタイプにArduino Megaを選択した場合、このようになります。
@@ -110,16 +123,16 @@ main-folder
 }
 ```
 
-編集したらCtrl+Sで保存してください。
+編集したら`Ctrl + S`で保存してください。
 
-次に、IntelliSenseを少し改造します。`.vscode/c_cpp_properties.json`を開いてください。次のように編集します。
+次に、コード補完の設定を少し改造します。`.vscode/c_cpp_properties.json`を開いて、次のように編集します。
 
 * 5行目にある`"name": "Arduino"`の部分を`"name": "Arduino Specified"`に変更
 * 29行目にある`"defines"`のリストの先頭に`"USBCON",`を追加<br>※ `,`で区切ることを忘れないこと
 
-これで準備完了です。VS Codeでバリバリ開発しちゃってください。
+これで準備完了です。VSCodeでバリバリ開発しちゃってください。
 
-## 基本的な使い方
+### 基本的な使い方
 
 コマンドパレットからアクションを行う方法を紹介します。(基本的には https://github.com/microsoft/vscode-arduino の和訳です)
 
@@ -143,9 +156,9 @@ main-folder
 よく使うものは`Arduino: Board Config`、`Arduino: Select Serial Port`、`Arduino: Upload`です。
 キーボードショートカットは次のものがあります。
 
-* `Arduino: Upload` - Ctrl + Alt + U
-* `Arduino: Verify` - Ctrl + Alt + R
-* `Arduino: Rebuild IntelliSense Configuration` - Ctrl + Alt + I
+* `Arduino: Upload` - `Ctrl + Alt + U`
+* `Arduino: Verify` - `Ctrl + Alt + R`
+* `Arduino: Rebuild IntelliSense Configuration` - `Ctrl + Alt + I`
 
 画面下部のステータスバーには次のショートカットが割り当てられています。
 
@@ -156,14 +169,7 @@ main-folder
 
 `.ino`ファイルを編集中、`Arduino: Verify`と`Arduino: Upload`のボタンが画面右上に表示されます。
 
-## 終わりに
-
-VS CodeでのArduinoの使い方の紹介は以上です。これ読んで分からなかったところは調べてください。
-Arduinoの入門で参考になったサイトのリンクを載せておきます。
-
-https://deviceplus.jp/hobby/arduino-listicle-01/
-
-## 追記
+### 追記
 
 **ArduinoIDEの設定をいい感じにする** (2020/11/12追記)
 
@@ -181,3 +187,40 @@ IDEの「環境設定」でもある程度はいじれるのですが、もっ�
 * https://garretlab.web.fc2.com/arduino/introduction/preferences/index.html
 * https://www.arduino.cc/en/hacking/preferences
 * https://github.com/arduino/Arduino/blob/master/build/shared/lib/preferences.txt
+
+## ライブラリを自作する
+
+`robo2019`はArduinoで私が自作したライブラリです。おそらくライブラリを自作する強者が後輩にも出てくると思うので、必要最低限にとどめて作り方をまとめておきます。
+
+参考:
+
+- https://arduino.github.io/arduino-cli/latest/library-specification/
+- https://stupiddog.jp/note/archives/266
+
+以下、`mylib`という名前のライブラリを作るものとして解説します。
+
+### 基本構造
+
+```
+mylib
+ |- src
+ |   |- some files...
+ |- examples
+ |   |- some files...
+ |- keywords.txt
+ |- library.properties
+ |- README.md
+```
+
+1つずつ解説していきます。
+
+**src**
+
+TODO
+
+## 終わりに
+
+VSCodeでのArduinoの使い方の紹介は以上です。これ読んで分からなかったところは調べてください。
+Arduinoの入門で参考になったサイトのリンクを載せておきます。
+
+https://deviceplus.jp/hobby/arduino-listicle-01/
