@@ -1,0 +1,23 @@
+# ハッシュで始まる行はコメント
+# ArduinoIDEでライブラリを使う際のハイライト設定
+# 形式は name[tab]value
+
+# valueのリスト
+# KEYWORD1 – 型 (Datatypes, Class)
+# KEYWORD2 – メンバー関数と関数 (Methods and Functions)
+# KEYWORD3
+# LITERAL1 – 定数 (Constants)
+# LITERAL2
+# RESERVED_WORD
+# RESERVED_WORD2
+# DATA_TYPE
+# PREPROCESSOR
+
+# ハイライトはLITERAL1が緑色で、その他は橙色らしい
+# VSCodeで使うんだったら正直どうでもいい
+
+# 以下、実際の定義
+LED	KEYWORD1
+toggle	LITERAL1
+on	LITERAL1
+off	LITERAL1
