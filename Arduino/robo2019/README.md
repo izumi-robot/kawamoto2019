@@ -1,23 +1,18 @@
+<!-- omit in toc -->
 # robo2019
 
 <!-- VSCodeでプレビューする場合はCtrl+Kを押してからV -->
 
 ロボカップ用に作ったArduinoライブラリです。名前の由来は、2019年度に入学した人が作ったからです。
 
-## Table of Contents {ignore=true}
-
-<!-- @import "[TOC]" {cmd="toc" depthFrom=2 depthTo=6 orderedList=false} -->
-
-<!-- code_chunk_output -->
+<!-- omit in toc -->
+## Table of Contents
 
 - [Machine Info](#machine-info)
 - [Usage](#usage)
 - [Reference](#reference)
 
-<!-- /code_chunk_output -->
-
-
-## Machine Info
+## 機体情報
 
 **機体の構成**
 
@@ -55,10 +50,10 @@ MCBとモーターの接続ですが、上の写真につけた番号がその�
 
 OpenMV内部では`./src/openmv-slave.py`にあるプログラムが動いているものとします。
 
-## Usage
+## 使い方
 
 `#include <robo2019.h>`でインクルードしてください。このライブラリが提供するものはすべて`robo`ネームスペースに格納されます。
 
-## Reference
+## リファレンス
 
 Doxygen用にコメントを入れました。そっちをリファレンスにしてください。あと、`.h`ファイルと`.cpp`ファイルにできるだけ分けるようにしましたが、Arduino IDEのバグで一部リンクができなかったため、そこだけ`.h`内に書いてあります。
