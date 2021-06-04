@@ -1,3 +1,8 @@
+"""
+ボードについてるLEDをチカらせる
+https://micropython-docs-ja.readthedocs.io/ja/latest/library/machine.Pin.html
+"""
+
 from machine import Pin
 from time import sleep_ms
 
