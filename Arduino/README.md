@@ -3,7 +3,7 @@
 <!-- omit in toc -->
 # Arduino
 
-このREADMEに書いてあるのは以下の2つです。
+このREADMEに書いてあるのは以下の3つです。
 
 - VSCodeとの連携方法
 - ArduinoIDEの設定をいい感じにする
