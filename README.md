@@ -5,7 +5,7 @@
 
 - Visual Studio Code
 - Python 3.8.5
-- C/C++(MinGW)
+- C/C++(MSYS2)
 - OpenJDK
 - Node.js
 - .NET
@@ -25,7 +25,7 @@
 ## Table of Contents
 
 - [ターミナル](#ターミナル)
-- [VS Code](#vs-code)
+- [VSCode](#vscode)
 - [Python](#python)
 - [C/C++](#cc)
 - [Java](#java)
@@ -53,12 +53,12 @@ Linuxでは`>_`みたいなアイコンの「端末」というアプリケー�
 
 「コマンドを実行する」といった文脈があれば、ターミナルに指定された文字列を入力して実行することを意味します。
 
-## VS Code
+## VSCode
 
 - 公式サイト<br>https://code.visualstudio.com/
-- VS Code入門で参考になったサイト<br>https://zenn.dev/karaage0703/books/80b6999d429abc8051bb
+- VSCode入門で参考になったサイト<br>https://zenn.dev/karaage0703/books/80b6999d429abc8051bb
 
-Surfaceでは`code`コマンドが使えます。あと、エクスプローラー上で「Codeで開く」というオプションからファイル/フォルダーをVS Codeで開くことができます。
+Surfaceでは`code`コマンドが使えます。あと、エクスプローラー上で「Codeで開く」というオプションからファイル/フォルダーをVSCodeで開くことができます。
 
 ## Python
 
@@ -71,13 +71,12 @@ anacondaも入っているらしいですが、そこの使い方は入れた人
 ## C/C++
 
 - ドキュメント<br>https://ja.cppreference.com/w/%E3%83%A1%E3%82%A4%E3%83%B3%E3%83%9A%E3%83%BC%E3%82%B8<br>https://cpprefjp.github.io/
-- インストールからVS Codeで使えるようにするまで<br>https://qiita.com/N_Matsukiyo/items/464594d1fd3e6ef576a4
 - 入門サイト
     - 江添亮のC++入門<br>https://ezoeryou.github.io/cpp-intro/
     - 苦しんで覚えるC言語<br>https://9cguide.appspot.com/
     - AtCoder Programming Guide<br>https://atcoder.jp/contests/APG4b
 
-ロボット部のSurfaceにはMSYS2経由でGNUコンパイラを入れました。コマンドは`gcc`、`g++`です。あと、江添亮のC++入門は聖書です。
+ロボット部のSurfaceにはMSYS2経由でGNUコンパイラを入れました。コマンドは`gcc`、`g++`です。あと、江添亮のC++入門は聖書です。VSCodeとの連携方法についてはドンピシャな記事がなかったので自分で書きました。`Clang/README.md`を見てください。
 
 ## Java
 
