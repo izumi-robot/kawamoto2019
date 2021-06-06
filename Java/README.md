@@ -9,9 +9,9 @@
 
 例として取り上げるJavaのバージョンは`14.0.2`であるものとします。ここでは本当に基礎的な部分しか紹介しません。
 
-## Installation
+## インストール方法
 
-Javaのインストール方法です。この節では、パソコンでJavaを使う方法を紹介します。VSCodeで使う方法は別に書きます。
+この節では、パソコンでJavaを使う方法を紹介します。VSCodeで使う方法は別に書きます。
 
 1. https://www.oracle.com/jp/java/ を開く
 2. 画面右上の「Javaダウンロード」ボタンを押す
@@ -40,7 +40,7 @@ Java(TM) SE Runtime Environment (build 14.0.2+12-46)
 Java HotSpot(TM) 64-Bit Server VM (build 14.0.2+12-46, mixed mode, sharing)
 ```
 
-## Usage
+## 使い方
 
 上の節での作業を全て終えたものとして、シェルでの使用例を紹介します。
 
@@ -80,11 +80,9 @@ PS C:\path\to\directory>
 https://qiita.com/pitan109/items/ba62ac1973f727ba719f
 こっちのほうが詳しく書いてあります。
 
-## use in VS Code
+## VSCodeとの連携方法
 
-VS Code内でのJavaの使用方法です。
-
-まずは拡張機能「Java Extension Pack」をインストールします。名前の通り複数の拡張機能をまとめたものなので、少し時間がかかります。
+まずは拡張機能「[Java Extension Pack](https://marketplace.visualstudio.com/items?itemName=vscjava.vscode-java-pack)」をインストールします。名前の通り複数の拡張機能をまとめたものなので、少し時間がかかります。
 
 インストールしたら`Ctrl + ,`で設定を開き、`java.home`をインストールしたJDKがある場所に設定します。`C:\Program Foles(x86)\Java\openjdk-14.0.2\bin\`といった具合です。jdk内の`bin`フォルダーまで指定してください。
 
