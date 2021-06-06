@@ -26,6 +26,8 @@
 
 - [ターミナル](#ターミナル)
 - [VSCode](#vscode)
+- [Arduino](#arduino)
+- [Processing](#processing)
 - [Python](#python)
 - [C/C++](#cc)
 - [Java](#java)
@@ -37,7 +39,6 @@
 - [OpenMV](#openmv)
 - [Raspberry Pi](#raspberry-pi)
 - [Raspberry Pi Pico](#raspberry-pi-pico)
-- [さいごに](#さいごに)
 
 ## ターミナル
 
@@ -60,11 +61,29 @@ Linuxでは`>_`みたいなアイコンの「端末」というアプリケー�
 
 Surfaceでは`code`コマンドが使えます。あと、エクスプローラー上で「Codeで開く」というオプションからファイル/フォルダーをVSCodeで開くことができます。
 
+## Arduino
+
+- 公式サイト<br>https://www.arduino.cc/
+- リファレンス
+  - 英語版<br>https://www.arduino.cc/reference/en/
+  - 日本語版<br>https://garretlab.web.fc2.com/arduino_reference/
+- Arduino入門<br>https://deviceplus.jp/hobby/arduino-listicle-01/
+
+VSCodeとの連携方法、自作ライブラリの作り方は`Arduino/README.md`を参照してください。
+
+## Processing
+
+- 公式サイト<br>https://processing.org
+- リファレンス<br>https://processing.org/reference
+- Processing学習ノート(Processing入門で参考になったサイトです)<br>https://www.d-improvement.jp/learning/processing/
+
+VSCodeとの連携方法は`Processing/README.md`を参照してください。
+
 ## Python
 
 - 公式サイト<br>https://www.python.org/
 - ドキュメント<br>https://docs.python.org/ja/3.8/
-- インストールからVS Codeで使えるようにするまで<br>https://qiita.com/ayuchiy/items/82d6d2dfcf1acc3bec00
+- インストールからVSCodeで使えるようにするまで<br>https://qiita.com/ayuchiy/items/82d6d2dfcf1acc3bec00
 
 anacondaも入っているらしいですが、そこの使い方は入れた人に投げます。
 
@@ -82,7 +101,7 @@ anacondaも入っているらしいですが、そこの使い方は入れた人
 
 - 公式サイト<br>https://www.oracle.com/jp/java/
 - ドキュメント<br>https://docs.oracle.com/javase/jp/8/docs/api/overview-summary.html
-- インストールからVS Codeで使えるようにするまで<br>https://qiita.com/msakamoto_sf/items/d65947ddf509acbc98cb
+- インストールからVSCodeで使えるようにするまで<br>https://qiita.com/msakamoto_sf/items/d65947ddf509acbc98cb
 
 Javaは権利関係が複雑なので、正直オススメできないです。
 
@@ -90,14 +109,14 @@ Javaは権利関係が複雑なので、正直オススメできないです。
 
 - 公式サイト<br>https://nodejs.org/ja/
 - ドキュメント<br>https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference<br>https://nodejs.org/ja/docs/
-- インストールからVS Codeで使えるようにするまで<br>https://qiita.com/GRGSIBERIA/items/b8cd4a2b3635d1bb0391<br>途中にgitの紹介がありますが飛ばしてください。
+- インストールからVSCodeで使えるようにするまで<br>https://qiita.com/GRGSIBERIA/items/b8cd4a2b3635d1bb0391<br>途中にgitの紹介がありますが飛ばしてください。
 
 JavaScriptを使えると給料が上がるらしいです。
 
 ## .NET
 
 - 公式サイトとドキュメント<br>https://docs.microsoft.com/ja-jp/dotnet/
-- インストールからVS Codeで使えるようにするまで<br>https://qiita.com/ronkabu/items/e591214c1477a8d8f434
+- インストールからVSCodeで使えるようにするまで<br>https://qiita.com/ronkabu/items/e591214c1477a8d8f434
 
 C#が有名ですが、興味があったらF#を触ってみてください。
 
@@ -105,7 +124,7 @@ C#が有名ですが、興味があったらF#を触ってみてください。
 
 - 公式サイト<br>https://git-scm.com/
 - ドキュメント<br>https://git-scm.com/book/ja/v2
-- インストールからVS Codeで使えるようにするまで<br>https://qiita.com/y-tsutsu/items/2ba96b16b220fb5913be
+- インストールからVSCodeで使えるようにするまで<br>https://qiita.com/y-tsutsu/items/2ba96b16b220fb5913be
 
 Surfaceには`git`コマンドをいれてあります。モダンプログラマになるためには必須のツールです。
 
@@ -131,7 +150,7 @@ OpenMVは知名度が低すぎて日本語記事がほとんどありません�
 
 ## Raspberry Pi
 
-ラズパイにはC/C++(`gcc`, `g++`), Python3(`python3`, `python`), VS Code, arduinoを入れてあります。
+ラズパイにはC/C++(`gcc`, `g++`), Python3(`python3`, `python`), VSCode, arduinoを入れてあります。
 
 - 公式サイト<br>https://www.raspberrypi.org/
 - 入門<br>https://deviceplus.jp/hobby/entry_001/
@@ -149,7 +168,3 @@ Arduino Nanoの完全上位互換です。
 - ドキュメント(MicroPython)<br>http://docs.micropython.org/en/latest/
 
 詳しい情報は`rasp-pico`を参照してください。
-
-## さいごに
-
-Arduino、ProcessingとVS Codeの連携方法については`Arduino/README.md`, `Processing/README.md`を読んでください。
