@@ -1,3 +1,8 @@
+/**
+ * @file uss.ino
+ * @brief 超音波センサーを使う例
+ */
+
 #include <robo2019.h>
 
 // USSensor(Echo-pin, Trig-pin)

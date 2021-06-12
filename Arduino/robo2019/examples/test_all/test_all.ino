@@ -1,10 +1,17 @@
+/**
+ * @file test_all.ino
+ * @brief 全部一気に検証
+ */
+
 #include <robo2019.h>
 #include <SoftwareSerial.h>
 
+// robo::openmvのエイリアス
 namespace omv {
     using namespace robo::openmv;
 }
 
+// robo::move_infoのエイリアス
 namespace inf {
     using namespace robo::move_info;
 

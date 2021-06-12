@@ -1,6 +1,12 @@
+/**
+ * @file lcd.ino
+ * @brief LCD(液晶ディスプレイ)の使用例
+ */
+
 #include <robo2019.h>
 
-robo::LCD lcd(0x27, 16, 2);
+// LCD(I2Cアドレス, 列数, 行数)
+robo::LCD lcd = robo::LCD(0x27, 16, 2);
 
 void setup()
 {

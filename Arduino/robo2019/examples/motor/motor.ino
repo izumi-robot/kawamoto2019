@@ -1,18 +1,30 @@
+/**
+ * @file motor.ino
+ * @brief MCB操作の例
+ * @details ロボットの方向などの定義はrobo2019/README.mdを参照
+ */
+
 #include <robo2019.h>
 #include <SoftwareSerial.h>
 
-// for mega
 
 SoftwareSerial motor_serial(12, 13);
+
 robo::Motor motor(&motor_serial);
+
 constexpr int power = 60;
-using namespace robo::move_info;
-MoveInfo * infos[] = {
-    new Translate(100, 0),
-    new Rotate(true, power),
-    new Translate(0, -power),
-    new Translate(robo::V2_float::from_polar_coord(PI / 4, power)),
-    new Stop()
+
+// 長ったらしいので省略
+namespace inf {
+    using namespace robo::move_info;
+}
+
+inf::MoveInfo * infos[] = {
+    new inf::Translate(100, 0),
+    new inf::Rotate(true, power),
+    new inf::Translate(0, -power),
+    new inf::Translate(robo::V2_float::from_polar_coord(PI / 4, power)),
+    new inf::Stop()
 };
 
 void setup()

@@ -1,3 +1,8 @@
+/**
+ * @file line_sensor.ino
+ * @brief ラインセンサーの使用例
+ */
+
 #include <robo2019.h>
 
 // LineSensor(analog-in pin)

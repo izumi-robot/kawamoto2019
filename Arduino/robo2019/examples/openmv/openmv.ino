@@ -1,5 +1,12 @@
+/**
+ * @file openmv.ino
+ * @brief OpenMVと通信する例
+ * @details OpenMV側のプログラムは同じフォルダーにあるslave.pyを参照
+ */
+
 #include <robo2019.h>
 
+// robo::openmvが長ったらしいので略
 namespace omv {
     using namespace robo::openmv;
 }

@@ -1,3 +1,8 @@
+/**
+ * @file bno055.ino
+ * @brief BNO055ラッパーの使用例
+ */
+
 #include <robo2019.h>
 
 //  Adafruit_BNO055(id, addr)
@@ -12,10 +17,12 @@ void setup()
 
 void loop()
 {
+    // BNOが接続されているか確認
     if (!bno055.detected()) Serial.println("bno not detected");
-    // 最初の方向からの差分を取得
-    // 反時計回りが正
-    // ラジアン(-PI以上PI以下)
+    /**
+     * 現在向いている方向を取得
+     * 最初に向いていた方向を0としてラジアン(-PI以上PI以下)、反時計回りが正で表現
+     */
     float dir = bno055.get_geomag_direction();
     // 度数法(-180以上180以下)で表示
     Serial.println(dir * 180 / PI);

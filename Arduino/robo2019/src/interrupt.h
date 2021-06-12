@@ -53,7 +53,8 @@ public:
     /**
      * @fn bool state()
      * @brief 現在保存されている状態を返す
-     * @return _stateの値
+     * @details 割り込みが発生するごとに値が切り替わる。初期値はfalse
+     * @return 現在の状態
      */
     bool state();
 
@@ -66,6 +67,8 @@ public:
 };
 
 } // namespace robo
+
+// interrupt.cppに書くとコンパイルエラーになったのでこっち
 
 template<int in_pin, int mode> volatile bool robo::Interrupt<in_pin, mode>::_state;
 
