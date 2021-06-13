@@ -1,16 +1,20 @@
+<!--
+VSCodeで開いている場合は、このファイルの編集画面上にカーソルを置いてからCtrl + Shift + Vを押してみてください。
+-->
+
 <!-- omit in toc -->
 # Kawamoto
 
-2019年入学の川本博詔です。ロボ部のSurfaceに次のものを入れた人です。
+川本博詔です。ロボ部のSurfaceに次のものを入れた人です。
 
 - Visual Studio Code
 - Python 3.8.5
-- C/C++(MSYS2)
+- C/C++ (MSYS2)
 - OpenJDK
 - Node.js
 - .NET
 - Git
-- Windows Subsystem for Linux
+- Windows Subsystem for Linux (WSL)
 - Windows Terminal
 - OpenMV
 
@@ -29,6 +33,7 @@
 - [Arduino](#arduino)
 - [Processing](#processing)
 - [Python](#python)
+- [Anaconda](#anaconda)
 - [C/C++](#cc)
 - [Java](#java)
 - [Node.js](#nodejs)
@@ -52,7 +57,7 @@ Macでのシェルは「ターミナル」というアプリケーションで�
 
 Linuxでは`>_`みたいなアイコンの「端末」というアプリケーションです。
 
-「コマンドを実行する」といった文脈があれば、ターミナルに指定された文字列を入力して実行することを意味します。
+**「コマンドを実行する」といった文脈があれば、ターミナルに指定された文字列を入力して実行することを意味します。**
 
 ## VSCode
 
@@ -74,7 +79,7 @@ VSCodeとの連携方法、自作ライブラリの作り方は`Arduino/README.m
 ## Processing
 
 - 公式サイト<br>https://processing.org
-- リファレンス<br>https://processing.org/reference
+- リファレンス(英語)<br>https://processing.org/reference
 - Processing学習ノート(Processing入門で参考になったサイトです)<br>https://www.d-improvement.jp/learning/processing/
 
 VSCodeとの連携方法は`Processing/README.md`を参照してください。
@@ -82,14 +87,20 @@ VSCodeとの連携方法は`Processing/README.md`を参照してください。
 ## Python
 
 - 公式サイト<br>https://www.python.org/
-- ドキュメント<br>https://docs.python.org/ja/3.8/
+- リファレンス<br>https://docs.python.org/ja/3.8/
 - インストールからVSCodeで使えるようにするまで<br>https://qiita.com/ayuchiy/items/82d6d2dfcf1acc3bec00
 
-anacondaも入っているらしいですが、そこの使い方は入れた人に投げます。
+Pythonだけだと弱いので、C++あたりも書けるようになっておくのがオススメです。
+
+## Anaconda
+
+- 公式サイト<br>https://www.anaconda.com/
+- インストール方法<br>https://www.python.jp/install/anaconda/
+- PythonとAnacondaの違い<br>https://www.python.jp/install/docs/pypi_or_anaconda.html
 
 ## C/C++
 
-- ドキュメント<br>https://ja.cppreference.com/w/%E3%83%A1%E3%82%A4%E3%83%B3%E3%83%9A%E3%83%BC%E3%82%B8<br>https://cpprefjp.github.io/
+- リファレンス<br>https://ja.cppreference.com/w/%E3%83%A1%E3%82%A4%E3%83%B3%E3%83%9A%E3%83%BC%E3%82%B8<br>https://cpprefjp.github.io/
 - 入門サイト
     - 江添亮のC++入門<br>https://ezoeryou.github.io/cpp-intro/
     - 苦しんで覚えるC言語<br>https://9cguide.appspot.com/
@@ -100,7 +111,7 @@ anacondaも入っているらしいですが、そこの使い方は入れた人
 ## Java
 
 - 公式サイト<br>https://www.oracle.com/jp/java/
-- ドキュメント<br>https://docs.oracle.com/javase/jp/8/docs/api/overview-summary.html
+- リファレンス<br>https://docs.oracle.com/javase/jp/8/docs/api/overview-summary.html
 - インストールからVSCodeで使えるようにするまで<br>https://qiita.com/msakamoto_sf/items/d65947ddf509acbc98cb
 
 Javaは権利関係が複雑なので、正直オススメできないです。
@@ -108,14 +119,14 @@ Javaは権利関係が複雑なので、正直オススメできないです。
 ## Node.js
 
 - 公式サイト<br>https://nodejs.org/ja/
-- ドキュメント<br>https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference<br>https://nodejs.org/ja/docs/
+- リファレンス<br>https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference<br>https://nodejs.org/ja/docs/
 - インストールからVSCodeで使えるようにするまで<br>https://qiita.com/GRGSIBERIA/items/b8cd4a2b3635d1bb0391<br>途中にgitの紹介がありますが飛ばしてください。
 
 JavaScriptを使えると給料が上がるらしいです。
 
 ## .NET
 
-- 公式サイトとドキュメント<br>https://docs.microsoft.com/ja-jp/dotnet/
+- 公式サイトとリファレンス<br>https://docs.microsoft.com/ja-jp/dotnet/
 - インストールからVSCodeで使えるようにするまで<br>https://qiita.com/ronkabu/items/e591214c1477a8d8f434
 
 C#が有名ですが、興味があったらF#を触ってみてください。
@@ -143,10 +154,10 @@ Windows Subsystem for Linux (WSL)はWindows内で動かせるLinuxです。
 ## OpenMV
 
 - 公式サイト<br>https://openmv.io/
-- ドキュメント<br>https://docs.openmv.io/
+- リファレンス<br>https://docs.openmv.io/
 - 入門記事<br>https://qiita.com/qmore/items/60d2c776d4a00db5863c
 
-OpenMVは知名度が低すぎて日本語記事がほとんどありません。そのため、最初から公式のドキュメント(上記URL)で探した方が早いです。`openmv/README.md`により詳しい説明があります。
+OpenMVは知名度が低すぎて日本語記事がほとんどありません。そのため、最初から公式のリファレンス(上記URL)で探した方が早いです。`openmv/README.md`により詳しい説明があります。
 
 ## Raspberry Pi
 
@@ -165,6 +176,6 @@ Arduino Nanoの完全上位互換です。
 - 環境構築
   - C/C++<br>https://qiita.com/iwatake2222/items/33b4cd3a39da5a44dc02
   - MicroPython<br>https://rikoubou.hatenablog.com/entry/2021/02/05/150631
-- ドキュメント(MicroPython)<br>http://docs.micropython.org/en/latest/
+- リファレンス(MicroPython)<br>http://docs.micropython.org/en/latest/
 
 詳しい情報は`rasp-pico`を参照してください。
