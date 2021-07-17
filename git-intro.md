@@ -1,7 +1,9 @@
 <!-- omit in toc -->
 # Gitの使い方
 
-<!-- Press Ctrl + K, V -->
+<!-- Ctrl + Shift + V を押してプレビュー -->
+
+実戦形式でGit及びGitHubの使い方を紹介します。
 
 <!-- omit in toc -->
 ## Table of Contents

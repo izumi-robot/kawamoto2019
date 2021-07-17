@@ -62,7 +62,9 @@ Linuxでは`>_`みたいなアイコンの「端末」というアプリケー�
 ## VSCode
 
 - 公式サイト<br>https://code.visualstudio.com/
-- VSCode入門で参考になったサイト<br>https://zenn.dev/karaage0703/books/80b6999d429abc8051bb
+- VSCode入門で参考になったサイト
+  - https://zenn.dev/karaage0703/books/80b6999d429abc8051bb
+  - https://www.javadrive.jp/vscode/
 
 Surfaceでは`code`コマンドが使えます。あと、エクスプローラー上で「Codeで開く」というオプションからファイル/フォルダーをVSCodeで開くことができます。
 
