@@ -15,7 +15,7 @@ WSLでは少し事情が違います。それについては後述します。
 
 ## Windows Subsystem for Linux (WSL)
 
-参考: 
+参考:
 https://docs.microsoft.com/ja-jp/windows/wsl/install-win10
 https://docs.microsoft.com/en-us/windows/wsl/wsl2-kernel
 

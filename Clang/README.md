@@ -30,7 +30,7 @@ WindowsでC/C++を使う方法はいろいろあるのですが、ここではMS
    1. `pacman -Syu`
    2. `pacman -Su`
    3. `pacman -S --needed base-devel mingw-w64-x86_64-toolchain`
-8. MSYS2を閉じる。次に、環境変数を設定する<br>※(パスの通し方)[https://www.atmarkit.co.jp/ait/articles/1805/11/news035.html]
+8. MSYS2を閉じる。次に、環境変数を設定する<br>※[パスの通し方](https://www.atmarkit.co.jp/ait/articles/1805/11/news035.html)
 9. Windowsの設定で「環境変数」と検索
 10. 「システム環境変数の編集」を選ぶ
 11. 管理者権限が要求されるので、通す
@@ -73,6 +73,6 @@ C++の場合はファイル拡張子が`.c`から`.cpp`、`gcc`が`g++`になり
 
 VSCode内での使用方法です。
 
-1. 以下の[C/C++ の拡張機能](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)をインストール ※[拡張機能について](https://futureys.tokyo/how-should-i-manage-extension-in-vscode/)
+1. 以下の[C/C++ の拡張機能](https://marketplace.visualstudio.com/items?itemName=ms-vscode.cpptools)をインストール<br>※[拡張機能について](https://futureys.tokyo/how-should-i-manage-extension-in-vscode/)
 2. 拡張子`.cpp`でファイル作成
 3. 勝手に拡張機能が起動して補完、型チェックなどいろいろとやってくれる
