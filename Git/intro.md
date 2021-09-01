@@ -3,7 +3,7 @@
 
 <!-- Ctrl + Shift + V を押してプレビュー -->
 
-実戦形式でGit及びGitHubの使い方を紹介します。
+実践形式でGit及びGitHubの使い方を紹介します。
 
 <!-- omit in toc -->
 ## Table of Contents
