@@ -148,6 +148,10 @@ Windows Subsystem for Linux (WSL)はWindows内で動かせるLinuxです。
 - ドキュメント<br>https://docs.microsoft.com/ja-jp/windows/wsl/
 - インストール方法<br>https://docs.microsoft.com/ja-jp/windows/wsl/install-win10
 
+パスワードは`izumissh`だったはずです、多分。
+
+- [WSLでパスワードを忘れた場合の対処](https://qiita.com/iszk/items/557cd99739ea6cc82941)
+
 ## Windows Terminal
 
 - 公式サイト<br>https://docs.microsoft.com/ja-jp/windows/terminal/
